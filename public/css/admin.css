@@ -1,1 +1,144 @@
 /* admin.css – styles for the admin dashboard tables and forms */
+
+:root {
+  --mf-navy: #0b3d5c;
+  --mf-navy-dark: #072a40;
+  --mf-accent: #f2a900;
+  --mf-surface: #f4f7fa;
+  --mf-border: #dde5ec;
+}
+
+body {
+  background: var(--mf-surface);
+  color: #1b2a36;
+}
+
+/* top bar */
+.mf-nav {
+  background: var(--mf-navy);
+  border-bottom: 3px solid var(--mf-accent);
+}
+.mf-nav-tag {
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--mf-navy-dark);
+  background: var(--mf-accent);
+  border-radius: 999px;
+  padding: .15rem .55rem;
+  margin-left: .35rem;
+  vertical-align: middle;
+}
+
+/* summary tiles */
+.mf-stat {
+  background: #fff;
+  border: 1px solid var(--mf-border);
+  border-left: 4px solid var(--mf-navy);
+  border-radius: .5rem;
+  padding: .85rem 1rem;
+  display: flex;
+  flex-direction: column;
+}
+.mf-stat-label {
+  font-size: .8rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #5b6b78;
+}
+.mf-stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+/* cards */
+.card {
+  border-color: var(--mf-border);
+  border-radius: .5rem;
+}
+.card-header {
+  background: #fff;
+}
+
+/* bus table */
+.mf-table thead th {
+  background: #eaf0f5;
+  color: #38505f;
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--mf-border);
+}
+.mf-table td {
+  vertical-align: middle;
+}
+.mf-table td .small {
+  line-height: 1.25;
+}
+.mf-table .num {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* seat availability bar */
+.seat-bar-wrap {
+  width: 90px;
+  height: 6px;
+  background: #e3e9ee;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.seat-bar {
+  height: 100%;
+  width: 0;
+  background: #198754;
+  border-radius: 3px;
+}
+.seat-bar.is-low { background: #e0a100; }
+.seat-bar.is-full { background: #dc3545; }
+
+.mf-actions .btn {
+  white-space: nowrap;
+}
+
+/* toasts (shown/hidden with jQuery fadeIn / fadeOut) */
+.mf-toast-box {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  max-width: min(360px, calc(100vw - 2rem));
+}
+.mf-toast {
+  display: none;
+  padding: .7rem 1rem;
+  border-radius: .5rem;
+  color: #fff;
+  font-size: .92rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .2);
+}
+.mf-toast-success { background: #198754; }
+.mf-toast-error   { background: #b02a37; }
+.mf-toast-info    { background: var(--mf-navy); }
+
+/* form validation hint inside modals */
+.was-validated .form-control:invalid,
+.was-validated .form-select:invalid {
+  border-color: #dc3545;
+}
+
+@media (max-width: 575.98px) {
+  .mf-stat-value { font-size: 1.4rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade { transition: none; }
+}
