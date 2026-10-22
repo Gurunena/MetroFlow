@@ -1,0 +1,326 @@
+/* chat.css – Metro AI chat widget and full-page assistant view
+   -------------------------------------------------------------------------
+   Classes are prefixed `mfc-`. Design tokens (--mf-*) come from home.css;
+   the fallbacks in var() keep the widget usable on a page that only loads
+   style.css + chat.css.
+   ------------------------------------------------------------------------- */
+
+/* ================================ THE FAB =============================== */
+.mfc-fab {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1055;
+  width: 60px;
+  height: 60px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--mf-red, #D80F1E);
+  color: #fff;
+  font-size: 1.5rem;
+  box-shadow: 0 12px 28px rgba(216, 15, 30, .4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform .25s cubic-bezier(.22, 1, .36, 1), background-color .2s;
+}
+.mfc-fab:hover { transform: scale(1.07); background: var(--mf-red-dark, #B00B18); }
+.mfc-fab[aria-expanded="true"] { transform: scale(.85); opacity: 0; pointer-events: none; }
+
+/* Soft pulse that draws the eye to the button. */
+.mfc-ping {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--mf-red, #D80F1E);
+  animation: mfc-ping 2.4s ease-out infinite;
+}
+@keyframes mfc-ping {
+  0%   { transform: scale(1);   opacity: .7; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* ============================== THE PANEL =============================== */
+.mfc-panel {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1056;
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  height: 560px;
+  max-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--mf-line, #E8EAEF);
+  border-radius: var(--mf-r-lg, 24px);
+  box-shadow: 0 30px 70px rgba(15, 27, 51, .25);
+
+  /* Hidden until .mfc-open is set by chat.js. */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(16px) scale(.97);
+  transition: opacity .28s cubic-bezier(.22, 1, .36, 1),
+              transform .28s cubic-bezier(.22, 1, .36, 1),
+              visibility .28s;
+}
+.mfc-panel.mfc-open { opacity: 1; visibility: visible; transform: none; }
+
+/* --------------------------------- head -------------------------------- */
+.mfc-head {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  padding: .9rem 1rem;
+  background: linear-gradient(135deg, var(--mf-red, #D80F1E), var(--mf-red-dark, #B00B18));
+  color: #fff;
+  flex: 0 0 auto;
+}
+.mfc-robot {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+}
+.mfc-title { font-weight: 800; line-height: 1.1; }
+.mfc-status { font-size: .72rem; opacity: .95; display: flex; align-items: center; gap: .3rem; }
+.mfc-status i { font-size: .45rem; color: #7BE495; }
+
+.mfc-close {
+  border: 0;
+  background: rgba(255, 255, 255, .16);
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color .2s;
+}
+.mfc-close:hover { background: rgba(255, 255, 255, .32); }
+.mfc-close:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+/* --------------------------------- body -------------------------------- */
+.mfc-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1rem;
+  background: var(--mf-tint-grey, #F7F8FA);
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+}
+
+/* ------------------------------- bubbles ------------------------------- */
+.mfc-row { display: flex; flex-direction: column; max-width: 86%; margin-bottom: .6rem; }
+.mfc-row-bot  { align-self: flex-start; align-items: flex-start; }
+.mfc-row-user { align-self: flex-end;   align-items: flex-end; }
+
+.mfc-bubble {
+  padding: .65rem .9rem;
+  border-radius: var(--mf-r-md, 16px);
+  font-size: .9rem;
+  line-height: 1.5;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  animation: mfc-pop .3s cubic-bezier(.22, 1, .36, 1);
+}
+.mfc-row-bot .mfc-bubble {
+  background: #fff;
+  color: var(--mf-navy, #0F1B33);
+  border: 1px solid var(--mf-line, #E8EAEF);
+  border-bottom-left-radius: 6px;
+}
+.mfc-row-user .mfc-bubble {
+  background: var(--mf-red, #D80F1E);
+  color: #fff;
+  border-bottom-right-radius: 6px;
+}
+.mfc-bubble strong { font-weight: 800; }
+.mfc-bubble a { color: inherit; font-weight: 700; }
+
+@keyframes mfc-pop {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.mfc-time { font-size: .64rem; color: var(--mf-grey, #6B7280); margin-top: .22rem; padding: 0 .3rem; }
+
+/* --------------------------- typing indicator -------------------------- */
+.mfc-typing {
+  display: inline-flex;
+  gap: .25rem;
+  padding: .8rem .95rem;
+  background: #fff;
+  border: 1px solid var(--mf-line, #E8EAEF);
+  border-radius: var(--mf-r-md, 16px);
+  border-bottom-left-radius: 6px;
+}
+.mfc-typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mf-grey, #6B7280);
+  animation: mfc-blink 1.3s ease-in-out infinite;
+}
+.mfc-typing span:nth-child(2) { animation-delay: .18s; }
+.mfc-typing span:nth-child(3) { animation-delay: .36s; }
+@keyframes mfc-blink {
+  0%, 60%, 100% { opacity: .25; transform: translateY(0); }
+  30%           { opacity: 1;   transform: translateY(-3px); }
+}
+
+/* ----------------------------- mini bus card --------------------------- */
+.mfc-bus {
+  display: block;
+  margin-top: .45rem;
+  padding: .7rem .85rem;
+  background: #fff;
+  border: 1px solid var(--mf-line, #E8EAEF);
+  border-left: 3px solid var(--mf-red, #D80F1E);
+  border-radius: var(--mf-r-sm, 12px);
+  text-decoration: none;
+  color: var(--mf-navy, #0F1B33);
+  transition: transform .2s cubic-bezier(.22, 1, .36, 1), box-shadow .2s;
+}
+.mfc-bus:hover { transform: translateX(3px); box-shadow: 0 8px 18px rgba(15, 27, 51, .1); }
+.mfc-bus-top { display: flex; justify-content: space-between; gap: .5rem; align-items: baseline; }
+.mfc-bus-name { font-weight: 800; font-size: .85rem; }
+.mfc-bus-fare { font-weight: 800; font-size: .85rem; color: var(--mf-red, #D80F1E); white-space: nowrap; }
+/* The card is an <a>, so its inline spans need explicit block/inline-block
+   display or the meta lines run together. */
+.mfc-bus-meta { display: block; font-size: .74rem; color: var(--mf-grey, #6B7280); font-weight: 600; margin-top: .15rem; }
+.mfc-bus-seats { display: inline-block; font-size: .72rem; font-weight: 800; margin-top: .4rem; }
+
+/* --------------------------- quick-reply chips ------------------------- */
+.mfc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  padding: .6rem .9rem;
+  background: #fff;
+  border-top: 1px solid var(--mf-line, #E8EAEF);
+  flex: 0 0 auto;
+}
+.mfc-chips:empty { display: none; }
+.mfc-chip {
+  border: 1px solid var(--mf-line, #E8EAEF);
+  background: var(--mf-tint-red, #FFF5F5);
+  color: var(--mf-red, #D80F1E);
+  border-radius: 999px;
+  padding: .32rem .75rem;
+  font-size: .76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color .2s, color .2s;
+}
+.mfc-chip:hover { background: var(--mf-red, #D80F1E); color: #fff; }
+
+/* ------------------------------- composer ------------------------------ */
+.mfc-form {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  padding: .7rem .9rem .9rem;
+  background: #fff;
+  border-top: 1px solid var(--mf-line, #E8EAEF);
+  flex: 0 0 auto;
+}
+.mfc-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 1px solid var(--mf-line, #E8EAEF);
+  background: var(--mf-tint-grey, #F7F8FA);
+  border-radius: 999px;
+  padding: .65rem 1rem;
+  font-size: .9rem;
+  font-weight: 500;
+  color: var(--mf-navy, #0F1B33);
+}
+.mfc-input:focus {
+  outline: none;
+  background: #fff;
+  border-color: var(--mf-red, #D80F1E);
+  box-shadow: 0 0 0 .2rem rgba(216, 15, 30, .15);
+}
+.mfc-send {
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--mf-red, #D80F1E);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color .2s, transform .2s;
+}
+.mfc-send:hover { background: var(--mf-red-dark, #B00B18); transform: scale(1.06); }
+.mfc-send:disabled { background: #C9CDD6; cursor: not-allowed; transform: none; }
+
+/* ======================= FULL-PAGE VIEW (assistant.html) ================ */
+.mfc-page { padding: clamp(1.5rem, 4vw, 3rem) 0; background: var(--mf-tint-grey, #F7F8FA); }
+.mfc-page .mfc-fab { display: none; }
+.mfc-page .mfc-panel {
+  position: static;
+  width: 100%;
+  max-width: 760px;
+  height: min(72vh, 680px);
+  max-height: none;
+  margin: 0 auto;
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  box-shadow: 0 20px 50px rgba(15, 27, 51, .12);
+}
+.mfc-page .mfc-close { display: none; }
+.mfc-page .mfc-body { background: #fff; }
+.mfc-page .mfc-row-bot .mfc-bubble { background: var(--mf-tint-grey, #F7F8FA); }
+
+/* ============================== MOBILE SHEET ============================ */
+@media (max-width: 575.98px) {
+  .mfc-fab { right: 16px; bottom: 16px; width: 54px; height: 54px; font-size: 1.3rem; }
+
+  /* Full-height bottom sheet on small screens. */
+  .mfc-panel {
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    border: 0;
+    transform: translateY(100%);
+  }
+  .mfc-panel.mfc-open { transform: translateY(0); }
+  .mfc-row { max-width: 92%; }
+
+  .mfc-page .mfc-panel { height: 78vh; border-radius: var(--mf-r-lg, 24px); transform: none; }
+}
+
+/* ============================= REDUCED MOTION =========================== */
+@media (prefers-reduced-motion: reduce) {
+  .mfc-fab,
+  .mfc-panel,
+  .mfc-bubble,
+  .mfc-bus,
+  .mfc-send,
+  .mfc-ping,
+  .mfc-typing span {
+    animation: none !important;
+    transition-duration: .001ms !important;
+  }
+  .mfc-panel { transform: none; }
+}

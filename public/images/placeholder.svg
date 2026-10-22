@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Sri Lanka landscape illustration">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFE3E5"/>
+      <stop offset="1" stop-color="#FFF5F5"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#sky)"/>
+  <circle cx="300" cy="80" r="34" fill="#FFB4B9"/>
+  <path d="M0 230 L90 140 L150 190 L230 110 L320 200 L400 150 V300 H0 Z" fill="#F38D95"/>
+  <path d="M0 260 C80 230 160 270 240 245 S360 240 400 250 V300 H0 Z" fill="#D80F1E" opacity=".85"/>
+</svg>

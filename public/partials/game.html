@@ -1,0 +1,72 @@
+<!-- game.html – "MetroFlow Dash" mini-game strip, injected into #mf-game-slot
+     by js/game.js. All classes are prefixed mf-game-. -->
+<a class="mf-game-skip" href="#footer">Skip game</a>
+
+<section class="mf-game" aria-labelledby="mfGameTitle">
+  <div class="container">
+    <div class="mf-game-card">
+
+      <div class="mf-game-head">
+        <div class="mf-game-headings">
+          <h2 class="mf-game-title" id="mfGameTitle">
+            <span class="mf-game-kicker">Take a break — play</span>
+            <span class="mf-game-name">MetroFlow Dash</span>
+          </h2>
+          <!-- Which hint shows is decided by CSS media query, so it stays
+               correct on a touch device without JS sniffing. -->
+          <p class="mf-game-hint" id="mfGameHint">
+            <span class="mf-game-hint-key">Press Space or tap to jump</span>
+            <span class="mf-game-hint-tap">Tap the road to jump</span>
+          </p>
+        </div>
+
+        <div class="mf-game-hud">
+          <span class="mf-game-stat">Score <b id="mfGameScore">0</b></span>
+          <span class="mf-game-stat">Best <b id="mfGameBest">0</b></span>
+          <span class="mf-game-lives" id="mfGameLives" aria-label="Lives remaining: 3">
+            <i class="bi bi-heart-fill" aria-hidden="true"></i>
+            <i class="bi bi-heart-fill" aria-hidden="true"></i>
+            <i class="bi bi-heart-fill" aria-hidden="true"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="mf-game-stage" id="mfGameStage" role="application"
+           aria-label="MetroFlow Dash mini game" tabindex="0">
+        <canvas id="mfGameCanvas"></canvas>
+
+        <!-- Faded in by game.js on game over -->
+        <div class="mf-game-over" id="mfGameOver" style="display:none">
+          <div class="mf-game-over-inner">
+            <h3 class="mf-game-over-title">Game over</h3>
+            <p class="mf-game-final">Score <b id="mfGameFinal">0</b></p>
+            <p class="mf-game-newbest" id="mfGameNewBest" style="display:none">New best!</p>
+            <p class="mf-game-quip" id="mfGameQuip"></p>
+            <div class="mf-game-over-actions">
+              <button class="btn btn-sm mf-btn-red" type="button" id="mfGameAgain">
+                <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Play again
+              </button>
+              <a class="btn btn-sm mf-btn-ghost" href="search.html">
+                Find Buses <i class="bi bi-arrow-right" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mf-game-foot">
+        <button class="btn btn-sm mf-btn-red" type="button" id="mfGameStart">
+          <i class="bi bi-play-fill" aria-hidden="true"></i> <span id="mfGameStartLabel">Start</span>
+        </button>
+        <button class="mf-game-sound" type="button" id="mfGameSound" aria-pressed="false">
+          <i class="bi bi-volume-mute" aria-hidden="true" id="mfGameSoundIcon"></i>
+          <span id="mfGameSoundLabel">Sound off</span>
+        </button>
+      </div>
+
+      <!-- Only written to on game over, so the score is not read out per point -->
+      <p class="visually-hidden" id="mfGameLive" aria-live="polite"></p>
+
+    </div>
+  </div>
+</section>

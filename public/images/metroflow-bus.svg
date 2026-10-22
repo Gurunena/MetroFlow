@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 230" role="img" aria-label="Red and white MetroFlow metro bus, sign reads Colombo to Kandy">
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#eef0f4"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#B00B18"/>
+      <stop offset="1" stop-color="#E3141F"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2B3A55"/>
+      <stop offset="1" stop-color="#0F1B33"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".35"/>
+      <stop offset=".5" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="320" cy="214" rx="300" ry="10" fill="#0F1B33" opacity=".18"/>
+  <!-- body -->
+  <path d="M30 40 Q30 18 54 18 H560 Q600 18 612 52 L626 112 Q630 128 630 146 V176 Q630 192 614 192 H40 Q24 192 24 176 V56 Q24 40 30 40 Z" fill="url(#body)" stroke="#d9dde5" stroke-width="2"/>
+  <!-- red lower sweep -->
+  <path d="M24 128 H240 C320 128 360 100 460 100 H622 L630 146 V176 Q630 192 614 192 H40 Q24 192 24 176 Z" fill="url(#red)"/>
+  <path d="M24 122 H240 C320 122 360 94 460 94 H620" fill="none" stroke="#0F1B33" stroke-width="3" opacity=".9"/>
+  <!-- LED destination sign -->
+  <rect x="58" y="24" width="250" height="26" rx="6" fill="#111827"/>
+  <text x="183" y="43" text-anchor="middle" font-family="'Caveat','Segoe Script',cursive" font-size="21" font-weight="700" fill="#FFB020">Colombo to Kandy</text>
+  <!-- windows -->
+  <g fill="url(#glass)">
+    <rect x="40" y="58" width="62" height="56" rx="8"/>
+    <rect x="110" y="58" width="62" height="56" rx="8"/>
+    <rect x="180" y="58" width="62" height="56" rx="8"/>
+    <rect x="250" y="58" width="62" height="56" rx="8"/>
+    <rect x="320" y="58" width="62" height="56" rx="8"/>
+    <rect x="390" y="58" width="62" height="40" rx="8"/>
+    <path d="M540 30 H566 Q592 30 602 56 L614 104 H540 Z"/>
+  </g>
+  <g fill="url(#shine)">
+    <rect x="40" y="58" width="62" height="56" rx="8"/>
+    <rect x="180" y="58" width="62" height="56" rx="8"/>
+    <rect x="320" y="58" width="62" height="56" rx="8"/>
+    <path d="M540 30 H566 Q592 30 602 56 L614 104 H540 Z"/>
+  </g>
+  <!-- door -->
+  <rect x="466" y="30" width="62" height="150" rx="6" fill="#0F1B33"/>
+  <rect x="472" y="36" width="23" height="92" rx="4" fill="#2B3A55"/>
+  <rect x="499" y="36" width="23" height="92" rx="4" fill="#2B3A55"/>
+  <!-- brand -->
+  <g transform="translate(120 140)">
+    <rect width="30" height="30" rx="8" fill="#fff"/>
+    <path d="M6 23 V12 c0-2 2.5-3 4-1.5 l5 5.5 5-5.5 c1.5-1.5 4-.5 4 1.5 v11" fill="none" stroke="#D80F1E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="40" y="22" font-family="'Plus Jakarta Sans',Arial,sans-serif" font-size="22" font-weight="800" fill="#fff">MetroFlow</text>
+  </g>
+  <!-- lights -->
+  <rect x="612" y="150" width="14" height="10" rx="3" fill="#FFE8A3"/>
+  <rect x="26" y="150" width="8" height="14" rx="3" fill="#FF6B6B"/>
+  <!-- wheels -->
+  <g>
+    <circle cx="130" cy="190" r="30" fill="#111827"/><circle cx="130" cy="190" r="14" fill="#9CA3AF"/><circle cx="130" cy="190" r="5" fill="#374151"/>
+    <circle cx="530" cy="190" r="30" fill="#111827"/><circle cx="530" cy="190" r="14" fill="#9CA3AF"/><circle cx="530" cy="190" r="5" fill="#374151"/>
+  </g>
+</svg>
