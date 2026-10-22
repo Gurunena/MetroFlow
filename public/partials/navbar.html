@@ -1,11 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MetroFlow – Navbar Partial</title>
-</head>
-<body>
-  <!-- TODO -->
-</body>
-</html>
+<!-- navbar.html – injected into #navbar on every page.
+     IDs and data-* hooks are kept stable for auth.js / main.js. -->
+<a class="mf-skip-link" href="#main">Skip to content</a>
+<nav class="navbar navbar-expand-xl mf-nav sticky-top py-2" aria-label="Main navigation">
+  <div class="container">
+    <a class="navbar-brand mf-brand" href="index.html" aria-label="MetroFlow home">
+      <img src="images/logo-mark.svg" alt="" width="42" height="42">
+      <span>
+        <span class="mf-brand-name d-block">Metro<span>Flow</span></span>
+        <span class="mf-brand-tag d-block">Sri Lanka's Metro Bus Network</span>
+      </span>
+    </a>
+
+    <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mfNav" aria-controls="mfNav" aria-expanded="false" aria-label="Toggle navigation">
+      <i class="bi bi-list fs-2 mf-text-navy" aria-hidden="true"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mfNav">
+      <ul class="navbar-nav mx-auto mb-2 mb-xl-0">
+        <li class="nav-item"><a class="nav-link" data-page="index" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" data-page="explore" href="explore.html">Explore</a></li>
+        <li class="nav-item"><a class="nav-link" data-page="my-trips" href="my-trips.html">My Trips</a></li>
+        <li class="nav-item"><a class="nav-link" data-page="assistant" href="assistant.html">AI Assistant</a></li>
+        <li class="nav-item"><a class="nav-link" data-page="about" href="about.html">About</a></li>
+      </ul>
+
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <!-- Weather chip – default is static, home.js may refresh it -->
+        <div class="dropdown">
+          <button class="mf-weather-chip dropdown-toggle border-0" id="weatherChip" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Weather, choose a city">
+            <i class="bi bi-sun-fill" aria-hidden="true"></i><span class="mf-w-temp">28°C</span> <span class="mf-w-city">Colombo</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4 p-2" id="weatherMenu">
+            <li><button class="dropdown-item rounded-3" type="button" data-city="Colombo">Colombo</button></li>
+            <li><button class="dropdown-item rounded-3" type="button" data-city="Kandy">Kandy</button></li>
+            <li><button class="dropdown-item rounded-3" type="button" data-city="Galle">Galle</button></li>
+            <li><button class="dropdown-item rounded-3" type="button" data-city="Jaffna">Jaffna</button></li>
+            <li><button class="dropdown-item rounded-3" type="button" data-city="Nuwara Eliya">Nuwara Eliya</button></li>
+          </ul>
+        </div>
+
+        <div id="authGuest" class="d-flex gap-2">
+          <button class="btn mf-btn-outline-red btn-sm px-3" type="button" data-auth="login">Login</button>
+          <button class="btn mf-btn-red btn-sm px-3" type="button" data-auth="register">Sign Up</button>
+        </div>
+
+        <div id="authUser" class="dropdown d-none">
+          <button class="btn mf-btn-ghost btn-sm mf-user-pill dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="mf-avatar" id="userInitial">U</span><span id="userName">User</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4 p-2">
+            <li><a class="dropdown-item rounded-3" href="my-trips.html"><i class="bi bi-ticket-perforated me-2" aria-hidden="true"></i>My Trips</a></li>
+            <li><button class="dropdown-item rounded-3" type="button" id="logoutBtn"><i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>Log out</button></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Login / Sign Up modal – wired up by auth.js -->
+<div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-2">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <span class="mf-hand mf-text-red fs-4">Welcome aboard</span>
+          <h2 class="modal-title h4 mb-0" id="authTitle">Log in to MetroFlow</h2>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="authForm" novalidate>
+          <div class="mb-3 reg-only">
+            <label class="form-label" for="authName">Full name</label>
+            <input class="form-control" id="authName" name="Name" autocomplete="name">
+            <div class="invalid-feedback">Please enter your name.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="authEmail">Email</label>
+            <input class="form-control" id="authEmail" name="Email" type="email" required autocomplete="email">
+            <div class="invalid-feedback">Please enter a valid email.</div>
+          </div>
+          <div class="mb-3 reg-only">
+            <label class="form-label" for="authPhone">Phone <span class="mf-muted fw-normal">(optional)</span></label>
+            <input class="form-control" id="authPhone" name="Phone" placeholder="+94 77 123 4567" autocomplete="tel">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="authPassword">Password</label>
+            <input class="form-control" id="authPassword" name="Password" type="password" minlength="6" required autocomplete="current-password">
+            <div class="invalid-feedback">At least 6 characters.</div>
+          </div>
+          <button class="btn mf-btn-red w-100" type="submit" id="authSubmit">Log in <i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+          <p class="text-center small mt-3 mb-0">
+            <span class="login-only">New to MetroFlow? <a href="#" data-auth-switch="register">Create an account</a></span>
+            <span class="reg-only">Already have an account? <a href="#" data-auth-switch="login">Log in</a></span>
+          </p>
+          <p class="text-center small mf-muted mt-2 mb-0">Guests can still book — an account just keeps your trips in one place.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

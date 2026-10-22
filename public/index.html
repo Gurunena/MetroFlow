@@ -1,11 +1,264 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MetroFlow – Home</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MetroFlow – Sri Lanka's Metro Bus Network</title>
+  <meta name="description" content="Book premium metro bus seats across Sri Lanka — Colombo, Kandy, Galle, Jaffna and more.">
+  <link rel="icon" href="images/logo-mark.svg" type="image/svg+xml">
+
+  <!-- Fonts: Plus Jakarta Sans for UI, Caveat for the handwritten accents -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@600;700&family=Pinyon+Script&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap CSS -> Icons -> style.css -> home.css -> game.css -> chat.css -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/home.css" rel="stylesheet">
+  <link href="css/game.css" rel="stylesheet">
+  <link href="css/chat.css" rel="stylesheet">
 </head>
 <body>
-  <!-- TODO -->
+  <!-- Partials are injected by main.js if it provides a loader, otherwise by
+       home.js / chat.js as a fallback (see mfLoadPartial). -->
+  <div id="navbar"></div>
+
+  <main id="main">
+    <!-- ================================ HERO ============================= -->
+    <section class="mf-hero" aria-labelledby="heroTitle">
+      <div class="container">
+        <div class="mf-hero-grid">
+          <div class="mf-hero-copy">
+            <span class="mf-eyebrow mf-eyebrow-dash">Sri Lanka's premium metro bus service</span>
+            <h1 class="mf-hero-title" id="heroTitle">
+              <span class="mf-hero-script">More Than</span>
+              <span class="mf-hero-bold">Just a Bus<span class="mf-dot">.</span></span>
+            </h1>
+            <p class="mf-hero-sub">It's your time, your destination, your journey.</p>
+            <p class="mf-hero-lead">Smarter routes. Safer travels. A seamless experience across Sri Lanka — powered by MetroFlow.</p>
+
+            <ul class="mf-chips">
+              <li class="mf-chip">
+                <span class="mf-ic"><i class="bi bi-shield-check" aria-hidden="true"></i></span>
+                <span class="mf-chip-label">Safe &amp; Reliable</span>
+              </li>
+              <li class="mf-chip">
+                <span class="mf-ic"><i class="bi bi-cup-hot" aria-hidden="true"></i></span>
+                <span class="mf-chip-label">Comfortable Journeys</span>
+              </li>
+              <li class="mf-chip">
+                <span class="mf-ic"><i class="bi bi-tree" aria-hidden="true"></i></span>
+                <span class="mf-chip-label">Greener Tomorrow</span>
+              </li>
+              <li class="mf-chip">
+                <span class="mf-ic"><i class="bi bi-phone" aria-hidden="true"></i></span>
+                <span class="mf-chip-label">Modern Experience</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="mf-hero-visual">
+            <!-- Dashed route flourish arcing into the photo -->
+            <svg class="mf-route-dash d-none d-lg-block" viewBox="0 0 240 120" aria-hidden="true">
+              <path d="M4 112 C70 108 150 70 236 8" fill="none" stroke="#D80F1E" stroke-width="2" stroke-dasharray="5 7" opacity=".45"/>
+              <circle cx="4" cy="112" r="4.5" fill="#D80F1E"/>
+            </svg>
+
+            <!-- Main photo. The curved white mask is inside it so the frame's
+                 rounded corners clip it cleanly. -->
+            <div class="mf-hero-photo">
+              <img src="https://images.unsplash.com/photo-1612862862126-865765df2ded?auto=format&amp;fit=crop&amp;w=1400&amp;q=70"
+                   alt="Sigiriya rock fortress rising above the jungle"
+                   onerror="this.onerror=null;this.src='images/placeholder.svg'">
+              <div class="mf-hero-mask" aria-hidden="true">
+                <svg viewBox="0 0 120 560" preserveAspectRatio="none">
+                  <path d="M34 0 C92 110 88 190 52 272 C16 354 26 462 74 560 L120 560 L120 0 Z" fill="#fff"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="mf-hero-sign">
+              <span class="mf-pin"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i></span>
+              <span>
+                <span class="mf-sign-label">NOW BOARDING</span>
+                <span class="mf-hand">Colombo to Kandy</span>
+              </span>
+            </div>
+
+            <!-- Breaks out past the photo's left edge on purpose -->
+            <img class="mf-hero-bus" src="images/metroflow-bus.svg" alt="MetroFlow red and white metro bus heading from Colombo to Kandy">
+
+            <div class="mf-hero-stack">
+              <figure><img src="https://images.unsplash.com/photo-1665849050332-8d5d7e59afb6?auto=format&amp;fit=crop&amp;w=400&amp;q=70" alt="Temple of the Sacred Tooth Relic in Kandy" onerror="this.onerror=null;this.src='images/placeholder.svg'"></figure>
+              <figure><img src="https://images.unsplash.com/photo-1580910527739-556eb89f9d65?auto=format&amp;fit=crop&amp;w=400&amp;q=70" alt="Palm-fringed Mirissa beach" onerror="this.onerror=null;this.src='images/placeholder.svg'"></figure>
+              <figure><img src="https://images.unsplash.com/photo-1566296314736-6eaac1ca0cb9?auto=format&amp;fit=crop&amp;w=400&amp;q=70" alt="Blue train crossing the hill country near Ella" onerror="this.onerror=null;this.src='images/placeholder.svg'"></figure>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= PLAN YOUR JOURNEY ====================== -->
+    <section class="mf-search-wrap" aria-labelledby="planTitle">
+      <div class="container">
+        <form class="mf-search-card" id="searchForm" novalidate>
+          <h2 id="planTitle"><i class="bi bi-signpost-split-fill mf-text-red" aria-hidden="true"></i> Plan Your Journey</h2>
+          <div class="mf-search-grid">
+            <div class="mf-field mf-f-from">
+              <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+              <label for="from">From</label>
+              <input id="from" name="from" placeholder="Colombo Fort" autocomplete="off"
+                     role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="fromAc" required>
+              <div class="mf-invalid" id="fromError">Please choose a departure city.</div>
+            </div>
+
+            <button type="button" class="mf-swap-btn" id="swapBtn" aria-label="Swap From and To">
+              <i class="bi bi-arrow-left-right" aria-hidden="true"></i>
+            </button>
+
+            <div class="mf-field mf-f-to">
+              <i class="bi bi-pin-map-fill" aria-hidden="true"></i>
+              <label for="to">To</label>
+              <input id="to" name="to" placeholder="Kandy" autocomplete="off"
+                     role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="toAc" required>
+              <div class="mf-invalid" id="toError">Please choose a destination.</div>
+            </div>
+
+            <div class="mf-field mf-f-date">
+              <i class="bi bi-calendar-event" aria-hidden="true"></i>
+              <label for="date">Date</label>
+              <input id="date" name="date" type="date" required>
+              <div class="mf-invalid" id="dateError">Pick today or a later date.</div>
+            </div>
+
+            <div class="mf-field mf-f-pax">
+              <i class="bi bi-people-fill" aria-hidden="true"></i>
+              <label for="pax">Passengers</label>
+              <select id="pax" name="pax">
+                <option value="1">1 Adult</option><option value="2">2 Adults</option><option value="3">3 Adults</option>
+                <option value="4">4 Adults</option><option value="5">5 Adults</option><option value="6">6 Adults</option>
+              </select>
+              <div class="mf-invalid" id="paxError">Between 1 and 6 passengers.</div>
+            </div>
+
+            <button class="btn mf-btn-red mf-f-go" type="submit">Find Buses <i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+          </div>
+        </form>
+
+        <!-- ------------------------- Teaser cards ------------------------ -->
+        <div class="row g-4 mf-teaser-row">
+          <div class="col-lg-4 mf-reveal">
+            <div class="mf-card mf-hover-lift d-flex gap-3 align-items-center">
+              <div class="mf-robot"><i class="bi bi-robot" aria-hidden="true"></i></div>
+              <div>
+                <span class="small fw-bold mf-text-red">Chat with Metro AI</span>
+                <h3 class="h5 mb-1">Not sure where to go?</h3>
+                <p class="small mb-2">Ask about routes, fares and seats — instantly.</p>
+                <button class="btn mf-btn-ghost btn-sm" type="button" data-open-chat>Start Chat <i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4 mf-reveal">
+            <!-- Filled by home.js from GET /api/buses/available -->
+            <div class="mf-card mf-hover-lift" id="popularRoute" aria-live="polite" aria-busy="true">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="small fw-bold mf-text-red"><i class="bi bi-fire" aria-hidden="true"></i> Popular Route</span>
+                <span class="mf-badge-soft">Live</span>
+              </div>
+              <div class="mf-skeleton mb-2" style="height:26px"></div>
+              <div class="mf-skeleton mb-2" style="height:18px;width:70%"></div>
+              <div class="mf-skeleton" style="height:34px;width:50%"></div>
+            </div>
+          </div>
+
+          <div class="col-lg-4 mf-reveal">
+            <div class="mf-card mf-map-card mf-hover-lift d-flex align-items-center gap-3">
+              <img src="images/sri-lanka-map.svg" alt="Map of Sri Lanka with pins on Jaffna, Kandy, Colombo and Galle">
+              <div>
+                <div class="mf-script">Same Island, New Journeys</div>
+                <p class="small mt-2 mb-2">From the northern tip to the southern coast.</p>
+                <a class="mf-link-arrow small" href="explore.html">Explore destinations <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <a class="mf-scroll-cue" href="#routes" data-scroll><span class="mf-mouse" aria-hidden="true"></span>Scroll to Explore</a>
+      </div>
+    </section>
+
+    <!-- ========================== POPULAR ROUTES ======================== -->
+    <section class="mf-section" id="routes" aria-labelledby="routesTitle">
+      <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4 mf-reveal">
+          <div>
+            <span class="mf-eyebrow">Popular routes</span>
+            <h2 class="mf-section-title mt-2 mb-0" id="routesTitle">Where Sri Lanka is <span class="mf-script mf-text-red" style="font-size:1.35em">travelling</span></h2>
+          </div>
+          <a class="btn mf-btn-outline-red" href="explore.html">All destinations <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+        </div>
+        <!-- Filled by home.js from GET /api/buses/available -->
+        <div class="row g-4" id="routesGrid" aria-live="polite" aria-busy="true"></div>
+      </div>
+    </section>
+
+    <!-- ========================== WHY METROFLOW ========================= -->
+    <section class="mf-section mf-bg-tint" aria-labelledby="whyTitle">
+      <div class="container">
+        <div class="text-center mb-5 mf-reveal">
+          <span class="mf-eyebrow">Why MetroFlow</span>
+          <h2 class="mf-section-title mt-2" id="whyTitle">Built for the way you travel</h2>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-3 mf-reveal"><div class="mf-card mf-why-card mf-hover-lift"><span class="mf-ic"><i class="bi bi-shield-lock" aria-hidden="true"></i></span><h3 class="h5">Safe &amp; reliable</h3><p class="small mb-0">Trained drivers, GPS-tracked fleet and on-time departures you can plan around.</p></div></div>
+          <div class="col-md-6 col-lg-3 mf-reveal"><div class="mf-card mf-why-card mf-hover-lift"><span class="mf-ic"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i></span><h3 class="h5">Pick your seat</h3><p class="small mb-0">A live seat map shows exactly what is free — choose the window you want.</p></div></div>
+          <div class="col-md-6 col-lg-3 mf-reveal"><div class="mf-card mf-why-card mf-hover-lift"><span class="mf-ic"><i class="bi bi-lightning-charge" aria-hidden="true"></i></span><h3 class="h5">Instant e-ticket</h3><p class="small mb-0">Booking ID in seconds. Manage, edit or cancel anytime from My Trips.</p></div></div>
+          <div class="col-md-6 col-lg-3 mf-reveal"><div class="mf-card mf-why-card mf-hover-lift"><span class="mf-ic"><i class="bi bi-recycle" aria-hidden="true"></i></span><h3 class="h5">Greener tomorrow</h3><p class="small mb-0">Modern low-emission coaches — one full bus takes 40 cars off the road.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================== HOW IT WORKS ========================= -->
+    <section class="mf-section" aria-labelledby="howTitle">
+      <div class="container">
+        <div class="text-center mb-5 mf-reveal">
+          <span class="mf-eyebrow">How it works</span>
+          <h2 class="mf-section-title mt-2" id="howTitle">Four steps to your seat</h2>
+        </div>
+        <div class="row g-4">
+          <div class="col-6 col-lg-3 mf-step mf-reveal"><div class="mf-num">1</div><h3 class="h6">Search</h3><p class="small">Pick From, To, date and passengers.</p></div>
+          <div class="col-6 col-lg-3 mf-step mf-reveal"><div class="mf-num">2</div><h3 class="h6">Select seat</h3><p class="small">Choose seats on the live bus map.</p></div>
+          <div class="col-6 col-lg-3 mf-step mf-reveal"><div class="mf-num">3</div><h3 class="h6">Book</h3><p class="small">Add passenger details and confirm.</p></div>
+          <div class="col-6 col-lg-3 mf-step mf-reveal"><div class="mf-num">4</div><h3 class="h6">Travel</h3><p class="small">Show your Booking ID and enjoy the ride.</p></div>
+        </div>
+
+        <!-- Counters animate once the band scrolls into view (home.js) -->
+        <div class="mf-stats mt-5 mf-reveal" id="statsBand">
+          <div class="row g-4 text-center position-relative" style="z-index:1">
+            <div class="col-6 col-md-3"><div class="mf-stat-num" data-count="0" data-key="totalBuses">0</div><div class="mf-stat-label">Live services</div></div>
+            <div class="col-6 col-md-3"><div class="mf-stat-num" data-count="0" data-key="totalRoutes">0</div><div class="mf-stat-label">Routes served</div></div>
+            <div class="col-6 col-md-3"><div class="mf-stat-num" data-count="0" data-key="seatsOpen">0</div><div class="mf-stat-label">Seats on sale</div></div>
+            <div class="col-6 col-md-3"><div class="mf-stat-num" data-count="98" data-suffix="%" data-key="rideAgain">0</div><div class="mf-stat-label">Would ride again</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="mf-game-slot"></div>
+  <div id="footer"></div>
+  <div id="chatWidget"></div>
+
+  <!-- jQuery -> Bootstrap JS -> api.js -> main.js -> home.js -> game.js -> chat.js -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/home.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/chat.js"></script>
 </body>
 </html>

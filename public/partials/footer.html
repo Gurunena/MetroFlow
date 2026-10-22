@@ -1,11 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MetroFlow – Footer Partial</title>
-</head>
-<body>
-  <!-- TODO -->
-</body>
-</html>
+<!-- footer.html – injected into #footer on every page -->
+<footer class="mf-footer">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <a class="mf-brand mb-3" href="index.html">
+          <img src="images/logo-mark.svg" alt="" width="42" height="42">
+          <span class="mf-brand-name">Metro<span>Flow</span></span>
+        </a>
+        <p class="mb-2"><span class="mf-script">Same Island, New Journeys</span></p>
+        <p class="small">Smarter routes, safer travels and a seamless booking experience across Sri Lanka.</p>
+        <div class="mf-social mt-3">
+          <a href="#" aria-label="Facebook"><i class="bi bi-facebook" aria-hidden="true"></i></a>
+          <a href="#" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
+          <a href="#" aria-label="X (Twitter)"><i class="bi bi-twitter-x" aria-hidden="true"></i></a>
+          <a href="#" aria-label="YouTube"><i class="bi bi-youtube" aria-hidden="true"></i></a>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h3>Travel</h3>
+        <ul class="list-unstyled d-grid gap-2 small">
+          <li><a href="search.html">Find buses</a></li>
+          <li><a href="explore.html">Explore destinations</a></li>
+          <li><a href="my-trips.html">Manage booking</a></li>
+          <li><a href="assistant.html">Metro AI</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h3>Company</h3>
+        <ul class="list-unstyled d-grid gap-2 small">
+          <li><a href="about.html">About us</a></li>
+          <li><a href="about.html#team">Our team</a></li>
+          <li><a href="admin.html">Operator login</a></li>
+          <li><a href="about.html#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-4">
+        <h3>Help centre</h3>
+        <ul class="list-unstyled d-grid gap-2 small">
+          <li><i class="bi bi-telephone mf-text-red me-2" aria-hidden="true"></i>+94 11 234 5678 (24/7)</li>
+          <li><i class="bi bi-envelope mf-text-red me-2" aria-hidden="true"></i>hello@metroflow.lk</li>
+          <li><i class="bi bi-geo-alt mf-text-red me-2" aria-hidden="true"></i>Colombo Fort Central Bus Stand, Colombo 01</li>
+        </ul>
+      </div>
+    </div>
+    <hr class="my-4">
+    <div class="d-flex flex-wrap justify-content-between gap-2 small">
+      <span>© <span id="year">2026</span> MetroFlow.</span>
+      <span>Built with HTML5 · Bootstrap 5 · jQuery · Node.js · Express · MongoDB</span>
+    </div>
+  </div>
+</footer>

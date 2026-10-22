@@ -1,0 +1,188 @@
+/* game.css – "MetroFlow Dash" mini-game strip above the footer.
+   -------------------------------------------------------------------------
+   Reuses the design tokens declared in home.css (--mf-red, --mf-navy …).
+   The var() fallbacks keep the strip presentable if it is ever dropped onto
+   a page that does not load home.css. All classes are prefixed mf-game-.
+   ------------------------------------------------------------------------- */
+
+/* Visible bypass link, so keyboard users are not trapped walking the strip. */
+.mf-game-skip {
+  display: block;
+  width: fit-content;
+  margin: 0 auto;
+  padding: .3rem .9rem;
+  font-size: .76rem;
+  font-weight: 700;
+  color: var(--mf-grey, #6B7280);
+  text-decoration: none;
+  border-radius: 999px;
+}
+.mf-game-skip:hover { color: var(--mf-red, #D80F1E); background: var(--mf-tint-red, #FFF5F5); }
+
+.mf-game { padding: clamp(1.25rem, 3vw, 2.25rem) 0 clamp(1.5rem, 3vw, 2.5rem); }
+
+.mf-game-card {
+  background: linear-gradient(180deg, #fff 0%, var(--mf-tint-grey, #F7F8FA) 100%);
+  border: 1px solid var(--mf-line, #E8EAEF);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(15, 27, 51, .08);
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+/* --------------------------------- head -------------------------------- */
+.mf-game-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: .75rem 1rem;
+  margin-bottom: .85rem;
+}
+.mf-game-headings { min-width: 0; }
+
+.mf-game-title { margin: 0; line-height: 1.1; }
+.mf-game-kicker {
+  display: block;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--mf-grey, #6B7280);
+}
+/* Same script face as the hero's "More Than". */
+.mf-game-name {
+  display: block;
+  font-family: "Pinyon Script", "Great Vibes", Caveat, cursive;
+  font-weight: 400;
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  color: var(--mf-navy, #0F1B33);
+  line-height: 1.05;
+  padding-top: .08em;
+}
+.mf-game-hint { margin: .15rem 0 0; font-size: .8rem; color: var(--mf-grey, #6B7280); }
+/* Keyboard hint by default; the tap wording takes over on touch devices. */
+.mf-game-hint-tap { display: none; }
+
+/* ---------------------------------- HUD -------------------------------- */
+.mf-game-hud { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.mf-game-stat {
+  background: #fff;
+  border: 1px solid var(--mf-line, #E8EAEF);
+  border-radius: 999px;
+  padding: .3rem .8rem;
+  font-size: .76rem;
+  font-weight: 700;
+  color: var(--mf-grey, #6B7280);
+  white-space: nowrap;
+}
+.mf-game-stat b {
+  display: inline-block;
+  min-width: 1.6em;
+  font-size: 16px;
+  color: var(--mf-navy, #0F1B33);
+}
+
+.mf-game-lives {
+  display: inline-flex;
+  gap: .22rem;
+  background: #fff;
+  border: 1px solid var(--mf-line, #E8EAEF);
+  border-radius: 999px;
+  padding: .36rem .7rem;
+  font-size: .85rem;
+  color: var(--mf-red, #D80F1E);
+}
+.mf-game-lives .is-spent { color: #D7DAE1; }
+
+/* --------------------------------- stage ------------------------------- */
+.mf-game-stage {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #EAF2FD;
+  border: 1px solid var(--mf-line, #E8EAEF);
+  line-height: 0;
+  /* Keeps a tap from double-tap-zooming or firing a 300ms delayed click. */
+  touch-action: manipulation;
+}
+.mf-game-stage:focus-visible {
+  outline: 3px solid rgba(216, 15, 30, .45);
+  outline-offset: 2px;
+}
+.mf-game-stage canvas { display: block; width: 100%; }
+
+/* ------------------------------ game over ------------------------------ */
+.mf-game-over {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 27, 51, .72);
+  backdrop-filter: blur(2px);
+  line-height: 1.4;
+}
+.mf-game-over-inner { text-align: center; color: #fff; padding: 1rem; }
+.mf-game-over-title { font-size: 1.15rem; font-weight: 800; margin: 0 0 .15rem; }
+.mf-game-final { margin: 0; font-size: .85rem; color: rgba(255, 255, 255, .82); }
+.mf-game-final b { font-size: 1.1rem; color: #fff; }
+.mf-game-newbest {
+  margin: .2rem 0 0;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #FFD36E;
+}
+.mf-game-quip { margin: .3rem 0 .7rem; font-size: .82rem; color: rgba(255, 255, 255, .82); }
+.mf-game-over-actions { display: flex; gap: .5rem; justify-content: center; flex-wrap: wrap; }
+/* The ghost button sits on a dark scrim here, so lighten it. */
+.mf-game-over-actions .mf-btn-ghost { background: rgba(255, 255, 255, .16); color: #fff; }
+.mf-game-over-actions .mf-btn-ghost:hover { background: rgba(255, 255, 255, .3); color: #fff; }
+
+/* --------------------------------- foot -------------------------------- */
+.mf-game-foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  margin-top: .85rem;
+}
+.mf-game-sound {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  background: #fff;
+  border: 1px solid var(--mf-line, #E8EAEF);
+  border-radius: 999px;
+  padding: .36rem .9rem;
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--mf-grey, #6B7280);
+  cursor: pointer;
+}
+.mf-game-sound:hover { color: var(--mf-red, #D80F1E); border-color: var(--mf-red, #D80F1E); }
+.mf-game-sound[aria-pressed="true"] { color: var(--mf-red, #D80F1E); border-color: var(--mf-red, #D80F1E); }
+.mf-game-sound:focus-visible,
+.mf-game-skip:focus-visible {
+  outline: 3px solid rgba(216, 15, 30, .45);
+  outline-offset: 2px;
+}
+
+/* ------------------------------- responsive ---------------------------- */
+@media (max-width: 575.98px) {
+  .mf-game-head { align-items: flex-start; }
+  .mf-game-hud { width: 100%; }
+  .mf-game-stat { flex: 1 1 auto; text-align: center; }
+}
+
+/* A touch device gets the tap wording instead of the keyboard hint. */
+@media (hover: none) and (pointer: coarse) {
+  .mf-game-hint-key { display: none; }
+  .mf-game-hint-tap { display: inline; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mf-game-over { backdrop-filter: none; }
+}
