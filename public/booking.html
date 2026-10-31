@@ -124,7 +124,8 @@
         <p>Your e-ticket is below. Keep your Booking ID handy &mdash; you can manage it any time from My Trips.</p>
         <div id="tickets" class="mx-auto text-start" style="max-width: 720px"></div>
         <div class="d-flex flex-wrap justify-content-center gap-2 mt-2 no-print">
-          <button type="button" class="btn mf-btn-red" id="printBtn"><i class="bi bi-printer" aria-hidden="true"></i> Print ticket</button>
+          <button type="button" class="btn mf-btn-red" id="downloadBtn"><i class="bi bi-download" aria-hidden="true"></i> Download ticket</button>
+          <button type="button" class="btn mf-btn-outline-red" id="printBtn"><i class="bi bi-printer" aria-hidden="true"></i> Print ticket</button>
           <a class="btn mf-btn-outline-red" id="manageLink" href="my-trips.html">Manage booking</a>
           <a class="btn mf-btn-ghost" href="index.html">Back to home</a>
         </div>
@@ -141,6 +142,10 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/api.js"></script>
   <script src="js/main.js"></script>
+  <!-- Ticket extras: JsBarcode draws the Booking ID barcode, html2canvas + jsPDF build the downloadable PDF -->
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="js/booking.js"></script>
   <script src="js/chat.js"></script>
 </body>

@@ -92,7 +92,10 @@ body { background: var(--mf-tint-grey, #F7F8FA); }
 .bk-tear::before { left: -2.15rem; }
 .bk-tear::after { right: -2.15rem; }
 .bk-price { color: var(--mf-red); font-weight: 800; font-size: 1.6rem; }
-.bk-barcode {
+/* real barcode (canvas drawn by JsBarcode) */
+.bk-barcode { display: block; max-width: 230px; height: auto; }
+/* striped placeholder, only used if the barcode library fails to load */
+.bk-barcode-fallback {
   width: 180px; height: 48px;
   background: repeating-linear-gradient(90deg, var(--mf-navy) 0 2px, transparent 2px 4px,
     var(--mf-navy) 4px 5px, transparent 5px 8px, var(--mf-navy) 8px 11px, transparent 11px 12px);

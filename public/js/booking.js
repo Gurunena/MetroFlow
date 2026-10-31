@@ -14,6 +14,7 @@
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   var currentBus = null; // bus shown in the trip summary
+  var createdBookings = []; // bookings shown on the confirmation screen
 
   /* ===================== shared namespace & tiny helpers ================= */
 
@@ -209,7 +210,8 @@
           '<div class="bk-kv mb-2"><small>Seat ' + esc(b.Seat_Number) + '</small><strong class="fs-5">' + esc(b.Booking_ID) + '</strong></div>' +
           '<div class="bk-kv"><small>Total paid at boarding</small><span class="bk-price">' + esc(money(b.Fare)) + '</span></div>' +
         '</div>' +
-        '<div class="bk-barcode" aria-hidden="true"></div>' +
+        '<canvas class="bk-barcode" data-code="' + esc(b.Booking_ID) + '" role="img" aria-label="Barcode for ' +
+          esc(b.Booking_ID) + '"></canvas>' +
       '</div>' +
     '</article>';
   }
@@ -230,11 +232,75 @@
     $('#confirmHello').text('You\'re all set, ' + firstName + '!');
     $('#titleScript').text('confirmed');
     $('#manageLink').attr('href', 'my-trips.html?id=' + encodeURIComponent(created[0].Booking_ID));
+    createdBookings = created;
     $('#tickets').html($.map(created, ticketHtml).join(''));
+    drawBarcodes();
 
     $('#detailsSection').slideUp(300, function () {
       $('#confirmSection').fadeIn(400);
       $('html, body').animate({ scrollTop: 0 }, 300);
+    });
+  }
+
+  /* ======================= barcode + download ticket ===================== */
+
+  // Draws a scannable Code 128 barcode of the Booking ID on every ticket.
+  // If the barcode library could not load, the plain striped placeholder is shown instead.
+  function drawBarcodes() {
+    $('#tickets .bk-barcode').each(function () {
+      var code = $(this).data('code');
+      if (typeof window.JsBarcode !== 'function') {
+        $(this).addClass('bk-barcode-fallback');
+        return;
+      }
+      window.JsBarcode(this, code, {
+        format: 'CODE128',
+        width: 2,
+        height: 56,
+        margin: 0,
+        fontSize: 14,
+        textMargin: 4,
+        lineColor: '#0F1B33',
+        background: '#ffffff'
+      });
+    });
+  }
+
+  // Saves every e-ticket on the page into one PDF – one ticket per page.
+  function downloadTickets() {
+    if (typeof window.html2canvas !== 'function' || !window.jspdf) {
+      showToast('Download is not available right now – use Print ticket and choose "Save as PDF"', 'warning');
+      return;
+    }
+    var $btn = $('#downloadBtn');
+    var $tickets = $('#tickets .bk-ticket');
+    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Preparing...');
+
+    var shots = $tickets.map(function () {
+      return window.html2canvas(this, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+    }).get();
+
+    Promise.all(shots).then(function (canvases) {
+      var pdf = null;
+      canvases.forEach(function (canvas) {
+        var w = canvas.width / 2;  // back to on-screen size, in points
+        var h = canvas.height / 2;
+        var pad = 24;
+        var size = [w + pad * 2, h + pad * 2];
+        if (!pdf) {
+          pdf = new window.jspdf.jsPDF({ orientation: size[0] > size[1] ? 'landscape' : 'portrait', unit: 'pt', format: size });
+        } else {
+          pdf.addPage(size, size[0] > size[1] ? 'landscape' : 'portrait');
+        }
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', pad, pad, w, h);
+      });
+      var id = createdBookings.length ? createdBookings[0].Booking_ID : 'ticket';
+      pdf.save('MetroFlow-e-ticket-' + id + (createdBookings.length > 1 ? '-and-' + (createdBookings.length - 1) + '-more' : '') + '.pdf');
+      showToast('Ticket downloaded', 'success');
+    }).catch(function () {
+      showToast('Could not create the PDF – use Print ticket and choose "Save as PDF"', 'danger');
+    }).then(function () {
+      $btn.prop('disabled', false).html('<i class="bi bi-download" aria-hidden="true"></i> Download ticket');
     });
   }
 
@@ -264,6 +330,7 @@
     });
 
     $('#printBtn').on('click', function () { window.print(); });
+    $('#downloadBtn').on('click', downloadTickets);
   }
 
   /* ================================= init ================================ */
