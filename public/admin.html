@@ -4,345 +4,394 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MetroFlow – Admin Dashboard</title>
-  <!-- If app.js serves Bootstrap/jQuery from /vendor, point these two tags and the script tags at the /vendor paths -->
+  <link rel="icon" href="images/logo-mark.svg" type="image/svg+xml">
+
+  <!-- Fonts: same as the rest of the site -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap CSS -> Icons -> style.css -> home.css (shared tokens, navbar, footer, buttons) -> admin.css -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/admin.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/home.css" rel="stylesheet">
+  <link href="css/admin.css" rel="stylesheet">
 </head>
 <body>
+  <div id="navbar"></div>
 
-<nav class="navbar navbar-dark mf-nav">
-  <div class="container-xl">
-    <a class="navbar-brand fw-bold" href="/">MetroFlow <span class="mf-nav-tag">Operator</span></a>
-    <div class="d-flex align-items-center gap-2">
-      <span id="authBadge" class="badge text-bg-secondary">Not signed in</span>
-      <button type="button" id="loginBtn" class="btn btn-sm btn-outline-light">Operator login</button>
-      <button type="button" id="logoutBtn" class="btn btn-sm btn-outline-light d-none">Logout</button>
-    </div>
-  </div>
-</nav>
+  <main id="main" class="mfa-page">
+    <div class="container py-4 py-lg-5">
 
-<main class="container-xl py-4">
-
-  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-    <div>
-      <h1 class="h3 mb-0">Bus Management</h1>
-      <p class="text-muted mb-0">Add, view, update and delete metro buses, and check seat availability.</p>
-    </div>
-    <button type="button" id="addBusBtn" class="btn btn-primary">+ Add bus</button>
-  </div>
-
-  <!-- summary tiles -->
-  <section class="row g-3 mb-4" aria-label="Fleet summary">
-    <div class="col-6 col-lg-3"><div class="mf-stat"><span class="mf-stat-label">Total buses</span><span class="mf-stat-value" id="statTotal">0</span></div></div>
-    <div class="col-6 col-lg-3"><div class="mf-stat"><span class="mf-stat-label">Available</span><span class="mf-stat-value text-success" id="statAvailable">0</span></div></div>
-    <div class="col-6 col-lg-3"><div class="mf-stat"><span class="mf-stat-label">Unavailable</span><span class="mf-stat-value text-secondary" id="statUnavailable">0</span></div></div>
-    <div class="col-6 col-lg-3"><div class="mf-stat"><span class="mf-stat-label">Free seats</span><span class="mf-stat-value" id="statSeats">0</span></div></div>
-  </section>
-
-  <!-- search -->
-  <section class="card mb-4" aria-labelledby="searchHeading">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <h2 class="h6 mb-0" id="searchHeading">Search buses</h2>
-      <button type="button" id="toggleSearchBtn" class="btn btn-sm btn-link" aria-expanded="true" aria-controls="searchBody">Hide</button>
-    </div>
-    <div class="card-body" id="searchBody">
-      <ul class="nav nav-pills mb-3" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="tabFind" data-bs-toggle="pill" data-bs-target="#paneFind" type="button" role="tab" aria-controls="paneFind" aria-selected="true">Find buses</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tabAvailable" data-bs-toggle="pill" data-bs-target="#paneAvailable" type="button" role="tab" aria-controls="paneAvailable" aria-selected="false">Available buses</button>
-        </li>
-      </ul>
-
-      <div class="tab-content">
-        <div class="tab-pane fade show active" id="paneFind" role="tabpanel" aria-labelledby="tabFind">
-          <form id="findForm" class="row g-2 align-items-end" novalidate>
-            <div class="col-md-3">
-              <label for="findMode" class="form-label">Find by</label>
-              <select id="findMode" class="form-select">
-                <option value="busId">Bus ID</option>
-                <option value="route">Route</option>
-                <option value="departure">Departure location</option>
-                <option value="destination">Destination</option>
-                <option value="date">Travel date</option>
-              </select>
-            </div>
-            <div class="col-md-5">
-              <label for="findValue" class="form-label">Value</label>
-              <input type="text" id="findValue" class="form-control" placeholder="e.g. MB1001" list="locationList" autocomplete="off">
-            </div>
-            <div class="col-md-4 d-flex gap-2">
-              <button type="submit" class="btn btn-primary">Find</button>
-              <button type="button" id="showAllBtn" class="btn btn-outline-secondary">Show all buses</button>
-            </div>
-          </form>
+      <!-- page header -->
+      <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+        <div>
+          <span class="mf-hand mf-text-red fs-4">Operator dashboard</span>
+          <h1 class="mf-section-title mb-1">Bus Management</h1>
+          <p class="mb-0">Add, view, update and delete metro buses, and check seat availability.</p>
         </div>
-
-        <div class="tab-pane fade" id="paneAvailable" role="tabpanel" aria-labelledby="tabAvailable">
-          <form id="availableForm" class="row g-2 align-items-end" novalidate>
-            <div class="col-md-3">
-              <label for="avFrom" class="form-label">From</label>
-              <input type="text" id="avFrom" name="from" class="form-control" list="locationList" placeholder="Departure" autocomplete="off">
-            </div>
-            <div class="col-md-3">
-              <label for="avTo" class="form-label">To</label>
-              <input type="text" id="avTo" name="to" class="form-control" list="locationList" placeholder="Destination" autocomplete="off">
-            </div>
-            <div class="col-md-2">
-              <label for="avDate" class="form-label">Date</label>
-              <input type="date" id="avDate" name="date" class="form-control">
-            </div>
-            <div class="col-md-2">
-              <label for="avTime" class="form-label">Departure time</label>
-              <input type="time" id="avTime" name="time" class="form-control">
-            </div>
-            <div class="col-md-2">
-              <label for="avSeats" class="form-label">Min. seats</label>
-              <input type="number" id="avSeats" name="minSeats" class="form-control" min="1" max="52" placeholder="1">
-            </div>
-            <div class="col-12 d-flex gap-2 mt-3">
-              <button type="submit" class="btn btn-primary">Search available buses</button>
-              <button type="button" id="resetAvailableBtn" class="btn btn-outline-secondary">Reset</button>
-            </div>
-          </form>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+          <span id="opBadge" class="mfa-pill mfa-pill-off">Not signed in</span>
+          <button type="button" id="opLoginBtn" class="btn btn-sm mf-btn-outline-red">
+            <i class="bi bi-person-lock" aria-hidden="true"></i> Operator login
+          </button>
+          <button type="button" id="opLogoutBtn" class="btn btn-sm mf-btn-outline-red d-none">
+            <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Logout
+          </button>
+          <button type="button" id="addBusBtn" class="btn btn-sm mf-btn-red">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i> Add bus
+          </button>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- bus table -->
-  <section class="card" aria-labelledby="listHeading">
-    <div class="card-header">
-      <div class="row g-2 align-items-center">
-        <div class="col-lg-4">
-          <h2 class="h6 mb-0" id="listHeading">
-            <span id="resultLabel">All buses</span>
-            <span id="busCount" class="badge text-bg-secondary ms-1">0</span>
-          </h2>
+      <!-- summary tiles -->
+      <section class="row g-3 mb-4" aria-label="Fleet summary">
+        <div class="col-6 col-lg-3">
+          <div class="mfa-stat">
+            <span class="mfa-stat-ic"><i class="bi bi-bus-front" aria-hidden="true"></i></span>
+            <span><span class="mfa-stat-label d-block">Total buses</span><span class="mfa-stat-value" id="statTotal">0</span></span>
+          </div>
         </div>
-        <div class="col-lg-8">
-          <div class="row g-2">
-            <div class="col-md-6">
-              <label for="liveFilter" class="visually-hidden">Filter the list</label>
-              <input type="search" id="liveFilter" class="form-control form-control-sm" placeholder="Filter this list (ID, name, route…)">
+        <div class="col-6 col-lg-3">
+          <div class="mfa-stat">
+            <span class="mfa-stat-ic"><i class="bi bi-check-circle" aria-hidden="true"></i></span>
+            <span><span class="mfa-stat-label d-block">Available</span><span class="mfa-stat-value" id="statAvailable">0</span></span>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="mfa-stat">
+            <span class="mfa-stat-ic"><i class="bi bi-slash-circle" aria-hidden="true"></i></span>
+            <span><span class="mfa-stat-label d-block">Unavailable</span><span class="mfa-stat-value" id="statUnavailable">0</span></span>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="mfa-stat">
+            <span class="mfa-stat-ic"><i class="bi bi-ticket-perforated" aria-hidden="true"></i></span>
+            <span><span class="mfa-stat-label d-block">Free seats</span><span class="mfa-stat-value" id="statSeats">0</span></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- search -->
+      <section class="mfa-card mb-4" aria-labelledby="searchHeading">
+        <div class="mfa-card-head d-flex justify-content-between align-items-center">
+          <h2 class="h6 mb-0" id="searchHeading"><i class="bi bi-search mf-text-red me-2" aria-hidden="true"></i>Search buses</h2>
+          <button type="button" id="toggleSearchBtn" class="btn btn-link btn-sm p-0 mf-text-red fw-bold text-decoration-none" aria-expanded="true" aria-controls="searchBody">Hide</button>
+        </div>
+        <div class="p-3 p-md-4" id="searchBody">
+          <ul class="nav mfa-tabs mb-3 gap-2" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="tabFind" data-bs-toggle="pill" data-bs-target="#paneFind" type="button" role="tab" aria-controls="paneFind" aria-selected="true">Find buses</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="tabAvailable" data-bs-toggle="pill" data-bs-target="#paneAvailable" type="button" role="tab" aria-controls="paneAvailable" aria-selected="false">Available buses</button>
+            </li>
+          </ul>
+
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="paneFind" role="tabpanel" aria-labelledby="tabFind">
+              <form id="findForm" class="row g-3 align-items-end" novalidate>
+                <div class="col-md-3">
+                  <label for="findMode" class="form-label fw-semibold">Find by</label>
+                  <select id="findMode" class="form-select">
+                    <option value="busId">Bus ID</option>
+                    <option value="route">Route</option>
+                    <option value="departure">Departure location</option>
+                    <option value="destination">Destination</option>
+                    <option value="date">Travel date</option>
+                  </select>
+                </div>
+                <div class="col-md-5">
+                  <label for="findValue" class="form-label fw-semibold">Value</label>
+                  <input type="text" id="findValue" class="form-control" placeholder="e.g. MB1001" list="locationList" autocomplete="off">
+                </div>
+                <div class="col-md-4 d-flex flex-wrap gap-2">
+                  <button type="submit" class="btn btn-sm mf-btn-red">Find</button>
+                  <button type="button" id="showAllBtn" class="btn btn-sm mf-btn-outline-red">Show all buses</button>
+                </div>
+              </form>
             </div>
-            <div class="col-6 col-md-3">
-              <label for="typeFilter" class="visually-hidden">Bus type</label>
-              <select id="typeFilter" class="form-select form-select-sm">
-                <option value="">All types</option>
+
+            <div class="tab-pane fade" id="paneAvailable" role="tabpanel" aria-labelledby="tabAvailable">
+              <form id="availableForm" class="row g-3 align-items-end" novalidate>
+                <div class="col-md-3">
+                  <label for="avFrom" class="form-label fw-semibold">From</label>
+                  <input type="text" id="avFrom" name="from" class="form-control" list="locationList" placeholder="Departure" autocomplete="off">
+                </div>
+                <div class="col-md-3">
+                  <label for="avTo" class="form-label fw-semibold">To</label>
+                  <input type="text" id="avTo" name="to" class="form-control" list="locationList" placeholder="Destination" autocomplete="off">
+                </div>
+                <div class="col-md-2">
+                  <label for="avDate" class="form-label fw-semibold">Date</label>
+                  <input type="date" id="avDate" name="date" class="form-control">
+                </div>
+                <div class="col-md-2">
+                  <label for="avTime" class="form-label fw-semibold">Departure time</label>
+                  <input type="time" id="avTime" name="time" class="form-control">
+                </div>
+                <div class="col-md-2">
+                  <label for="avSeats" class="form-label fw-semibold">Min. seats</label>
+                  <input type="number" id="avSeats" name="minSeats" class="form-control" min="1" max="52" placeholder="1">
+                </div>
+                <div class="col-12 d-flex flex-wrap gap-2">
+                  <button type="submit" class="btn btn-sm mf-btn-red">Search available buses</button>
+                  <button type="button" id="resetAvailableBtn" class="btn btn-sm mf-btn-outline-red">Reset</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- bus table -->
+      <section class="mfa-card" aria-labelledby="listHeading">
+        <div class="mfa-card-head">
+          <div class="row g-2 align-items-center">
+            <div class="col-lg-4">
+              <h2 class="h6 mb-0" id="listHeading">
+                <i class="bi bi-list-ul mf-text-red me-2" aria-hidden="true"></i><span id="resultLabel">All buses</span>
+                <span id="busCount" class="mf-badge-soft ms-1">0</span>
+              </h2>
+            </div>
+            <div class="col-lg-8">
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <label for="liveFilter" class="visually-hidden">Filter the list</label>
+                  <input type="search" id="liveFilter" class="form-control form-control-sm" placeholder="Filter this list (ID, name, route…)">
+                </div>
+                <div class="col-6 col-md-3">
+                  <label for="typeFilter" class="visually-hidden">Bus type</label>
+                  <select id="typeFilter" class="form-select form-select-sm">
+                    <option value="">All types</option>
+                    <option>Normal</option>
+                    <option>Semi-Luxury</option>
+                    <option>Luxury</option>
+                    <option>AC</option>
+                  </select>
+                </div>
+                <div class="col-6 col-md-3">
+                  <label for="statusFilter" class="visually-hidden">Status</label>
+                  <select id="statusFilter" class="form-select form-select-sm">
+                    <option value="">All statuses</option>
+                    <option>Available</option>
+                    <option>Unavailable</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 mfa-table">
+            <thead>
+              <tr>
+                <th scope="col">Bus ID</th>
+                <th scope="col">Bus</th>
+                <th scope="col">Route</th>
+                <th scope="col">Schedule</th>
+                <th scope="col">Seats</th>
+                <th scope="col" class="text-end">Fare (Rs.)</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="busTableBody">
+              <tr><td colspan="8"><div class="mf-state"><i class="bi bi-hourglass-split" aria-hidden="true"></i>Loading buses…</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <datalist id="locationList"></datalist>
+
+  <!-- toasts -->
+  <div id="mfaToasts" class="mfa-toast-box" role="status" aria-live="polite"></div>
+
+  <!-- Add / edit bus -->
+  <div class="modal fade" id="busModal" tabindex="-1" aria-labelledby="busModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <form id="busForm" class="modal-content p-2" novalidate>
+        <div class="modal-header border-0 pb-0">
+          <div>
+            <span class="mf-hand mf-text-red fs-4" id="busModalHand">New route, new journeys</span>
+            <h2 class="modal-title h4 mb-0" id="busModalTitle">Add bus</h2>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editingId" value="">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label for="fBusId" class="form-label fw-semibold">Bus ID</label>
+              <input type="text" id="fBusId" name="Bus_ID" class="form-control" placeholder="MB1001" maxlength="20" required pattern="[A-Za-z0-9_\-]{3,20}">
+            </div>
+            <div class="col-md-4">
+              <label for="fBusName" class="form-label fw-semibold">Bus name</label>
+              <input type="text" id="fBusName" name="Bus_Name" class="form-control" maxlength="60" required>
+            </div>
+            <div class="col-md-4">
+              <label for="fBusType" class="form-label fw-semibold">Bus type</label>
+              <select id="fBusType" name="Bus_Type" class="form-select" required>
                 <option>Normal</option>
                 <option>Semi-Luxury</option>
                 <option>Luxury</option>
                 <option>AC</option>
               </select>
             </div>
-            <div class="col-6 col-md-3">
-              <label for="statusFilter" class="visually-hidden">Status</label>
-              <select id="statusFilter" class="form-select form-select-sm">
-                <option value="">All statuses</option>
+
+            <div class="col-md-4">
+              <label for="fRoute" class="form-label fw-semibold">Route</label>
+              <input type="text" id="fRoute" name="Route" class="form-control" placeholder="Colombo - Makubura" maxlength="100" required>
+            </div>
+            <div class="col-md-4">
+              <label for="fDeparture" class="form-label fw-semibold">Departure</label>
+              <input type="text" id="fDeparture" name="Departure" class="form-control" list="locationList" maxlength="60" required>
+            </div>
+            <div class="col-md-4">
+              <label for="fDestination" class="form-label fw-semibold">Destination</label>
+              <input type="text" id="fDestination" name="Destination" class="form-control" list="locationList" maxlength="60" required>
+            </div>
+
+            <div class="col-md-4">
+              <label for="fDate" class="form-label fw-semibold">Travel date</label>
+              <input type="date" id="fDate" name="Travel_Date" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+              <label for="fDepTime" class="form-label fw-semibold">Departure time</label>
+              <input type="time" id="fDepTime" name="Departure_Time" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+              <label for="fArrTime" class="form-label fw-semibold">Arrival time</label>
+              <input type="time" id="fArrTime" name="Arrival_Time" class="form-control" required>
+            </div>
+
+            <div class="col-md-3">
+              <label for="fTotal" class="form-label fw-semibold">Capacity (seats)</label>
+              <input type="number" id="fTotal" name="Total_Seats" class="form-control" min="1" max="52" step="1" required>
+            </div>
+            <div class="col-md-3">
+              <label for="fAvailable" class="form-label fw-semibold">Available seats</label>
+              <input type="number" id="fAvailable" name="Available_Seats" class="form-control" min="0" max="52" step="1">
+              <div class="form-text" id="availableHelp">Leave empty to start with all seats free.</div>
+            </div>
+            <div class="col-md-3">
+              <label for="fFare" class="form-label fw-semibold">Fare (Rs.)</label>
+              <input type="number" id="fFare" name="Fare" class="form-control" min="0" step="0.01" required>
+            </div>
+            <div class="col-md-3">
+              <label for="fStatus" class="form-label fw-semibold">Status</label>
+              <select id="fStatus" name="Status" class="form-select" required>
                 <option>Available</option>
                 <option>Unavailable</option>
               </select>
             </div>
           </div>
         </div>
-      </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-sm mf-btn-outline-red" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" id="saveBusBtn" class="btn btn-sm mf-btn-red">Save bus</button>
+        </div>
+      </form>
     </div>
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0 mf-table">
-        <thead>
-          <tr>
-            <th scope="col">Bus ID</th>
-            <th scope="col">Bus</th>
-            <th scope="col">Route</th>
-            <th scope="col">Schedule</th>
-            <th scope="col">Seats</th>
-            <th scope="col" class="text-end">Fare (Rs.)</th>
-            <th scope="col">Status</th>
-            <th scope="col" class="text-end">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="busTableBody">
-          <tr><td colspan="8" class="text-center text-muted py-4">Loading buses…</td></tr>
-        </tbody>
-      </table>
+  </div>
+
+  <!-- Update schedule -->
+  <div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <form id="scheduleForm" class="modal-content p-2" novalidate>
+        <div class="modal-header border-0 pb-0">
+          <div>
+            <span class="mf-hand mf-text-red fs-4">Change of plans</span>
+            <h2 class="modal-title h4 mb-0" id="scheduleModalTitle">Update schedule</h2>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="scheduleId" value="">
+          <p class="small" id="scheduleInfo"></p>
+          <div class="mb-3">
+            <label for="sDate" class="form-label fw-semibold">Travel date</label>
+            <input type="date" id="sDate" name="Travel_Date" class="form-control" required>
+          </div>
+          <div class="row g-3">
+            <div class="col-6">
+              <label for="sDepTime" class="form-label fw-semibold">Departure time</label>
+              <input type="time" id="sDepTime" name="Departure_Time" class="form-control" required>
+            </div>
+            <div class="col-6">
+              <label for="sArrTime" class="form-label fw-semibold">Arrival time</label>
+              <input type="time" id="sArrTime" name="Arrival_Time" class="form-control" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-sm mf-btn-outline-red" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" id="saveScheduleBtn" class="btn btn-sm mf-btn-red">Save schedule</button>
+        </div>
+      </form>
     </div>
-  </section>
-</main>
-
-<datalist id="locationList"></datalist>
-
-<!-- toasts -->
-<div id="toastBox" class="mf-toast-box" role="status" aria-live="polite"></div>
-
-<!-- Add / edit bus -->
-<div class="modal fade" id="busModal" tabindex="-1" aria-labelledby="busModalTitle" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <form id="busForm" class="modal-content" novalidate>
-      <div class="modal-header">
-        <h2 class="modal-title h5" id="busModalTitle">Add bus</h2>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" id="editingId" value="">
-        <div class="row g-3">
-          <div class="col-md-4">
-            <label for="fBusId" class="form-label">Bus ID</label>
-            <input type="text" id="fBusId" name="Bus_ID" class="form-control" placeholder="MB1001" maxlength="20" required pattern="[A-Za-z0-9_\-]{3,20}">
-          </div>
-          <div class="col-md-4">
-            <label for="fBusName" class="form-label">Bus name</label>
-            <input type="text" id="fBusName" name="Bus_Name" class="form-control" maxlength="60" required>
-          </div>
-          <div class="col-md-4">
-            <label for="fBusType" class="form-label">Bus type</label>
-            <select id="fBusType" name="Bus_Type" class="form-select" required>
-              <option>Normal</option>
-              <option>Semi-Luxury</option>
-              <option>Luxury</option>
-              <option>AC</option>
-            </select>
-          </div>
-
-          <div class="col-md-4">
-            <label for="fRoute" class="form-label">Route</label>
-            <input type="text" id="fRoute" name="Route" class="form-control" placeholder="Colombo - Makubura" maxlength="100" required>
-          </div>
-          <div class="col-md-4">
-            <label for="fDeparture" class="form-label">Departure</label>
-            <input type="text" id="fDeparture" name="Departure" class="form-control" list="locationList" maxlength="60" required>
-          </div>
-          <div class="col-md-4">
-            <label for="fDestination" class="form-label">Destination</label>
-            <input type="text" id="fDestination" name="Destination" class="form-control" list="locationList" maxlength="60" required>
-          </div>
-
-          <div class="col-md-4">
-            <label for="fDate" class="form-label">Travel date</label>
-            <input type="date" id="fDate" name="Travel_Date" class="form-control" required>
-          </div>
-          <div class="col-md-4">
-            <label for="fDepTime" class="form-label">Departure time</label>
-            <input type="time" id="fDepTime" name="Departure_Time" class="form-control" required>
-          </div>
-          <div class="col-md-4">
-            <label for="fArrTime" class="form-label">Arrival time</label>
-            <input type="time" id="fArrTime" name="Arrival_Time" class="form-control" required>
-          </div>
-
-          <div class="col-md-3">
-            <label for="fTotal" class="form-label">Capacity (seats)</label>
-            <input type="number" id="fTotal" name="Total_Seats" class="form-control" min="1" max="52" step="1" required>
-          </div>
-          <div class="col-md-3">
-            <label for="fAvailable" class="form-label">Available seats</label>
-            <input type="number" id="fAvailable" name="Available_Seats" class="form-control" min="0" max="52" step="1">
-            <div class="form-text" id="availableHelp">Leave empty to start with all seats free.</div>
-          </div>
-          <div class="col-md-3">
-            <label for="fFare" class="form-label">Fare (Rs.)</label>
-            <input type="number" id="fFare" name="Fare" class="form-control" min="0" step="0.01" required>
-          </div>
-          <div class="col-md-3">
-            <label for="fStatus" class="form-label">Status</label>
-            <select id="fStatus" name="Status" class="form-select" required>
-              <option>Available</option>
-              <option>Unavailable</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" id="saveBusBtn" class="btn btn-primary">Save bus</button>
-      </div>
-    </form>
   </div>
-</div>
 
-<!-- Update schedule -->
-<div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalTitle" aria-hidden="true">
-  <div class="modal-dialog">
-    <form id="scheduleForm" class="modal-content" novalidate>
-      <div class="modal-header">
-        <h2 class="modal-title h5" id="scheduleModalTitle">Update schedule</h2>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" id="scheduleId" value="">
-        <p class="text-muted small" id="scheduleInfo"></p>
-        <div class="mb-3">
-          <label for="sDate" class="form-label">Travel date</label>
-          <input type="date" id="sDate" name="Travel_Date" class="form-control" required>
+  <!-- Delete confirmation -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content p-2">
+        <div class="modal-header border-0 pb-0">
+          <h2 class="modal-title h4 mb-0" id="deleteModalTitle">Delete bus?</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="row g-3">
-          <div class="col-6">
-            <label for="sDepTime" class="form-label">Departure time</label>
-            <input type="time" id="sDepTime" name="Departure_Time" class="form-control" required>
-          </div>
-          <div class="col-6">
-            <label for="sArrTime" class="form-label">Arrival time</label>
-            <input type="time" id="sArrTime" name="Arrival_Time" class="form-control" required>
-          </div>
+        <div class="modal-body">
+          <p class="mb-0" id="deleteText"></p>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" id="saveScheduleBtn" class="btn btn-primary">Save schedule</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Delete confirmation -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalTitle" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title h5" id="deleteModalTitle">Delete bus?</h2>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p class="mb-0" id="deleteText"></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-sm mf-btn-outline-red" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" id="confirmDeleteBtn" class="btn btn-sm mf-btn-red">Delete</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Operator login -->
-<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalTitle" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-    <form id="loginForm" class="modal-content" novalidate>
-      <div class="modal-header">
-        <h2 class="modal-title h5" id="loginModalTitle">Operator login</h2>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p class="text-muted small">Adding, updating and deleting buses needs an operator account.</p>
-        <div class="mb-3">
-          <label for="lUser" class="form-label">Username</label>
-          <input type="text" id="lUser" name="username" class="form-control" autocomplete="username" required>
+  <!-- Operator login -->
+  <div class="modal fade" id="opLoginModal" tabindex="-1" aria-labelledby="opLoginTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <form id="opLoginForm" class="modal-content p-2" novalidate>
+        <div class="modal-header border-0 pb-0">
+          <div>
+            <span class="mf-hand mf-text-red fs-4">Operators only</span>
+            <h2 class="modal-title h4 mb-0" id="opLoginTitle">Operator login</h2>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="mb-0">
-          <label for="lPass" class="form-label">Password</label>
-          <input type="password" id="lPass" name="password" class="form-control" autocomplete="current-password" required>
+        <div class="modal-body">
+          <p class="small">Adding, updating and deleting buses needs an operator account.</p>
+          <div class="mb-3">
+            <label for="opUser" class="form-label fw-semibold">Username</label>
+            <input type="text" id="opUser" name="username" class="form-control" autocomplete="username" required>
+          </div>
+          <div class="mb-0">
+            <label for="opPass" class="form-label fw-semibold">Password</label>
+            <input type="password" id="opPass" name="password" class="form-control" autocomplete="current-password" required>
+          </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" id="loginSubmitBtn" class="btn btn-primary">Sign in</button>
-      </div>
-    </form>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-sm mf-btn-outline-red" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" id="opLoginSubmit" class="btn btn-sm mf-btn-red">Sign in</button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="js/admin.js"></script>
+  <!-- jQuery -> Bootstrap JS -> api.js -> main.js -> admin.js (same order as index.html) -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/admin.js"></script>
 </body>
 </html>
