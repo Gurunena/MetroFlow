@@ -113,6 +113,54 @@ body { background: var(--mf-tint-grey, #F7F8FA); }
 .bk-trip.is-cancelled .bk-ticket-head { background: linear-gradient(120deg, #9CA3AF, #C4C9D1); }
 .bk-trip.is-cancelled { opacity: .85; }
 
+/* ---------- extras: countdown, CO2, WhatsApp, MetroMiles, scratch card ---------- */
+.bk-countdown {
+  display: inline-flex; align-items: center; gap: .35rem; padding: .3rem .8rem; border-radius: 999px;
+  background: #EEF2FF; color: #3730A3; font-size: .82rem; font-weight: 700;
+}
+.bk-countdown.is-soon { background: #FFF0F1; color: var(--mf-red); }
+.bk-countdown.is-past { background: var(--mf-tint-grey); color: var(--mf-grey); }
+.bk-miles-chip { background: #FEF3C7; color: #92400E; }
+.bk-co2-chip { background: #E8F7EE; color: #15803D; }
+.bk-co2 { color: #15803D; font-size: .88rem; font-weight: 600; }
+.bk-co2 i { margin-right: .2rem; }
+
+.bk-btn-whatsapp {
+  display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
+  background: #25D366; border: 1.5px solid #25D366; color: #fff; border-radius: 999px; font-weight: 700;
+}
+.bk-btn-whatsapp i { line-height: 1; }
+.bk-btn-whatsapp:hover, .bk-btn-whatsapp:focus { background: #1DA851; color: #fff; }
+
+.bk-miles-badge {
+  width: 56px; height: 56px; flex: 0 0 56px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 1.6rem; color: #fff; background: #B45309; box-shadow: var(--mf-shadow-sm);
+}
+.bk-miles-badge.is-silver { background: linear-gradient(135deg, #9CA3AF, #D1D5DB); }
+.bk-miles-badge.is-gold { background: linear-gradient(135deg, #D97706, #FCD34D); }
+.bk-miles-badge.is-platinum { background: linear-gradient(135deg, #4338CA, #A5B4FC); }
+.bk-progress { height: 10px; border-radius: 999px; background: var(--mf-tint-grey); overflow: hidden; margin-bottom: .35rem; }
+.bk-progress span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--mf-red), #F0444F); }
+.bk-co2-total { font-size: 1.4rem; font-weight: 800; color: #15803D; }
+
+.bk-scratch {
+  position: relative; width: min(100%, 360px); height: 190px; border-radius: var(--mf-r-md, 16px);
+  overflow: hidden; border: 2px dashed var(--mf-line); background: #fff;
+}
+.bk-scratch.is-revealed { border-color: var(--mf-red); animation: bk-pop .5s var(--mf-ease); }
+.bk-scratch-prize {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .25rem; padding: 1rem; text-align: center; background: linear-gradient(180deg, #fff, var(--mf-tint-red, #FFF5F5));
+}
+.bk-scratch-icon { font-size: 2.2rem; line-height: 1; }
+.bk-scratch-prize strong { color: var(--mf-navy); font-size: 1.1rem; }
+.bk-scratch-prize small { color: var(--mf-grey); }
+.bk-scratch-prize code {
+  margin-top: .25rem; padding: .2rem .6rem; border-radius: 8px; background: var(--mf-navy); color: #fff; font-weight: 700;
+}
+.bk-scratch-cover { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; }
+@keyframes bk-pop { 0% { transform: scale(.96); } 60% { transform: scale(1.03); } 100% { transform: scale(1); } }
+
 /* ---------- toast ---------- */
 .bk-toast {
   position: fixed; left: 50%; bottom: 1.5rem; transform: translateX(-50%); z-index: 2000;
@@ -141,5 +189,6 @@ body { background: var(--mf-tint-grey, #F7F8FA); }
 
 @media (prefers-reduced-motion: reduce) {
   .bk-trip, .bk-field, .bk-pill { transition: none; }
+  .bk-scratch.is-revealed { animation: none; }
   .bk-trip:hover { transform: none; }
 }

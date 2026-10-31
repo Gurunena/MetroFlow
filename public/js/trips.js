@@ -38,6 +38,8 @@
   }
 
   var esc = MF.escape;
+  var extras = MF.bookingExtras;
+  var busMap = null; // Bus_ID -> bus, used for departure times and CO2 estimates
 
   function api(method, path, body) {
     return $.ajax({
@@ -85,7 +87,64 @@
 
   /* ======================= results (one card per booking) ================ */
 
+  // Loads the timetable once (Bus service: GET /api/buses) – the cards still work without it
+  function loadBuses() {
+    if (busMap) { return $.Deferred().resolve(busMap).promise(); }
+    return api('GET', '/buses').then(function (payload) {
+      busMap = {};
+      $.each(payload && payload.data ? payload.data : [], function (i, bus) { busMap[bus.Bus_ID] = bus; });
+      return busMap;
+    }, function () {
+      return $.Deferred().resolve({}).promise();
+    });
+  }
+
+  // MetroMiles + total CO2 saved, only when every result belongs to the same passenger
+  function showMiles(bookings, buses) {
+    var $panel = $('#milesPanel');
+    var phones = {};
+    $.each(bookings, function (i, b) { phones[String(b.Phone).replace(/^\+94/, '0')] = true; });
+    if (!bookings.length || Object.keys(phones).length !== 1) {
+      $panel.slideUp(200);
+      return;
+    }
+
+    var mm = extras.metroMiles(bookings);
+    var co2 = 0;
+    $.each(bookings, function (i, b) {
+      if (b.Booking_Status === 'Confirmed' && buses[b.Bus_ID]) { co2 += extras.co2Saved(buses[b.Bus_ID]); }
+    });
+
+    $panel.html(
+      '<div class="row g-3 align-items-center">' +
+        '<div class="col-md-5 d-flex align-items-center gap-3">' +
+          '<span class="bk-miles-badge is-' + esc(mm.level.name.toLowerCase()) + '"><i class="bi ' + esc(mm.level.icon) + '" aria-hidden="true"></i></span>' +
+          '<div><small class="mf-eyebrow">MetroMiles &middot; ' + esc(bookings[0].Passenger_Name) + '</small>' +
+            '<div class="h4 mb-0">' + esc(mm.miles.toLocaleString()) + ' <span class="fs-6 fw-semibold mf-muted">miles</span></div>' +
+            '<span class="fw-bold mf-text-red">' + esc(mm.level.name) + ' member</span></div>' +
+        '</div>' +
+        '<div class="col-md-4">' +
+          '<div class="bk-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + mm.progress + '">' +
+            '<span style="width:' + mm.progress + '%"></span></div>' +
+          '<small class="mf-muted">' + (mm.next
+            ? esc((mm.next.min - mm.miles).toLocaleString()) + ' miles to ' + esc(mm.next.name)
+            : 'Top level reached – thank you!') + '</small>' +
+        '</div>' +
+        '<div class="col-md-3 text-md-end">' +
+          '<div class="bk-co2-total"><i class="bi bi-tree-fill" aria-hidden="true"></i> ' + esc(Math.round(co2 * 10) / 10) + ' kg</div>' +
+          '<small class="mf-muted">CO&#8322; saved on ' + mm.trips + ' trip' + (mm.trips === 1 ? '' : 's') + '</small>' +
+        '</div>' +
+      '</div>'
+    ).slideDown(250);
+    $panel.find('.bk-progress span').css('width', 0).animate({ width: mm.progress + '%' }, 800);
+  }
+
   function showResults(bookings) {
+    loadBuses().always(function (buses) { renderResults(bookings, buses || {}); });
+  }
+
+  function renderResults(bookings, buses) {
+    showMiles(bookings, buses);
     var $results = $('#results').empty();
     $('#resultCount').text(bookings.length + ' booking' + (bookings.length === 1 ? '' : 's') + ' found');
 
@@ -97,6 +156,7 @@
 
     $.each(bookings, function (i, b) {
       var cancelled = b.Booking_Status === 'Cancelled';
+      var bus = buses[b.Bus_ID];
       var $col = $('<div class="col-md-6 col-xl-4 trip-col">').toggleClass('cancelled', cancelled).html(
         '<article class="bk-ticket bk-trip' + (cancelled ? ' is-cancelled' : '') + '">' +
           '<div class="bk-ticket-head">' +
@@ -112,11 +172,19 @@
             kv('Seat', esc(b.Seat_Number)) +
             kv('Phone', esc(b.Phone)) +
             kv('Fare', '<span class="mf-text-red">' + esc(money(b.Fare)) + '</span>') +
-          '</div></div>' +
+          '</div>' +
+          (bus && !cancelled
+            ? '<div class="d-flex flex-wrap gap-2 mt-3">' + extras.countdownHtml(b.Travel_Date, bus.Departure_Time) +
+              '<span class="bk-countdown bk-co2-chip"><i class="bi bi-tree" aria-hidden="true"></i> ' +
+              esc(extras.co2Saved(bus)) + ' kg CO&#8322; saved</span></div>'
+            : '') +
+          '</div>' +
           '<div class="bk-tear"></div>' +
           '<div class="bk-ticket-body d-flex gap-2">' +
             '<button type="button" class="btn btn-sm mf-btn-outline-red edit-btn"><i class="bi ' +
               (cancelled ? 'bi-eye' : 'bi-pencil') + '" aria-hidden="true"></i> ' + (cancelled ? 'View' : 'Edit') + '</button>' +
+            (cancelled ? '' : '<a class="btn btn-sm bk-btn-whatsapp" href="' + esc(extras.shareUrl(b, bus)) +
+              '" target="_blank" rel="noopener" aria-label="Share on WhatsApp"><i class="bi bi-whatsapp" aria-hidden="true"></i></a>') +
             (cancelled ? '' : '<button type="button" class="btn btn-sm mf-btn-ghost cancel-btn ms-auto">' +
               '<i class="bi bi-x-circle" aria-hidden="true"></i> Cancel booking</button>') +
           '</div>' +

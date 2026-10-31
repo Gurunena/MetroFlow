@@ -45,3 +45,14 @@ Deleting a bus with Confirmed bookings is already blocked in busService.deleteBu
   `routes/index.js` needs `router.use('/bookings', require('./bookingRoutes'))`.
 - **seats.html** – after picking seats, go to `booking.html?bus=MB1002&seats=A1,A2`.
   Booked seats: `GET /api/bookings/bus/:busId/seats`.
+
+## Extra features (to stand out)
+All in `public/js/booking-extras.js` – front-end only, built from data the API already returns.
+| Feature | Where | How it works |
+|---|---|---|
+| Scannable barcode + Download ticket (PDF) | booking.html | JsBarcode (Code 128 of the Booking ID); html2canvas + jsPDF, one ticket per page |
+| Scratch-card reward | booking.html, after booking | Canvas "foil" erased with the mouse/finger; reward chosen from the Booking ID so it never changes |
+| Live departure countdown | e-ticket + My Trips cards | Ticks every second, turns red within 24 h |
+| Carbon saved | e-ticket, My Trips | Distance ≈ journey time × 40 km/h; saving = km × (0.17 − 0.03) kg CO₂ |
+| MetroMiles loyalty | My Trips (results for one passenger) | 1 mile per LKR 10 confirmed; Bronze → Silver (500) → Gold (1500) → Platinum (3000) |
+| Share to WhatsApp | e-ticket + My Trips cards | wa.me link with the trip details and Booking ID |

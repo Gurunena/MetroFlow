@@ -43,6 +43,7 @@
   }
 
   var esc = MF.escape;
+  var extras = MF.bookingExtras;
 
   function api(method, path, body) {
     return $.ajax({
@@ -203,7 +204,12 @@
         kv('Departs', esc(bus.Departure_Time || '—')) +
         kv('Arrives', esc(bus.Arrival_Time || '—')) +
         kv('Phone', esc(b.Phone)) +
-      '</div></div>' +
+      '</div>' +
+      (bus.Departure_Time
+        ? '<p class="bk-co2 mt-3 mb-0"><i class="bi bi-tree" aria-hidden="true"></i> Taking the bus saves about <strong>' +
+          esc(extras.co2Saved(bus)) + ' kg CO&#8322;</strong> compared with driving (~' + esc(extras.tripKm(bus)) + ' km).</p>'
+        : '') +
+      '</div>' +
       '<div class="bk-tear"></div>' +
       '<div class="bk-ticket-body d-flex justify-content-between align-items-end flex-wrap gap-3">' +
         '<div>' +
@@ -236,8 +242,19 @@
     $('#tickets').html($.map(created, ticketHtml).join(''));
     drawBarcodes();
 
+    // extras: live countdown, MetroMiles earned, WhatsApp share, scratch-card reward
+    var bus = currentBus || {};
+    var earned = extras.metroMiles(created).miles;
+    $('#confirmExtras').html(
+      (bus.Departure_Time ? extras.countdownHtml(created[0].Travel_Date, bus.Departure_Time) : '') +
+      '<span class="bk-countdown bk-miles-chip"><i class="bi bi-stars" aria-hidden="true"></i> +' + esc(earned) + ' MetroMiles earned</span>'
+    );
+    $('#shareBtn').attr('href', extras.shareUrl(created[0], bus));
+
     $('#detailsSection').slideUp(300, function () {
-      $('#confirmSection').fadeIn(400);
+      $('#confirmSection').show();
+      extras.mountScratchCard($('#rewardBox'), created[0].Booking_ID);
+      $('#confirmSection').hide().fadeIn(400);
       $('html, body').animate({ scrollTop: 0 }, 300);
     });
   }
