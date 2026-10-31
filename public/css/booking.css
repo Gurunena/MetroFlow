@@ -1,0 +1,142 @@
+/* booking.css – styles for the booking and my-trips pages (Member 4)
+   -------------------------------------------------------------------------
+   Uses the shared MetroFlow tokens (--mf-red, --mf-navy, --mf-line ...) and the
+   shared buttons/navbar/footer from home.css. Page-specific classes are
+   prefixed `bk-` so they never clash with teammates' `mf-` classes.
+   ------------------------------------------------------------------------- */
+
+body { background: var(--mf-tint-grey, #F7F8FA); }
+
+/* ---------- page header band ---------- */
+.bk-head {
+  background: linear-gradient(180deg, var(--mf-tint-red, #FFF5F5) 0%, #fff 100%);
+  padding: 2.25rem 0 2rem;
+  border-bottom: 1px solid var(--mf-line);
+}
+.bk-crumbs { font-size: .85rem; color: var(--mf-grey); }
+.bk-crumbs a { color: var(--mf-grey); text-decoration: none; }
+.bk-crumbs a:hover { color: var(--mf-red); }
+.bk-title { font-size: clamp(2rem, 4vw, 2.6rem); margin: .35rem 0; color: var(--mf-navy); }
+.bk-title .bk-script {
+  font-family: "Pinyon Script", "Great Vibes", var(--mf-font-hand), cursive;
+  font-weight: 400; color: var(--mf-red); font-size: .95em; letter-spacing: 0; margin-left: .2rem;
+}
+.bk-sub { color: var(--mf-navy); font-weight: 600; margin: 0; }
+.bk-sub i { color: var(--mf-red); }
+
+/* ---------- panels ---------- */
+.bk-panel {
+  background: #fff; border: 1px solid var(--mf-line); border-radius: var(--mf-r-lg, 24px);
+  box-shadow: var(--mf-shadow-sm); padding: 1.5rem;
+}
+.bk-panel-title { font-size: 1.1rem; font-weight: 800; display: flex; align-items: center; gap: .5rem; margin-bottom: 1rem; }
+.bk-panel-title i { color: var(--mf-red); }
+
+/* ---------- inputs (same look as the home "Plan Your Journey" fields) ---------- */
+.bk-field {
+  display: flex; align-items: center; gap: .75rem; background: var(--mf-tint-grey, #F7F8FA);
+  border: 1.5px solid transparent; border-radius: var(--mf-r-md, 16px); padding: .55rem 1rem;
+  transition: border-color .2s, background-color .2s;
+}
+.bk-field:focus-within { border-color: var(--mf-red); background: #fff; }
+.bk-field > i { color: var(--mf-red); font-size: 1.1rem; }
+.bk-field label {
+  display: block; margin: 0; font-size: .68rem; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--mf-grey);
+}
+.bk-field input, .bk-field select {
+  width: 100%; border: 0; padding: 0; background: transparent; outline: none;
+  font-weight: 700; color: var(--mf-navy);
+}
+.bk-field input:focus-visible { outline: none; }
+.bk-field input::placeholder { color: #9CA3AF; font-weight: 500; }
+.bk-field input:disabled { color: var(--mf-grey); }
+.bk-field.is-invalid { border-color: var(--mf-red); background: #FFF0F1; }
+.bk-field.is-valid { border-color: #BBF7D0; }
+.bk-error { display: none; color: var(--mf-red); font-size: .8rem; margin: .3rem 0 0 .3rem; }
+.bk-field.is-invalid + .bk-error { display: block; }
+
+/* ---------- filter pills (same look as the Explore page filters) ---------- */
+.bk-pill {
+  border: 1px solid var(--mf-line); background: #fff; color: var(--mf-navy);
+  border-radius: 999px; padding: .42rem 1rem; font-weight: 600; font-size: .9rem;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.bk-pill:hover { border-color: var(--mf-red); }
+.bk-pill.active { background: var(--mf-red); border-color: var(--mf-red); color: #fff; }
+
+/* ---------- ticket (trip summary, e-ticket and My Trips cards) ---------- */
+.bk-ticket { background: #fff; border-radius: var(--mf-r-lg, 24px); box-shadow: var(--mf-shadow); overflow: hidden; }
+.bk-ticket-head {
+  background: linear-gradient(120deg, var(--mf-red) 0%, #F0444F 100%); color: #fff;
+  padding: 1.15rem 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+}
+.bk-ticket-head small { font-weight: 700; opacity: .9; }
+.bk-ticket-head h3 { color: #fff; font-size: 1.35rem; font-weight: 700; margin: 0; }
+.bk-status {
+  background: #fff; color: #16A34A; border-radius: 999px; padding: .2rem .75rem;
+  font-size: .8rem; font-weight: 700; white-space: nowrap;
+}
+.bk-status.is-cancelled { color: var(--mf-grey); }
+.bk-ticket-body { padding: 1.25rem 1.5rem; }
+.bk-kv small {
+  display: block; font-size: .68rem; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--mf-grey);
+}
+.bk-kv strong { color: var(--mf-navy); font-weight: 700; }
+.bk-tear { position: relative; border-top: 2px dashed var(--mf-line); margin: 0 1.5rem; }
+.bk-tear::before, .bk-tear::after {
+  content: ""; position: absolute; top: -11px; width: 20px; height: 20px;
+  border-radius: 50%; background: var(--mf-tint-grey, #F7F8FA);
+}
+.bk-tear::before { left: -2.15rem; }
+.bk-tear::after { right: -2.15rem; }
+.bk-price { color: var(--mf-red); font-weight: 800; font-size: 1.6rem; }
+.bk-barcode {
+  width: 180px; height: 48px;
+  background: repeating-linear-gradient(90deg, var(--mf-navy) 0 2px, transparent 2px 4px,
+    var(--mf-navy) 4px 5px, transparent 5px 8px, var(--mf-navy) 8px 11px, transparent 11px 12px);
+}
+.bk-done {
+  width: 64px; height: 64px; margin: 0 auto; border-radius: 50%;
+  background: #E8F7EE; color: #16A34A; display: grid; place-items: center; font-size: 2rem;
+}
+
+/* My Trips cards */
+.bk-trip { height: 100%; transition: transform .3s var(--mf-ease), box-shadow .3s var(--mf-ease); }
+.bk-trip:hover { transform: translateY(-3px); box-shadow: var(--mf-shadow-lg); }
+.bk-trip .bk-ticket-head { padding: .9rem 1.25rem; }
+.bk-trip .bk-ticket-head h3 { font-size: 1.1rem; }
+.bk-trip.is-cancelled .bk-ticket-head { background: linear-gradient(120deg, #9CA3AF, #C4C9D1); }
+.bk-trip.is-cancelled { opacity: .85; }
+
+/* ---------- toast ---------- */
+.bk-toast {
+  position: fixed; left: 50%; bottom: 1.5rem; transform: translateX(-50%); z-index: 2000;
+  display: none; max-width: calc(100% - 2rem); padding: .7rem 1.4rem; border-radius: 999px;
+  background: var(--mf-navy); color: #fff; font-weight: 600; box-shadow: var(--mf-shadow-lg);
+}
+.bk-toast.success i { color: #4ADE80; }
+.bk-toast.danger i, .bk-toast.warning i { color: #FB7185; }
+
+/* ---------- modal ---------- */
+.bk-modal .modal-content { border: 0; border-radius: var(--mf-r-lg, 24px); }
+.bk-modal .modal-header, .bk-modal .modal-footer { border: 0; }
+
+/* ---------- print: only the tickets ---------- */
+@media print {
+  #navbar, #footer, #chatWidget, .bk-head, #detailsSection, .no-print, .bk-toast { display: none !important; }
+  body { background: #fff; }
+  .bk-ticket { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+  .bk-ticket-head { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+@media (max-width: 575.98px) {
+  .bk-tear::before, .bk-tear::after { display: none; }
+  .bk-panel { padding: 1.15rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bk-trip, .bk-field, .bk-pill { transition: none; }
+  .bk-trip:hover { transform: none; }
+}
