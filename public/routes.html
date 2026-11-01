@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MetroFlow – Routes &amp; Timetable</title>
+  <link rel="icon" href="images/logo-mark.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/home.css" rel="stylesheet">
+  <link href="css/admin.css" rel="stylesheet">
+</head>
+<body>
+  <div id="navbar"></div>
+
+  <main id="main" class="mfa-page">
+    <div class="container py-4 py-lg-5">
+
+      <div class="mb-4">
+        <span class="mf-hand mf-text-red fs-4">Plan ahead</span>
+        <h1 class="h3 fw-bold mb-0">Routes &amp; Timetable</h1>
+      </div>
+
+      <!-- route summary -->
+      <section class="mfa-card mb-4" aria-labelledby="routesHeading">
+        <div class="mfa-card-head">
+          <h2 class="h6 mb-0" id="routesHeading"><i class="bi bi-signpost-split mf-text-red me-2" aria-hidden="true"></i>Our routes</h2>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 mfa-table">
+            <thead>
+              <tr>
+                <th scope="col">Route</th>
+                <th scope="col" class="text-end">Upcoming trips</th>
+                <th scope="col" class="text-end">Fare (Rs.)</th>
+                <th scope="col" class="text-end">Seats left</th>
+                <th scope="col">Next departure</th>
+              </tr>
+            </thead>
+            <tbody id="routeBody">
+              <tr><td colspan="5"><div class="mf-state">Loading routes…</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- timetable search -->
+      <section class="mfa-card" aria-labelledby="ttHeading">
+        <div class="mfa-card-head">
+          <h2 class="h6 mb-0" id="ttHeading"><i class="bi bi-clock-history mf-text-red me-2" aria-hidden="true"></i>Timetable</h2>
+        </div>
+        <div class="p-3 p-md-4">
+          <form id="ttForm" class="row g-3 align-items-end" novalidate>
+            <div class="col-6 col-md-3">
+              <label for="ttRoute" class="form-label fw-semibold">Route</label>
+              <input type="text" id="ttRoute" name="route" class="form-control" placeholder="e.g. Kandy">
+            </div>
+            <div class="col-6 col-md-2">
+              <label for="ttFrom" class="form-label fw-semibold">From</label>
+              <input type="text" id="ttFrom" name="from" class="form-control" list="locationList" autocomplete="off">
+            </div>
+            <div class="col-6 col-md-2">
+              <label for="ttTo" class="form-label fw-semibold">To</label>
+              <input type="text" id="ttTo" name="to" class="form-control" list="locationList" autocomplete="off">
+            </div>
+            <div class="col-6 col-md-2">
+              <label for="ttDate" class="form-label fw-semibold">Date</label>
+              <input type="date" id="ttDate" name="date" class="form-control">
+            </div>
+            <div class="col-12 col-md-3 d-flex flex-wrap gap-3 align-items-center">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="ttAvail" name="availableOnly" value="true">
+                <label class="form-check-label" for="ttAvail">Seats available only</label>
+              </div>
+              <button type="submit" class="btn btn-sm mf-btn-red">Search</button>
+              <button type="button" id="ttReset" class="btn btn-sm mf-btn-outline-red">Reset</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="px-3 px-md-4 pb-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <span><strong id="ttCount">0</strong> trip(s)</span>
+          <input type="search" id="ttLive" class="form-control form-control-sm" style="max-width:260px" placeholder="Filter results (bus, route…)">
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 mfa-table">
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Time</th>
+                <th scope="col">Bus</th>
+                <th scope="col">Route</th>
+                <th scope="col" class="text-end">Seats</th>
+                <th scope="col" class="text-end">Fare (Rs.)</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody id="ttBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+  <datalist id="locationList"></datalist>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/routes.js"></script>
+</body>
+</html>
