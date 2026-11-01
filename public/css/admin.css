@@ -1,144 +1,97 @@
-/* admin.css – styles for the admin dashboard tables and forms */
-
+/* MetroFlow Admin – aligned with the main website's red, navy and white theme. */
 :root {
-  --mf-navy: #0b3d5c;
-  --mf-navy-dark: #072a40;
-  --mf-accent: #f2a900;
-  --mf-surface: #f4f7fa;
-  --mf-border: #dde5ec;
+  --mf-red: #D80F1E;
+  --mf-red-dark: #B00B18;
+  --mf-navy: #0F1B33;
+  --mf-grey: #6B7280;
+  --mf-tint-red: #FFF5F5;
+  --mf-tint-grey: #F7F8FA;
+  --mf-line: #E8EAEF;
+  --mf-shadow-sm: 0 2px 8px rgba(15, 27, 51, .06);
+  --mf-shadow: 0 10px 30px rgba(15, 27, 51, .08);
 }
 
 body {
-  background: var(--mf-surface);
-  color: #1b2a36;
+  font-family: "Plus Jakarta Sans", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--mf-navy);
+  background: var(--mf-tint-grey);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* top bar */
+h1, h2, h3, h4, h5, h6 { color: var(--mf-navy); font-weight: 800; letter-spacing: -.02em; }
+
+/* Admin top bar follows the public MetroFlow navy/red identity. */
 .mf-nav {
   background: var(--mf-navy);
-  border-bottom: 3px solid var(--mf-accent);
+  border-bottom: 3px solid var(--mf-red);
+  padding-top: .7rem;
+  padding-bottom: .7rem;
 }
+.mf-nav .navbar-brand { color: #fff; letter-spacing: -.02em; }
 .mf-nav-tag {
-  font-size: .7rem;
-  font-weight: 600;
+  display: inline-block;
+  font-size: .68rem;
+  font-weight: 800;
   letter-spacing: .08em;
   text-transform: uppercase;
-  color: var(--mf-navy-dark);
-  background: var(--mf-accent);
+  color: #fff;
+  background: var(--mf-red);
   border-radius: 999px;
-  padding: .15rem .55rem;
+  padding: .2rem .6rem;
   margin-left: .35rem;
   vertical-align: middle;
 }
 
-/* summary tiles */
+.btn-primary { background: var(--mf-red); border-color: var(--mf-red); }
+.btn-primary:hover, .btn-primary:focus { background: var(--mf-red-dark); border-color: var(--mf-red-dark); }
+.btn-outline-primary { color: var(--mf-red); border-color: var(--mf-red); }
+.btn-outline-primary:hover { background: var(--mf-red); border-color: var(--mf-red); }
+.nav-pills .nav-link { color: var(--mf-navy); }
+.nav-pills .nav-link.active { background: var(--mf-red); color: #fff; }
+
 .mf-stat {
   background: #fff;
-  border: 1px solid var(--mf-border);
-  border-left: 4px solid var(--mf-navy);
-  border-radius: .5rem;
-  padding: .85rem 1rem;
+  border: 1px solid var(--mf-line);
+  border-left: 4px solid var(--mf-red);
+  border-radius: 14px;
+  padding: .9rem 1rem;
   display: flex;
   flex-direction: column;
+  box-shadow: var(--mf-shadow-sm);
 }
-.mf-stat-label {
-  font-size: .8rem;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  color: #5b6b78;
-}
-.mf-stat-value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  line-height: 1.2;
-  font-variant-numeric: tabular-nums;
-}
+.mf-stat-label { font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; color: var(--mf-grey); }
+.mf-stat-value { font-size: 1.75rem; font-weight: 800; line-height: 1.2; font-variant-numeric: tabular-nums; color: var(--mf-navy); }
 
-/* cards */
-.card {
-  border-color: var(--mf-border);
-  border-radius: .5rem;
-}
-.card-header {
-  background: #fff;
-}
-
-/* bus table */
+.card { border: 1px solid var(--mf-line); border-radius: 16px; box-shadow: var(--mf-shadow-sm); }
+.card-header { background: #fff; border-bottom: 1px solid var(--mf-line); }
 .mf-table thead th {
-  background: #eaf0f5;
-  color: #38505f;
-  font-size: .78rem;
+  background: #F1F3F7;
+  color: var(--mf-navy);
+  font-size: .76rem;
   text-transform: uppercase;
   letter-spacing: .04em;
   white-space: nowrap;
-  border-bottom: 1px solid var(--mf-border);
+  border-bottom: 1px solid var(--mf-line);
 }
-.mf-table td {
-  vertical-align: middle;
-}
-.mf-table td .small {
-  line-height: 1.25;
-}
-.mf-table .num {
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
+.mf-table td { vertical-align: middle; }
+.mf-table td .small { line-height: 1.25; }
+.mf-table .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mf-actions .btn { white-space: nowrap; }
 
-/* seat availability bar */
-.seat-bar-wrap {
-  width: 90px;
-  height: 6px;
-  background: #e3e9ee;
-  border-radius: 3px;
-  overflow: hidden;
-  margin-top: 4px;
-}
-.seat-bar {
-  height: 100%;
-  width: 0;
-  background: #198754;
-  border-radius: 3px;
-}
+.seat-bar-wrap { width: 90px; height: 6px; background: #e3e9ee; border-radius: 3px; overflow: hidden; margin-top: 4px; }
+.seat-bar { height: 100%; width: 0; background: #198754; border-radius: 3px; }
 .seat-bar.is-low { background: #e0a100; }
-.seat-bar.is-full { background: #dc3545; }
+.seat-bar.is-full { background: var(--mf-red); }
 
-.mf-actions .btn {
-  white-space: nowrap;
-}
-
-/* toasts (shown/hidden with jQuery fadeIn / fadeOut) */
-.mf-toast-box {
-  position: fixed;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 2000;
-  display: flex;
-  flex-direction: column;
-  gap: .5rem;
-  max-width: min(360px, calc(100vw - 2rem));
-}
-.mf-toast {
-  display: none;
-  padding: .7rem 1rem;
-  border-radius: .5rem;
-  color: #fff;
-  font-size: .92rem;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, .2);
-}
+.mf-toast-box { position: fixed; right: 1rem; bottom: 1rem; z-index: 2000; display: flex; flex-direction: column; gap: .5rem; max-width: min(360px, calc(100vw - 2rem)); }
+.mf-toast { display: none; padding: .7rem 1rem; border-radius: 12px; color: #fff; font-size: .92rem; box-shadow: var(--mf-shadow); }
 .mf-toast-success { background: #198754; }
-.mf-toast-error   { background: #b02a37; }
-.mf-toast-info    { background: var(--mf-navy); }
+.mf-toast-error { background: var(--mf-red-dark); }
+.mf-toast-info { background: var(--mf-navy); }
 
-/* form validation hint inside modals */
-.was-validated .form-control:invalid,
-.was-validated .form-select:invalid {
-  border-color: #dc3545;
-}
+.was-validated .form-control:invalid, .was-validated .form-select:invalid { border-color: var(--mf-red); }
+.form-control:focus, .form-select:focus { border-color: var(--mf-red); box-shadow: 0 0 0 .2rem rgba(216, 15, 30, .14); }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid rgba(216, 15, 30, .4); outline-offset: 2px; }
 
-@media (max-width: 575.98px) {
-  .mf-stat-value { font-size: 1.4rem; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fade { transition: none; }
-}
+@media (max-width: 575.98px) { .mf-stat-value { font-size: 1.4rem; } }
+@media (prefers-reduced-motion: reduce) { .fade { transition: none; } }
