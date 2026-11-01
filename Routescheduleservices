@@ -1,0 +1,91 @@
+// Route & Schedule Management - business rules (no Express code here).
+// ASSUMPTION: Bus documents use Bus_ID, Route, Departure, Destination, Travel_Date ("YYYY-MM-DD" string),
+// Departure_Time / Arrival_Time ("HH:mm"), Total_Seats, Available_Seats, Fare. Adjust names if your model differs.
+const Bus = require('../models/Bus');
+
+const fail = (status, message) => Object.assign(new Error(message), { status, statusCode: status });
+const escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const exact = (s) => new RegExp('^' + escapeRegex(String(s).trim()) + '$', 'i');
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+const today = () => {
+  const d = new Date();
+  const p = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+};
+
+const clean = (v, label) => {
+  const s = typeof v === 'string' ? v.trim() : '';
+  if (!s) throw fail(400, `${label} is required`);
+  return s;
+};
+
+const findBus = async (busId) => {
+  const bus = await Bus.findOne({ Bus_ID: busId });
+  if (!bus) throw fail(404, `Bus ${busId} not found`);
+  return bus;
+};
+
+// Combined timetable search: route, departure, destination, date, availableOnly
+exports.search = async (q = {}) => {
+  const filter = {};
+  if (q.route) filter.Route = exact(q.route);
+  if (q.departure) filter.Departure = exact(q.departure);
+  if (q.destination) filter.Destination = exact(q.destination);
+  if (q.date) {
+    if (!DATE_RE.test(q.date)) throw fail(400, 'date must be YYYY-MM-DD');
+    filter.Travel_Date = q.date;
+  }
+  if (q.availableOnly === 'true') {
+    filter.Available_Seats = { $gt: 0 };
+    if (!q.date) filter.Travel_Date = { $gte: today() };
+  }
+  return Bus.find(filter).sort({ Travel_Date: 1, Departure_Time: 1 }).lean();
+};
+
+// One row per route: upcoming trips, fare range, seats left, next departure
+exports.routeSummary = async () =>
+  Bus.aggregate([
+    { $match: { Travel_Date: { $gte: today() } } },
+    {
+      $group: {
+        _id: '$Route',
+        Departure: { $first: '$Departure' },
+        Destination: { $first: '$Destination' },
+        trips: { $sum: 1 },
+        minFare: { $min: '$Fare' },
+        maxFare: { $max: '$Fare' },
+        seatsLeft: { $sum: '$Available_Seats' },
+        nextDeparture: { $min: { $concat: ['$Travel_Date', ' ', '$Departure_Time'] } },
+      },
+    },
+    { $project: { _id: 0, Route: '$_id', Departure: 1, Destination: 1, trips: 1, minFare: 1, maxFare: 1, seatsLeft: 1, nextDeparture: 1 } },
+    { $sort: { Route: 1 } },
+  ]);
+
+// Route management
+exports.updateRoute = async (busId, body = {}) => {
+  const Route = clean(body.Route, 'Route');
+  const Departure = clean(body.Departure, 'Departure');
+  const Destination = clean(body.Destination, 'Destination');
+  if (Departure.toLowerCase() === Destination.toLowerCase()) {
+    throw fail(400, 'Departure and Destination must be different');
+  }
+  const bus = await findBus(busId);
+  Object.assign(bus, { Route, Departure, Destination });
+  return bus.save();
+};
+
+// Schedule management
+exports.updateSchedule = async (busId, body = {}) => {
+  const { Travel_Date, Departure_Time, Arrival_Time } = body;
+  if (!DATE_RE.test(Travel_Date || '')) throw fail(400, 'Travel_Date must be YYYY-MM-DD');
+  if (Travel_Date < today()) throw fail(400, 'Travel_Date cannot be in the past');
+  if (!TIME_RE.test(Departure_Time || '')) throw fail(400, 'Departure_Time must be HH:mm');
+  if (!TIME_RE.test(Arrival_Time || '')) throw fail(400, 'Arrival_Time must be HH:mm');
+  if (Arrival_Time <= Departure_Time) throw fail(400, 'Arrival_Time must be later than Departure_Time');
+  const bus = await findBus(busId);
+  Object.assign(bus, { Travel_Date, Departure_Time, Arrival_Time });
+  return bus.save();
+};
