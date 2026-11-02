@@ -1,267 +1,179 @@
-// busService.js – business logic for searching and managing buses
-const mongoose = require('mongoose');
+/**
+ * Bus service — all business logic for Metro Bus resources.
+ * Controllers stay thin and call into here; this keeps logic reusable (chat bot, admin, future jobs).
+ */
 const Bus = require('../models/Bus');
+const Booking = require('../models/Booking');
+const { ApiError } = require('../utils/response');
+const { escapeRegex } = require('../utils/idGenerator');
+const { todayStr, isValidYMD } = require('../utils/dates');
 
-// Error that carries an HTTP status – the controller turns it into a JSON response
-class ServiceError extends Error {
-  constructor(status, message, details) {
-    super(message);
-    this.status = status;
-    this.details = details;
-  }
-}
-
-const ID_RE = /^[A-Z0-9_-]{3,20}$/;
-const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
-const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
-
-// Fields an operator may change with PUT. Bus_ID is the key, Available_Seats is system-managed.
-const EDITABLE = [
-  'Bus_Name', 'Bus_Type', 'Route', 'Departure', 'Destination',
-  'Travel_Date', 'Departure_Time', 'Arrival_Time', 'Total_Seats', 'Fare', 'Status'
-];
-const SCHEDULE_FIELDS = ['Travel_Date', 'Departure_Time', 'Arrival_Time'];
-
+const ci = (s) => new RegExp(escapeRegex(s.trim()), 'i'); // case-insensitive partial match
 const SORT = { Travel_Date: 1, Departure_Time: 1 };
-const HIDE_ID = '-_id';
 
-/* ---------- small helpers ---------- */
-
-function escapeRegex(text) {
-  return String(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-function normalizeId(value) {
-  const id = String(value == null ? '' : value).trim().toUpperCase();
-  if (!ID_RE.test(id)) {
-    throw new ServiceError(400, 'Invalid Bus_ID – use 3-20 letters, digits, - or _ (e.g. MB1001)');
-  }
-  return id;
-}
-
-function requireDate(value) {
-  const v = String(value == null ? '' : value).trim();
-  const [y, m, d] = v.split('-').map(Number);
-  const dt = new Date(Date.UTC(y, m - 1, d));
-  const real = DATE_RE.test(v) && dt.getUTCFullYear() === y && dt.getUTCMonth() === m - 1 && dt.getUTCDate() === d;
-  if (!real) throw new ServiceError(400, 'Invalid date – use YYYY-MM-DD');
-  return v;
-}
-
-function requireText(value, label) {
-  if (typeof value !== 'string' || !value.trim()) {
-    throw new ServiceError(400, label + ' is required');
-  }
-  if (value.length > 100) throw new ServiceError(400, label + ' is too long');
-  return value.trim();
-}
-
-// Copy only the allowed fields from a request body. Objects/arrays are rejected so that
-// values such as {"$gt": ""} can never reach a query or update.
-function pick(body, fields) {
-  if (!body || typeof body !== 'object' || Array.isArray(body)) {
-    throw new ServiceError(400, 'Request body must be a JSON object');
-  }
-  const out = {};
-  fields.forEach((key) => {
-    if (!Object.prototype.hasOwnProperty.call(body, key) || body[key] === undefined) return;
-    const value = body[key];
-    if (value !== null && typeof value === 'object') {
-      throw new ServiceError(400, key + ' must be a simple value, not an object or array');
-    }
-    out[key] = value;
-  });
+/** Seat labels for a bus with N seats in a 2+2 layout: A1..A4, B1..B4, ... */
+function seatLabels(totalSeats) {
+  const rows = 'ABCDEFGHIJKLM';
+  const out = [];
+  for (let i = 0; i < totalSeats; i++) out.push(rows[Math.floor(i / 4)] + ((i % 4) + 1));
   return out;
 }
 
-// case-insensitive "contains" match, e.g. "colombo" finds "Colombo Fort"
-function containsFilter(value) {
-  return new RegExp(escapeRegex(value), 'i');
-}
-
-/* ---------- create / read ---------- */
-
-async function createBus(body) {
-  const data = pick(body, ['Bus_ID'].concat(EDITABLE, ['Available_Seats']));
-  // a new bus starts with all seats free unless a different number is supplied
-  if (data.Available_Seats === undefined || data.Available_Seats === null || data.Available_Seats === '') {
-    data.Available_Seats = data.Total_Seats;
-  }
-  const bus = await Bus.create(data); // schema validators run here
-  return bus.toJSON();
-}
-
-function listBuses() {
-  return Bus.find().select(HIDE_ID).sort(SORT).lean();
-}
-
-async function getBusById(busId) {
-  const bus = await Bus.findOne({ Bus_ID: normalizeId(busId) }).select(HIDE_ID).lean();
-  if (!bus) throw new ServiceError(404, 'Bus not found');
+async function getBusOr404(busId) {
+  const bus = await Bus.findOne({ Bus_ID: String(busId).toUpperCase() });
+  if (!bus) throw new ApiError(404, `Bus ${busId} not found`);
   return bus;
 }
 
-function findByRoute(route) {
-  return Bus.find({ Route: containsFilter(requireText(route, 'Route')) }).select(HIDE_ID).sort(SORT).lean();
+const confirmedCount = (busId) => Booking.countDocuments({ Bus_ID: busId, Booking_Status: 'Confirmed' });
+
+/* ---------- Queries ---------- */
+
+/** GET /api/buses — optional ?from=&to=&date=&upcoming=true filters (used by the search page). */
+function list({ from, to, date, upcoming } = {}) {
+  const q = {};
+  if (from) q.Departure = ci(from);
+  if (to) q.Destination = ci(to);
+  if (date) q.Travel_Date = date;
+  else if (upcoming === 'true') q.Travel_Date = { $gte: todayStr() };
+  return Bus.find(q).sort(SORT).lean();
 }
 
-function findByDeparture(departure) {
-  return Bus.find({ Departure: containsFilter(requireText(departure, 'Departure')) })
-    .select(HIDE_ID).sort(SORT).lean();
-}
-
-function findByDestination(destination) {
-  return Bus.find({ Destination: containsFilter(requireText(destination, 'Destination')) })
-    .select(HIDE_ID).sort(SORT).lean();
-}
+const findByRoute = (route) => Bus.find({ Route: ci(route) }).sort(SORT).lean();
+const findByDeparture = (dep) => Bus.find({ Departure: ci(dep) }).sort(SORT).lean();
+const findByDestination = (dest) => Bus.find({ Destination: ci(dest) }).sort(SORT).lean();
 
 function findByDate(date) {
-  return Bus.find({ Travel_Date: requireDate(date) }).select(HIDE_ID).sort(SORT).lean();
+  if (!isValidYMD(date)) throw new ApiError(400, 'Date must be a valid YYYY-MM-DD');
+  return Bus.find({ Travel_Date: date }).sort(SORT).lean();
 }
 
-// GET /api/buses/available?from=&to=&date=&time=&minSeats=
-// (departure= / destination= are accepted as aliases of from= / to=)
-function searchAvailable(query) {
-  const q = query || {};
-  const read = (...names) => {
-    for (const name of names) {
-      const v = q[name];
-      if (v === undefined || v === '') continue;
-      if (typeof v !== 'string') throw new ServiceError(400, name + ' must be a single value');
-      return v.trim();
-    }
-    return undefined;
+/** Buses with free seats. Defaults to upcoming trips only. */
+function findAvailable({ from, to, date, minSeats } = {}) {
+  const seats = Math.max(1, parseInt(minSeats, 10) || 1);
+  const q = { Available_Seats: { $gte: seats } };
+  if (from) q.Departure = ci(from);
+  if (to) q.Destination = ci(to);
+  if (date) {
+    if (!isValidYMD(date)) throw new ApiError(400, 'Date must be a valid YYYY-MM-DD');
+    q.Travel_Date = date;
+  } else {
+    q.Travel_Date = { $gte: todayStr() };
+  }
+  return Bus.find(q).sort(SORT).lean();
+}
+
+/** Booked seat labels for a bus on a date. */
+async function getSeatMap(busId, date) {
+  const bus = await getBusOr404(busId);
+  const travelDate = date || bus.Travel_Date;
+  const booked = await Booking.find(
+    { Bus_ID: bus.Bus_ID, Travel_Date: travelDate, Booking_Status: 'Confirmed' },
+    { Seat_Number: 1, _id: 0 }
+  ).lean();
+  return {
+    Bus_ID: bus.Bus_ID,
+    Travel_Date: travelDate,
+    total: bus.Total_Seats,
+    seats: seatLabels(bus.Total_Seats),
+    booked: booked.map((b) => b.Seat_Number).sort(),
+    available: bus.Available_Seats,
+    fare: bus.Fare,
   };
-
-  const from = read('from', 'departure');
-  const to = read('to', 'destination');
-  const date = read('date');
-  const time = read('time');
-  const minSeatsRaw = read('minSeats');
-
-  const minSeats = minSeatsRaw === undefined ? 1 : Number(minSeatsRaw);
-  if (!Number.isInteger(minSeats) || minSeats < 1) {
-    throw new ServiceError(400, 'minSeats must be a whole number of 1 or more');
-  }
-
-  const filter = { Status: 'Available', Available_Seats: { $gte: minSeats } };
-  if (from) filter.Departure = containsFilter(from);
-  if (to) filter.Destination = containsFilter(to);
-  if (date) filter.Travel_Date = requireDate(date);
-  if (time) {
-    if (!TIME_RE.test(time)) throw new ServiceError(400, 'Invalid time – use HH:mm');
-    filter.Departure_Time = time;
-  }
-  return Bus.find(filter).select(HIDE_ID).sort(SORT).lean();
 }
 
-// distinct places – used for the autocomplete lists
-async function getLocations() {
-  const [departures, destinations] = await Promise.all([
-    Bus.distinct('Departure'),
-    Bus.distinct('Destination')
+/** Top routes by number of confirmed bookings, with cheapest upcoming fare + next departure. */
+async function popularRoutes(limit = 6) {
+  const today = todayStr();
+  const routes = await Bus.aggregate([
+    { $match: { Travel_Date: { $gte: today } } },
+    { $sort: { Travel_Date: 1, Departure_Time: 1 } },
+    {
+      $lookup: {
+        from: 'bookings',
+        let: { id: '$Bus_ID' },
+        pipeline: [{ $match: { $expr: { $and: [{ $eq: ['$Bus_ID', '$$id'] }, { $eq: ['$Booking_Status', 'Confirmed'] }] } } }, { $count: 'n' }],
+        as: 'b',
+      },
+    },
+    {
+      $group: {
+        _id: { from: '$Departure', to: '$Destination' },
+        Route: { $first: '$Route' },
+        bookings: { $sum: { $ifNull: [{ $arrayElemAt: ['$b.n', 0] }, 0] } },
+        minFare: { $min: '$Fare' },
+        seats: { $sum: '$Available_Seats' },
+        trips: { $sum: 1 },
+        next: { $first: { Bus_ID: '$Bus_ID', Travel_Date: '$Travel_Date', Departure_Time: '$Departure_Time', Arrival_Time: '$Arrival_Time', Available_Seats: '$Available_Seats', Fare: '$Fare', Bus_Name: '$Bus_Name' } },
+      },
+    },
+    { $sort: { bookings: -1, trips: -1 } },
+    { $limit: Math.min(Number(limit) || 6, 20) },
+    { $project: { _id: 0, Departure: '$_id.from', Destination: '$_id.to', Route: 1, bookings: 1, minFare: 1, seats: 1, trips: 1, next: 1 } },
   ]);
-  return Array.from(new Set(departures.concat(destinations))).sort((a, b) => a.localeCompare(b));
+  return routes;
 }
 
-/* ---------- update ---------- */
-
-// Applies already-picked changes to a bus.
-// Available_Seats is system-managed: when the capacity changes, the same difference is applied
-// to Available_Seats using an atomic $inc, so a booking made at the same moment is never lost.
-async function applyChanges(busId, changes) {
-  const id = normalizeId(busId);
-  const bus = await Bus.findOne({ Bus_ID: id });
-  if (!bus) throw new ServiceError(404, 'Bus not found');
-
-  const oldTotal = bus.Total_Seats;
-  const oldAvailable = bus.Available_Seats;
-  const booked = oldTotal - oldAvailable;
-
-  bus.set(changes);
-
-  let delta = 0;
-  if (changes.Total_Seats !== undefined && Number.isInteger(bus.Total_Seats)) {
-    delta = bus.Total_Seats - oldTotal;
-    if (bus.Total_Seats < booked) {
-      throw new ServiceError(409, 'Total_Seats cannot be less than the ' + booked + ' seats already booked');
-    }
-    bus.Available_Seats = oldAvailable + delta;
-  }
-
-  await bus.validate(); // throws a ValidationError if any rule is broken
-
-  const $set = {};
-  Object.keys(changes).forEach((key) => {
-    if (key !== 'Total_Seats') $set[key] = bus.get(key); // cast + trimmed value
-  });
-  const update = {};
-  if (Object.keys($set).length) update.$set = $set;
-  if (delta !== 0) update.$inc = { Total_Seats: delta, Available_Seats: delta };
-  if (!Object.keys(update).length) return getBusById(id); // nothing actually changed
-
-  const filter = { Bus_ID: id };
-  if (delta !== 0) {
-    filter.Total_Seats = oldTotal;
-    if (delta < 0) filter.Available_Seats = { $gte: -delta };
-  }
-
-  const updated = await Bus.findOneAndUpdate(filter, update, { new: true }).select(HIDE_ID).lean();
-  if (!updated) {
-    if (!(await Bus.exists({ Bus_ID: id }))) throw new ServiceError(404, 'Bus not found');
-    throw new ServiceError(409, 'Seats changed while updating (a booking was made) – please try again');
-  }
-  return updated;
+/** Distinct place names (for autocomplete). */
+async function locations() {
+  const [deps, dests] = await Promise.all([Bus.distinct('Departure'), Bus.distinct('Destination')]);
+  return [...new Set([...deps, ...dests])].sort();
 }
 
-async function updateBus(busId, body) {
-  const changes = pick(body, EDITABLE);
-  if (body && body.Bus_ID !== undefined && String(body.Bus_ID).trim().toUpperCase() !== normalizeId(busId)) {
-    throw new ServiceError(400, 'Bus_ID cannot be changed');
-  }
-  if (!Object.keys(changes).length) throw new ServiceError(400, 'No updatable fields were supplied');
-  return applyChanges(busId, changes);
+/* ---------- Commands ---------- */
+
+async function create(data) {
+  const exists = await Bus.exists({ Bus_ID: String(data.Bus_ID).toUpperCase() });
+  if (exists) throw new ApiError(409, `Bus ${data.Bus_ID} already exists`);
+  const doc = { ...data };
+  if (doc.Available_Seats === undefined || doc.Available_Seats === '') doc.Available_Seats = doc.Total_Seats ?? 50;
+  return (await Bus.create(doc)).toObject();
 }
 
-async function updateSchedule(busId, body) {
-  const changes = pick(body, SCHEDULE_FIELDS);
-  if (!Object.keys(changes).length) {
-    throw new ServiceError(400, 'Supply at least one of: ' + SCHEDULE_FIELDS.join(', '));
-  }
-  return applyChanges(busId, changes);
+/**
+ * Full update of bus details. Bus_ID is immutable.
+ * Available_Seats is system-managed once bookings exist: it is recalculated as Total_Seats − confirmed bookings.
+ */
+async function update(busId, data) {
+  const bus = await getBusOr404(busId);
+  const { Bus_ID, _id, createdAt, updatedAt, ...changes } = data; // eslint-disable-line no-unused-vars
+  const booked = await confirmedCount(bus.Bus_ID);
+  const prevDate = bus.Travel_Date;
+
+  Object.assign(bus, changes);
+  if (bus.Total_Seats < booked) throw new ApiError(409, `Total_Seats cannot be below ${booked} (seats already booked)`);
+  if (booked > 0 || changes.Available_Seats === undefined) bus.Available_Seats = bus.Total_Seats - booked;
+
+  await bus.save();
+  if (bus.Travel_Date !== prevDate) await Booking.updateMany({ Bus_ID: bus.Bus_ID }, { Travel_Date: bus.Travel_Date });
+  return bus.toObject();
 }
 
-/* ---------- delete ---------- */
+/** Update only the schedule (date / times). Existing bookings follow the new date. */
+async function updateSchedule(busId, { Travel_Date, Departure_Time, Arrival_Time }) {
+  const bus = await getBusOr404(busId);
+  const prevDate = bus.Travel_Date;
+  if (Travel_Date !== undefined) bus.Travel_Date = Travel_Date;
+  if (Departure_Time !== undefined) bus.Departure_Time = Departure_Time;
+  if (Arrival_Time !== undefined) bus.Arrival_Time = Arrival_Time;
+  await bus.save();
+  if (bus.Travel_Date !== prevDate) await Booking.updateMany({ Bus_ID: bus.Bus_ID }, { Travel_Date: bus.Travel_Date });
+  return bus.toObject();
+}
 
-async function deleteBus(busId) {
-  const id = normalizeId(busId);
-  const bus = await Bus.findOne({ Bus_ID: id }).select(HIDE_ID).lean();
-  if (!bus) throw new ServiceError(404, 'Bus not found');
-
-  // The Booking model belongs to another module; use it if it has been loaded.
-  const Booking = mongoose.models.Booking;
-  if (Booking) {
-    const confirmed = await Booking.countDocuments({ Bus_ID: id, Booking_Status: 'Confirmed' });
-    if (confirmed > 0) {
-      throw new ServiceError(409, 'Bus has ' + confirmed + ' confirmed booking(s) – cancel them before deleting the bus');
-    }
-  }
-  await Bus.deleteOne({ Bus_ID: id });
-  return bus;
+/**
+ * Delete a bus. Policy: BLOCK (409) while the bus has Confirmed bookings —
+ * an operator must cancel them first. Cancelled booking history is kept.
+ */
+async function remove(busId) {
+  const bus = await getBusOr404(busId);
+  const active = await confirmedCount(bus.Bus_ID);
+  if (active > 0) throw new ApiError(409, `Bus ${bus.Bus_ID} has ${active} confirmed booking(s). Cancel them before deleting.`);
+  await bus.deleteOne();
+  return bus.toObject();
 }
 
 module.exports = {
-  ServiceError,
-  createBus,
-  listBuses,
-  getBusById,
-  findByRoute,
-  findByDeparture,
-  findByDestination,
-  findByDate,
-  searchAvailable,
-  getLocations,
-  updateBus,
-  updateSchedule,
-  deleteBus
+  seatLabels, getBusOr404, list, findByRoute, findByDeparture, findByDestination, findByDate,
+  findAvailable, getSeatMap, popularRoutes, locations, create, update, updateSchedule, remove,
 };

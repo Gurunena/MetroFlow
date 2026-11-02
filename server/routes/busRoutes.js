@@ -1,22 +1,33 @@
-// REST endpoints for Member 1 – Bus Management.
-const express = require('express');
-const controller = require('../controllers/busController');
+/**
+ * /api/buses
+ * NOTE: static paths (/available, /route/…, /date/…) are declared BEFORE /:busId
+ * so Express does not treat "available" as a Bus_ID.
+ */
+const router = require('express').Router();
+const c = require('../controllers/busController');
+const { requireAdmin } = require('../middleware/auth');
+const v = require('../middleware/validate');
 
-const router = express.Router();
+// Helpers
+router.get('/popular', c.popular);
+router.get('/locations', c.locations);
 
-// Specific paths must be declared before /:busId.
-router.get('/available', controller.getAvailable);
-router.get('/locations', controller.getLocations);
-router.get('/route/:route', controller.getByRoute);
-router.get('/departure/:departure', controller.getByDeparture);
-router.get('/destination/:destination', controller.getByDestination);
-router.get('/date/:date', controller.getByDate);
+// Search services
+router.get('/available', c.available);                                  // 8
+router.get('/route/:route', c.byRoute);                                 // 4
+router.get('/departure/:departure', c.byDeparture);                     // 5
+router.get('/destination/:destination', c.byDestination);               // 6
+router.get('/date/:date', v.validateDateParam, c.byDate);               // 7
 
-router.get('/', controller.getAllBuses);
-router.post('/', controller.createBus);
-router.get('/:busId', controller.getBusById);
-router.put('/:busId', controller.updateBus);
-router.patch('/:busId/schedule', controller.updateSchedule);
-router.delete('/:busId', controller.deleteBus);
+// Collection
+router.get('/', c.list);                                                // 2
+router.post('/', requireAdmin, v.validateBusCreate, c.create);          // 1
+
+// Single bus
+router.get('/:busId/seats', c.seats);
+router.patch('/:busId/schedule', requireAdmin, v.validateSchedule, c.updateSchedule); // 10
+router.get('/:busId', c.getById);                                       // 3
+router.put('/:busId', requireAdmin, v.validateBusUpdate, c.update);     // 9
+router.delete('/:busId', requireAdmin, c.remove);                       // 11
 
 module.exports = router;
