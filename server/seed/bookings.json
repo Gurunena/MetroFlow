@@ -1,1 +1,8 @@
-[]
+[
+  { "Passenger_Name": "Amara Perera",     "Phone": "+94771234567", "Email": "amara.perera@example.lk",  "Bus_ID": "MB1001", "_dayOffset": 0, "Seat_Number": "B2", "Boarding_Point": "Colombo", "Destination": "Kandy",       "Fare": 1850, "Booking_Status": "Confirmed" },
+  { "Passenger_Name": "Nuwan Silva",      "Phone": "0772345678",   "Email": "nuwan.silva@example.lk",   "Bus_ID": "MB1001", "_dayOffset": 0, "Seat_Number": "B3", "Boarding_Point": "Colombo", "Destination": "Kandy",       "Fare": 1850, "Booking_Status": "Confirmed" },
+  { "Passenger_Name": "Dilani Fernando",  "Phone": "+94763456789", "Email": "dilani.f@example.lk",      "Bus_ID": "MB1002", "_dayOffset": 0, "Seat_Number": "C1", "Boarding_Point": "Colombo", "Destination": "Galle",       "Fare": 1450, "Booking_Status": "Confirmed" },
+  { "Passenger_Name": "Kasun Bandara",    "Phone": "0714567890",   "Email": "kasun.b@example.lk",       "Bus_ID": "MB1003", "_dayOffset": 1, "Seat_Number": "A1", "Boarding_Point": "Colombo", "Destination": "Jaffna",      "Fare": 3200, "Booking_Status": "Confirmed" },
+  { "Passenger_Name": "Thilini Jayasuriya","Phone": "+94785678901","Email": "thilini.j@example.lk",     "Bus_ID": "MB1004", "_dayOffset": 1, "Seat_Number": "D4", "Boarding_Point": "Kandy",   "Destination": "Nuwara Eliya","Fare": 1250, "Booking_Status": "Confirmed" },
+  { "Passenger_Name": "Ruwan Gunaratne",  "Phone": "0756789012",   "Email": "ruwan.g@example.lk",       "Bus_ID": "MB1006", "_dayOffset": 0, "Seat_Number": "E2", "Boarding_Point": "Galle",   "Destination": "Matara",      "Fare": 620,  "Booking_Status": "Cancelled" }
+]
