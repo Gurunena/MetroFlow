@@ -39,9 +39,10 @@
           </ul>
         </div>
 
+        <!-- Swapped for #authUser by MetroFlowAuth.paintNavbar() when signed in -->
         <div id="authGuest" class="d-flex gap-2">
-          <button class="btn mf-btn-outline-red btn-sm px-3" type="button" data-auth="login">Login</button>
-          <button class="btn mf-btn-red btn-sm px-3" type="button" data-auth="register">Sign Up</button>
+          <a class="btn mf-btn-outline-red btn-sm px-3" href="login.html" data-auth="login">Login</a>
+          <a class="btn mf-btn-red btn-sm px-3" href="login.html?mode=signup" data-auth="register">Sign Up</a>
         </div>
 
         <div id="authUser" class="dropdown d-none">
