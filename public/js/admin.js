@@ -1,498 +1,275 @@
-// admin.js – front-end logic for the admin dashboard (Bus Management)
-// jQuery uses are labelled "jQuery Use #n" (see the list in README.md).
-(function ($) {
-  'use strict';
+/** admin.js — operator dashboard: login gate, KPIs, bus CRUD, schedules, booking management (all Ajax, no reloads). */
+/* global $, Api, MF, bootstrap */
+$(function () {
+  const busModal = new bootstrap.Modal('#busModal');
+  const schedModal = new bootstrap.Modal('#schedModal');
+  const confirmModal = new bootstrap.Modal('#confirmModal');
+  const bkModal = new bootstrap.Modal('#bkModal');
+  let buses = [];
+  let bookings = [];
+  let busSort = { key: 'Travel_Date', dir: 1 };
+  let bookingLimit = 50;
+  let confirmAction = null;
+  let editingBus = null;
 
-  var API = '/api/buses';
-  var LOGIN_URL = '/api/auth/admin/login';
-  var TOKEN_KEY = 'mf_admin_token';
-
-  var state = {
-    all: [],      // every bus (used for the summary tiles)
-    buses: [],    // buses currently shown (all, or a search result)
-    label: 'All buses'
-  };
-  var modals = {};
-  var MODAL_IDS = { bus: '#busModal', schedule: '#scheduleModal', delete: '#deleteModal', login: '#loginModal' };
-  var resumeModal = null; // form modal to re-open after the operator signs in
-
-  /* ---------- helpers ---------- */
-
-  // escape API data before it is put into HTML
-  function esc(value) {
-    return String(value == null ? '' : value)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  /* ---------------- Auth gate ---------------- */
+  const token = () => { try { return sessionStorage.getItem('mf_admin_token'); } catch (e) { return null; } };
+  function showGate(loggedIn) {
+    $('#loginGate').toggleClass('d-none', loggedIn);
+    $('#dashboard').toggleClass('d-none', !loggedIn);
+    if (loggedIn) { $('#adminName').text(MF.store.get('mf_admin_user', 'admin', true)); loadAll(); }
   }
-
-  function money(n) {
-    return Number(n).toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
-
-  function getToken() {
-    try { return window.localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
-  }
-  function setToken(token) {
-    try {
-      if (token) window.localStorage.setItem(TOKEN_KEY, token);
-      else window.localStorage.removeItem(TOKEN_KEY);
-    } catch (e) { /* storage blocked – the token just lasts until reload */ }
-  }
-
-  // jQuery Use #5 – animation: toast messages fade in, wait, fade out
-  function toast(message, type) {
-    var $t = $('<div class="mf-toast"></div>')
-      .addClass('mf-toast-' + (type || 'info'))
-      .text(message)
-      .appendTo('#toastBox');
-    $t.fadeIn(200).delay(3200).fadeOut(400, function () { $t.remove(); });
-  }
-
-  function errorText(xhr) {
-    if (xhr.status === 0) return 'Cannot reach the server – is it running?';
-    var body = xhr.responseJSON;
-    if (body && body.error) {
-      if (body.details && body.details.length > 1) {
-        return body.details.map(function (d) { return d.message; }).join(' • ');
-      }
-      return body.error;
-    }
-    return 'Request failed (' + xhr.status + ')';
-  }
-
-  function showModal(name) { modals[name].show(); }
-  function hideModal(name) { modals[name].hide(); }
-
-  // Bootstrap supports one open modal at a time: close `from` first, then open `to`
-  function swapModal(from, to) {
-    var $from = $(MODAL_IDS[from]);
-    if ($from.hasClass('show')) {
-      $from.one('hidden.bs.modal', function () { showModal(to); });
-      hideModal(from);
-    } else {
-      showModal(to);
-    }
-  }
-
-  /* ---------- Ajax ---------- */
-
-  // jQuery Use #2 – Ajax: every call sends / receives JSON
-  function request(method, url, payload) {
-    var opts = { url: url, method: method, dataType: 'json', headers: {} };
-    if (payload !== undefined) {
-      opts.contentType = 'application/json';
-      opts.data = JSON.stringify(payload);
-    }
-    var token = getToken();
-    if (token) opts.headers.Authorization = 'Bearer ' + token;
-    return $.ajax(opts);
-  }
-
-  // failure handler for write operations; `from` is the modal that was open ('bus', 'schedule' or 'delete')
-  function writeFailed(xhr, from) {
-    if (xhr.status === 401 || xhr.status === 403) {
-      toast('Please sign in as an operator to make changes.', 'error');
-      resumeModal = (from === 'bus' || from === 'schedule') ? from : null; // keep the typed data
-      swapModal(from, 'login');
-      return;
-    }
-    toast(errorText(xhr), 'error');
-  }
-
-  /* ---------- rendering ---------- */
-
-  // jQuery Use #6 – live filtering without reloading: $.grep over the loaded buses
-  function visibleBuses() {
-    var q = $.trim($('#liveFilter').val()).toLowerCase();
-    var type = $('#typeFilter').val();
-    var status = $('#statusFilter').val();
-    return $.grep(state.buses, function (b) {
-      if (type && b.Bus_Type !== type) return false;
-      if (status && b.Status !== status) return false;
-      if (!q) return true;
-      var haystack = [b.Bus_ID, b.Bus_Name, b.Route, b.Departure, b.Destination].join(' ').toLowerCase();
-      return haystack.indexOf(q) !== -1;
-    });
-  }
-
-  function seatClass(b) {
-    if (!b.Available_Seats) return 'is-full';
-    return b.Available_Seats / b.Total_Seats <= 0.2 ? 'is-low' : '';
-  }
-
-  function rowHtml(b) {
-    var pct = b.Total_Seats ? Math.round((b.Available_Seats / b.Total_Seats) * 100) : 0;
-    var id = esc(b.Bus_ID);
-    var badge = b.Status === 'Available' ? 'text-bg-success' : 'text-bg-secondary';
-    return '<tr>' +
-      '<td class="fw-semibold">' + id + '</td>' +
-      '<td>' + esc(b.Bus_Name) + '<div class="small text-muted">' + esc(b.Bus_Type) + '</div></td>' +
-      '<td>' + esc(b.Route) + '<div class="small text-muted">' + esc(b.Departure) + ' → ' + esc(b.Destination) + '</div></td>' +
-      '<td class="num">' + esc(b.Travel_Date) + '<div class="small text-muted">' + esc(b.Departure_Time) + ' – ' + esc(b.Arrival_Time) + '</div></td>' +
-      '<td class="num">' + esc(b.Available_Seats) + ' / ' + esc(b.Total_Seats) +
-        '<div class="seat-bar-wrap"><div class="seat-bar ' + seatClass(b) + '" data-pct="' + pct + '"></div></div></td>' +
-      '<td class="num text-end">' + money(b.Fare) + '</td>' +
-      '<td><span class="badge ' + badge + '">' + esc(b.Status) + '</span></td>' +
-      '<td class="text-end text-nowrap mf-actions">' +
-        '<button type="button" class="btn btn-sm btn-outline-primary js-edit" data-id="' + id + '" aria-label="Edit ' + id + '">Edit</button> ' +
-        '<button type="button" class="btn btn-sm btn-outline-secondary js-schedule" data-id="' + id + '" aria-label="Update schedule of ' + id + '">Schedule</button> ' +
-        '<button type="button" class="btn btn-sm btn-outline-danger js-delete" data-id="' + id + '" aria-label="Delete ' + id + '">Delete</button>' +
-      '</td></tr>';
-  }
-
-  // jQuery Use #3 – dynamic DOM building: the table body is rebuilt from the data
-  function render() {
-    var list = visibleBuses();
-    var $body = $('#busTableBody').empty();
-
-    if (!list.length) {
-      var msg = state.buses.length ? 'No buses match the filter.' : 'No buses found.';
-      $body.append('<tr><td colspan="8" class="text-center text-muted py-4">' + msg + '</td></tr>');
-    } else {
-      $body.html($.map(list, rowHtml).join(''));
-      // set the bar widths with jQuery (data-pct → CSS width)
-      $body.find('.seat-bar').each(function () {
-        $(this).css('width', $(this).data('pct') + '%');
-      });
-    }
-    $('#busCount').text(list.length);
-    $('#resultLabel').text(state.label);
-  }
-
-  // jQuery Use #5 – animation: summary numbers count up to their new value
-  function animateNumber($el, to) {
-    var from = parseInt($el.text().replace(/,/g, ''), 10) || 0;
-    $({ n: from }).animate({ n: to }, {
-      duration: 400,
-      step: function () { $el.text(Math.round(this.n).toLocaleString('en-US')); },
-      complete: function () { $el.text(to.toLocaleString('en-US')); }
-    });
-  }
-
-  function updateStats() {
-    var available = $.grep(state.all, function (b) { return b.Status === 'Available'; }).length;
-    var seats = 0;
-    $.each(state.all, function (_, b) { seats += b.Status === 'Available' ? Number(b.Available_Seats) || 0 : 0; });
-    animateNumber($('#statTotal'), state.all.length);
-    animateNumber($('#statAvailable'), available);
-    animateNumber($('#statUnavailable'), state.all.length - available);
-    animateNumber($('#statSeats'), seats);
-  }
-
-  /* ---------- loading data ---------- */
-
-  function showLoading() {
-    $('#busTableBody').html('<tr><td colspan="8" class="text-center text-muted py-4">Loading…</td></tr>');
-  }
-
-  // GET a list of buses (all buses by default) and show it
-  function loadBuses(url, label) {
-    showLoading();
-    var isAll = !url || url === API;
-    return request('GET', url || API)
-      .done(function (res) {
-        var data = res.data;
-        state.buses = Array.isArray(data) ? data : (data ? [data] : []);
-        state.label = label || 'All buses';
-        if (isAll) { state.all = state.buses.slice(); updateStats(); }
-        render();
+  $('#adminLogin').on('submit', function (e) {
+    e.preventDefault();
+    const body = MF.formToJSON($(this));
+    const userOk = MF.setValid($('#aUser'), !!body.username);
+    const passOk = MF.setValid($('#aPass'), !!body.password);
+    if (!userOk || !passOk) return;
+    Api.auth.adminLogin(body)
+      .done((res) => {
+        try { sessionStorage.setItem('mf_admin_token', res.data.token); } catch (err) { /* ignore */ }
+        MF.store.set('mf_admin_user', res.data.username, true);
+        MF.toast('Welcome, ' + res.data.username);
+        showGate(true);
       })
-      .fail(function (xhr) {
-        if (xhr.status === 404) { // e.g. no bus with that ID
-          state.buses = [];
-          state.label = label || 'No result';
-          render();
-          toast(errorText(xhr), 'info');
-          return;
-        }
-        $('#busTableBody').html('<tr><td colspan="8" class="text-center text-danger py-4">' + esc(errorText(xhr)) + '</td></tr>');
-        toast(errorText(xhr), 'error');
-      });
-  }
-
-  // fills the From / To / Departure inputs with the places already in the database
-  function loadLocations() {
-    request('GET', API + '/locations').done(function (res) {
-      var options = $.map(res.data || [], function (place) {
-        return '<option value="' + esc(place) + '"></option>';
-      });
-      $('#locationList').html(options.join(''));
-    });
-  }
-
-  function refreshAfterWrite() {
-    $('#liveFilter').val('');
-    loadBuses();
-    loadLocations();
-  }
-
-  /* ---------- forms ---------- */
-
-  // jQuery Use #4 – form serialisation: .serializeArray() → JSON object
-  function formToObject($form) {
-    var obj = {};
-    $.each($form.serializeArray(), function (_, field) { obj[field.name] = $.trim(field.value); });
-    return obj;
-  }
-
-  function resetValidation($form) {
-    $form.removeClass('was-validated');
-    $form.find('input, select').each(function () { this.setCustomValidity(''); });
-  }
-
-  // checks the rules that need two fields; returns true when the form is valid
-  function checkForm($form, rules) {
-    var form = $form[0];
-    resetValidation($form);
-
-    if (rules.times) {
-      var dep = $form.find(rules.times[0]).val();
-      var arr = $form.find(rules.times[1]);
-      if (dep && arr.val() && arr.val() <= dep) arr[0].setCustomValidity('Arrival time must be after departure time');
-    }
-    if (rules.places) {
-      var from = $.trim($form.find('[name="Departure"]').val()).toLowerCase();
-      var toField = $form.find('[name="Destination"]');
-      if (from && from === $.trim(toField.val()).toLowerCase()) toField[0].setCustomValidity('Destination must be different from departure');
-    }
-    if (rules.seats) {
-      var total = Number($form.find('[name="Total_Seats"]').val());
-      var availField = $form.find('[name="Available_Seats"]');
-      if (availField.val() !== '' && Number(availField.val()) > total) availField[0].setCustomValidity('Available seats cannot be more than capacity');
-    }
-
-    if (!form.checkValidity()) {
-      $form.addClass('was-validated');
-      form.reportValidity();
-      return false;
-    }
-    return true;
-  }
-
-  function busy($btn, isBusy, text) {
-    if (isBusy) { $btn.data('label', $btn.text()).prop('disabled', true).text(text); }
-    else { $btn.prop('disabled', false).text($btn.data('label') || $btn.text()); }
-  }
-
-  function openAdd() {
-    var $form = $('#busForm');
-    $form[0].reset();
-    resetValidation($form);
-    $('#editingId').val('');
-    $('#busModalTitle').text('Add bus');
-    $('#fBusId').prop('readonly', false);
-    $('#fAvailable').prop('readonly', false).attr('placeholder', 'Same as capacity');
-    $('#availableHelp').text('Leave empty to start with all seats free.');
-    showModal('bus');
-  }
-
-  function openEdit(id) {
-    request('GET', API + '/' + encodeURIComponent(id)).done(function (res) {
-      var bus = res.data;
-      var $form = $('#busForm');
-      $form[0].reset();
-      resetValidation($form);
-      $.each(bus, function (key, value) { $form.find('[name="' + key + '"]').val(value); });
-      $('#editingId').val(bus.Bus_ID);
-      $('#busModalTitle').text('Update bus – ' + bus.Bus_ID);
-      $('#fBusId').prop('readonly', true);
-      $('#fAvailable').prop('readonly', true).attr('placeholder', '');
-      $('#availableHelp').text('Managed by the system (capacity minus booked seats).');
-      showModal('bus');
-    }).fail(function (xhr) { toast(errorText(xhr), 'error'); });
-  }
-
-  function openSchedule(id) {
-    request('GET', API + '/' + encodeURIComponent(id)).done(function (res) {
-      var bus = res.data;
-      var $form = $('#scheduleForm');
-      resetValidation($form);
-      $('#scheduleId').val(bus.Bus_ID);
-      $('#scheduleModalTitle').text('Update schedule – ' + bus.Bus_ID);
-      $('#scheduleInfo').text(bus.Bus_Name + ' · ' + bus.Route);
-      $('#sDate').val(bus.Travel_Date);
-      $('#sDepTime').val(bus.Departure_Time);
-      $('#sArrTime').val(bus.Arrival_Time);
-      showModal('schedule');
-    }).fail(function (xhr) { toast(errorText(xhr), 'error'); });
-  }
-
-  function openDelete(id) {
-    var bus = $.grep(state.buses, function (b) { return b.Bus_ID === id; })[0];
-    $('#confirmDeleteBtn').data('id', id);
-    $('#deleteText').text('Delete bus ' + id + (bus ? ' (' + bus.Bus_Name + ', ' + bus.Travel_Date + ')' : '') + '? This cannot be undone.');
-    showModal('delete');
-  }
-
-  /* ---------- search ---------- */
-
-  var FIND_PATHS = { route: '/route/', departure: '/departure/', destination: '/destination/', date: '/date/' };
-  var FIND_HINTS = {
-    busId: 'e.g. MB1001', route: 'e.g. Colombo - Makubura', departure: 'e.g. Colombo Fort',
-    destination: 'e.g. Makubura', date: ''
+      .fail((err) => { MF.toast(err.message, 'error'); $('#aPass').val('').addClass('is-invalid'); });
+  });
+  $('#adminLogout').on('click', () => {
+    try { sessionStorage.removeItem('mf_admin_token'); } catch (e) { /* ignore */ }
+    showGate(false);
+  });
+  // Any 401 from an admin call → back to login
+  const guard = (err) => {
+    if (err.status === 401) { MF.toast('Session expired — please log in again.', 'error'); try { sessionStorage.removeItem('mf_admin_token'); } catch (e) { /* ignore */ } showGate(false); return true; }
+    return false;
   };
 
-  function runFind() {
-    var mode = $('#findMode').val();
-    var value = $.trim($('#findValue').val());
-    if (!value) { toast('Enter a value to search for.', 'info'); $('#findValue').trigger('focus'); return; }
+  /* ---------------- Loading ---------------- */
+  function loadAll() { loadStats(); loadBuses(); loadBookings(); }
+  $('#refreshAll').on('click', loadAll);
 
-    var url = mode === 'busId'
-      ? API + '/' + encodeURIComponent(value)
-      : API + FIND_PATHS[mode] + encodeURIComponent(value);
-    var names = { busId: 'Bus ID', route: 'Route', departure: 'Departure', destination: 'Destination', date: 'Travel date' };
-    loadBuses(url, names[mode] + ': ' + value);
-  }
-
-  function runAvailable() {
-    var params = {};
-    $.each(formToObject($('#availableForm')), function (key, value) { if (value !== '') params[key] = value; });
-    var summary = $.map(params, function (v, k) { return k + ' ' + v; }).join(', ');
-    loadBuses(API + '/available' + ($.isEmptyObject(params) ? '' : '?' + $.param(params)),
-      'Available buses' + (summary ? ' (' + summary + ')' : ''));
-  }
-
-  /* ---------- operator login ---------- */
-
-  function updateAuthUi() {
-    var signedIn = !!getToken();
-    $('#authBadge').text(signedIn ? 'Operator signed in' : 'Not signed in')
-      .toggleClass('text-bg-success', signedIn).toggleClass('text-bg-secondary', !signedIn);
-    $('#loginBtn').toggleClass('d-none', signedIn);
-    $('#logoutBtn').toggleClass('d-none', !signedIn);
-  }
-
-  /* ---------- events ---------- */
-
-  function bindEvents() {
-    // jQuery Use #1 – events and selection (delegated handlers for the buttons inside the table)
-    $('#busTableBody')
-      .on('click', '.js-edit', function () { openEdit($(this).data('id')); })
-      .on('click', '.js-schedule', function () { openSchedule($(this).data('id')); })
-      .on('click', '.js-delete', function () { openDelete($(this).data('id')); });
-
-    $('#addBusBtn').on('click', openAdd);
-
-    // live filter
-    $('#liveFilter').on('input', render);
-    $('#typeFilter, #statusFilter').on('change', render);
-
-    // search forms
-    $('#findForm').on('submit', function (e) { e.preventDefault(); runFind(); });
-    $('#showAllBtn').on('click', function () { $('#findValue').val(''); loadBuses(); });
-    $('#findMode').on('change', function () {
-      var mode = $(this).val();
-      $('#findValue').attr('type', mode === 'date' ? 'date' : 'text')
-        .attr('placeholder', FIND_HINTS[mode]).val('');
-    });
-    $('#availableForm').on('submit', function (e) { e.preventDefault(); runAvailable(); });
-    $('#resetAvailableBtn').on('click', function () { $('#availableForm')[0].reset(); loadBuses(); });
-
-    // jQuery Use #5 – animation: slide the search panel away and back
-    $('#toggleSearchBtn').on('click', function () {
-      var $btn = $(this);
-      $('#searchBody').slideToggle(200, function () {
-        var open = $(this).is(':visible');
-        $btn.text(open ? 'Hide' : 'Show').attr('aria-expanded', open);
-      });
-    });
-
-    // add / update bus
-    $('#busForm').on('submit', function (e) {
-      e.preventDefault();
-      var $form = $(this);
-      var editingId = $('#editingId').val();
-      var isEdit = editingId !== '';
-      if (!checkForm($form, { times: ['[name="Departure_Time"]', '[name="Arrival_Time"]'], places: true, seats: !isEdit })) return;
-
-      var data = formToObject($form);
-      if (isEdit) { delete data.Bus_ID; delete data.Available_Seats; }
-      else if (data.Available_Seats === '') delete data.Available_Seats;
-
-      var $btn = $('#saveBusBtn');
-      busy($btn, true, 'Saving…');
-      request(isEdit ? 'PUT' : 'POST', isEdit ? API + '/' + encodeURIComponent(editingId) : API, data)
-        .done(function (res) {
-          hideModal('bus');
-          toast(res.message || 'Saved', 'success');
-          refreshAfterWrite();
-        })
-        .fail(function (xhr) { writeFailed(xhr, 'bus'); })
-        .always(function () { busy($btn, false); });
-    });
-
-    // update schedule
-    $('#scheduleForm').on('submit', function (e) {
-      e.preventDefault();
-      var $form = $(this);
-      if (!checkForm($form, { times: ['[name="Departure_Time"]', '[name="Arrival_Time"]'] })) return;
-
-      var $btn = $('#saveScheduleBtn');
-      busy($btn, true, 'Saving…');
-      request('PATCH', API + '/' + encodeURIComponent($('#scheduleId').val()) + '/schedule', formToObject($form))
-        .done(function (res) {
-          hideModal('schedule');
-          toast(res.message || 'Schedule updated', 'success');
-          refreshAfterWrite();
-        })
-        .fail(function (xhr) { writeFailed(xhr, 'schedule'); })
-        .always(function () { busy($btn, false); });
-    });
-
-    // delete bus
-    $('#confirmDeleteBtn').on('click', function () {
-      var id = $(this).data('id');
-      var $btn = $(this);
-      busy($btn, true, 'Deleting…');
-      request('DELETE', API + '/' + encodeURIComponent(id))
-        .done(function (res) {
-          hideModal('delete');
-          toast(res.message || 'Bus deleted', 'success');
-          refreshAfterWrite();
-        })
-        .fail(function (xhr) { writeFailed(xhr, 'delete'); if (xhr.status !== 401 && xhr.status !== 403) hideModal('delete'); })
-        .always(function () { busy($btn, false); });
-    });
-
-    // operator login / logout
-    $('#loginBtn').on('click', function () { resumeModal = null; showModal('login'); });
-    $('#logoutBtn').on('click', function () { setToken(''); updateAuthUi(); toast('Signed out', 'info'); });
-    $('#loginForm').on('submit', function (e) {
-      e.preventDefault();
-      var $form = $(this);
-      if (!checkForm($form, {})) return;
-      var $btn = $('#loginSubmitBtn');
-      busy($btn, true, 'Signing in…');
-      $.ajax({ url: LOGIN_URL, method: 'POST', contentType: 'application/json', dataType: 'json',
-               data: JSON.stringify(formToObject($form)) })
-        .done(function (res) {
-          var token = res && (res.token || (res.data && res.data.token));
-          if (!token) { toast('Login worked but no token was returned.', 'error'); return; }
-          setToken(token);
-          updateAuthUi();
-          $form[0].reset();
-          var resume = resumeModal;
-          resumeModal = null;
-          if (resume) $('#loginModal').one('hidden.bs.modal', function () { showModal(resume); });
-          hideModal('login');
-          toast('Signed in as operator' + (resume ? ' – press Save again' : ''), 'success');
-        })
-        .fail(function (xhr) { toast(xhr.status === 401 ? 'Wrong username or password' : errorText(xhr), 'error'); })
-        .always(function () { busy($btn, false); });
+  function loadStats() {
+    Api.stats().done((res) => {
+      $('#kpis .n').each(function () { $(this).data('count', res.data[$(this).data('k')]); });
+      MF.countUp($('#kpis .n'));
     });
   }
 
-  /* ---------- start ---------- */
+  function loadBuses() {
+    $('#busRows').html('<tr><td colspan="8"><div class="skeleton" style="height:120px"></div></td></tr>');
+    Api.buses.all().done((res) => { buses = res.data; renderBuses(); renderRoutes(); });
+  }
 
-  // jQuery Use #7 – document ready, plus the datalist (autocomplete) filled from the API
-  $(function () {
-    $.each(MODAL_IDS, function (name, selector) {
-      modals[name] = new bootstrap.Modal($(selector)[0]);
+  function loadBookings() {
+    $('#bookingRows').html('<tr><td colspan="9"><div class="skeleton" style="height:120px"></div></td></tr>');
+    Api.bookings.all().done((res) => { bookings = res.data; renderBookings(); });
+  }
+
+  /* ---------------- Buses table ---------------- */
+  // jQuery Use #3 — table rows rebuilt from JSON
+  function renderBuses() {
+    const q = $.trim($('#busFilter').val()).toLowerCase();
+    const list = buses
+      .filter((b) => !q || [b.Bus_ID, b.Bus_Name, b.Route, b.Departure, b.Destination].join(' ').toLowerCase().includes(q))
+      .sort((a, b) => (a[busSort.key] > b[busSort.key] ? 1 : a[busSort.key] < b[busSort.key] ? -1 : 0) * busSort.dir);
+    const $tb = $('#busRows').empty();
+    if (!list.length) return $tb.html('<tr><td colspan="8" class="text-center py-4">No buses match.</td></tr>');
+    list.forEach((b) => {
+      const past = b.Travel_Date < MF.today();
+      $tb.append(
+        '<tr data-id="' + MF.esc(b.Bus_ID) + '"' + (past ? ' class="opacity-50"' : '') + '>' +
+          '<td class="fw-bold">' + MF.esc(b.Bus_ID) + '</td><td>' + MF.esc(b.Bus_Name) + '</td><td>' + MF.esc(b.Route) + '</td>' +
+          '<td>' + MF.fmtDate(b.Travel_Date, { day: 'numeric', month: 'short' }) + '</td><td>' + b.Departure_Time + '–' + b.Arrival_Time + '</td>' +
+          '<td><span class="' + (b.Available_Seats === 0 ? 'text-red' : '') + '">' + b.Available_Seats + '</span>/' + b.Total_Seats + '</td>' +
+          '<td>' + MF.lkr(b.Fare) + '</td>' +
+          '<td class="text-end text-nowrap">' +
+            '<button class="icon-btn" data-act="sched" title="Update schedule" aria-label="Update schedule for ' + MF.esc(b.Bus_ID) + '"><i class="bi bi-clock-history"></i></button> ' +
+            '<button class="icon-btn" data-act="edit" title="Edit" aria-label="Edit ' + MF.esc(b.Bus_ID) + '"><i class="bi bi-pencil"></i></button> ' +
+            '<button class="icon-btn danger" data-act="delete" title="Delete" aria-label="Delete ' + MF.esc(b.Bus_ID) + '"><i class="bi bi-trash"></i></button>' +
+          '</td></tr>'
+      );
     });
-    bindEvents();
-    updateAuthUi();
-    loadBuses();
-    loadLocations();
+  }
+  // jQuery Use #6 — live filter + clickable column sorting without reload
+  $('#busFilter').on('input', renderBuses);
+  $('#tabBuses thead').on('click', 'th[data-sort]', function () {
+    const key = $(this).data('sort');
+    busSort = { key, dir: busSort.key === key ? -busSort.dir : 1 };
+    renderBuses();
   });
 
-})(jQuery);
+  /* ---------------- Bus form (add / edit) ---------------- */
+  $('#addBusBtn').on('click', () => openBusForm(null));
+  $('#busRows').on('click', '[data-act]', function () {
+    const bus = buses.find((b) => b.Bus_ID === $(this).closest('tr').data('id'));
+    const act = $(this).data('act');
+    if (act === 'edit') openBusForm(bus);
+    if (act === 'sched') openSchedule(bus);
+    if (act === 'delete') askConfirm('Delete bus ' + bus.Bus_ID + '?', 'This removes ' + MF.esc(bus.Bus_Name) + ' (' + MF.esc(bus.Route) + ', ' + bus.Travel_Date + '). Buses with confirmed bookings cannot be deleted.', () =>
+      Api.buses.remove(bus.Bus_ID).done(() => { MF.toast('Bus ' + bus.Bus_ID + ' deleted'); loadBuses(); loadStats(); }));
+  });
+
+  function openBusForm(bus) {
+    editingBus = bus;
+    const $f = $('#busForm');
+    $f[0].reset();
+    $f.find('.is-invalid, .is-valid').removeClass('is-invalid is-valid');
+    $('#busModalTitle').text(bus ? 'Edit ' + bus.Bus_ID : 'Add bus');
+    $('#fBus_ID').prop('readonly', !!bus);
+    $('#fTravel_Date').attr('min', bus ? null : MF.today());
+    if (bus) {
+      $.each(bus, (k, v) => $f.find('[name="' + k + '"]').val(v));
+      $('#fAvail').val(bus.Available_Seats + ' / ' + bus.Total_Seats);
+    } else {
+      $('#fTravel_Date').val(MF.addDays(MF.today(), 1));
+      $('#fAvail').val('= Total seats');
+      const next = Math.max(1000, ...buses.map((b) => Number(b.Bus_ID.slice(2)) || 0)) + 1;
+      $('#fBus_ID').val('MB' + next);
+    }
+    busModal.show();
+  }
+
+  // Auto-fill Route from Departure/Destination
+  $('#fDeparture, #fDestination').on('input', () => {
+    const a = $.trim($('#fDeparture').val()).replace(' Fort', '');
+    const b = $.trim($('#fDestination').val()).replace(' Fort', '');
+    if (a && b) $('#fRoute').val(a + ' - ' + b);
+  });
+
+  $('#busForm').on('submit', function (e) {
+    e.preventDefault();
+    const d = MF.formToJSON($(this));
+    d.Bus_ID = d.Bus_ID.toUpperCase();
+    d.Total_Seats = Number(d.Total_Seats);
+    d.Fare = Number(d.Fare);
+    let ok = true;
+    ok = MF.setValid($('#fBus_ID'), /^[A-Z]{2}\d{3,6}$/.test(d.Bus_ID)) && ok;
+    ['Bus_Name', 'Departure', 'Destination', 'Route', 'Travel_Date', 'Departure_Time'].forEach((k) => { ok = MF.setValid($('#f' + k), !!d[k]) && ok; });
+    ok = MF.setValid($('#fArrival_Time'), !!d.Arrival_Time && d.Arrival_Time > d.Departure_Time) && ok;
+    ok = MF.setValid($('#fTotal_Seats'), d.Total_Seats >= 1 && d.Total_Seats <= 52) && ok;
+    ok = MF.setValid($('#fFare'), d.Fare >= 0 && $('#fFare').val() !== '') && ok;
+    if (!ok) return;
+
+    const req = editingBus ? Api.buses.update(editingBus.Bus_ID, d) : Api.buses.create(d);
+    req.done((res) => {
+      busModal.hide();
+      MF.toast(res.message + ': ' + res.data.Bus_ID);
+      loadBuses();
+      loadStats();
+    }).fail((err) => {
+      if (guard(err)) return;
+      $.each(err.errors || {}, (k) => MF.setValid($('#f' + k), false));
+      MF.toast(err.message, 'error');
+    });
+  });
+
+  /* ---------------- Schedules ---------------- */
+  function openSchedule(bus) {
+    $('#sBus').val(bus.Bus_ID);
+    $('#sDate').val(bus.Travel_Date);
+    $('#sDep').val(bus.Departure_Time);
+    $('#sArr').val(bus.Arrival_Time).removeClass('is-invalid');
+    $('#schedTitle').text('Schedule · ' + bus.Bus_ID + ' (' + bus.Route + ')');
+    schedModal.show();
+  }
+  $('#schedForm').on('submit', function (e) {
+    e.preventDefault();
+    const d = MF.formToJSON($(this));
+    const id = d.Bus_ID;
+    delete d.Bus_ID;
+    if (!MF.setValid($('#sArr'), d.Arrival_Time > d.Departure_Time)) return;
+    Api.buses.schedule(id, d)
+      .done(() => { schedModal.hide(); MF.toast('Schedule updated for ' + id); loadBuses(); loadBookings(); })
+      .fail((err) => { if (!guard(err)) MF.toast(err.message, 'error'); });
+  });
+
+  // Routes & Schedules tab: buses grouped by route
+  function renderRoutes() {
+    const groups = {};
+    buses.forEach((b) => { (groups[b.Route] = groups[b.Route] || []).push(b); });
+    const $wrap = $('#routeCards').empty();
+    Object.keys(groups).sort().forEach((route) => {
+      const list = groups[route].sort((a, b) => (a.Travel_Date + a.Departure_Time > b.Travel_Date + b.Departure_Time ? 1 : -1));
+      const items = list.map((b) =>
+        '<li class="d-flex justify-content-between align-items-center py-2 border-bottom"><span><b>' + MF.fmtDate(b.Travel_Date, { day: 'numeric', month: 'short' }) + '</b> · ' + b.Departure_Time + '–' + b.Arrival_Time +
+        ' <span class="small text-muted-mf">' + MF.esc(b.Bus_ID) + '</span></span>' +
+        '<button class="btn btn-ghost btn-sm" data-sched="' + MF.esc(b.Bus_ID) + '"><i class="bi bi-clock-history"></i> Reschedule</button></li>').join('');
+      $wrap.append(
+        '<div class="col-md-6 col-xl-4"><div class="mf-card"><div class="d-flex justify-content-between align-items-center mb-2">' +
+        '<h3 class="h6 mb-0">' + MF.esc(route) + '</h3><span class="badge-soft">' + list.length + ' trip' + (list.length > 1 ? 's' : '') + '</span></div>' +
+        '<div class="small fw-semibold text-muted-mf mb-2">' + MF.esc(list[0].Departure) + ' → ' + MF.esc(list[0].Destination) + ' · from ' + MF.lkr(Math.min(...list.map((b) => b.Fare))) + '</div>' +
+        '<ul class="list-unstyled mb-0">' + items + '</ul></div></div>'
+      );
+    });
+  }
+  $('#routeCards').on('click', '[data-sched]', function () { openSchedule(buses.find((b) => b.Bus_ID === $(this).data('sched'))); });
+
+  /* ---------------- Bookings table ---------------- */
+  function renderBookings() {
+    const q = $.trim($('#bookingFilter').val()).toLowerCase();
+    const st = $('#bookingStatus').val();
+    const dt = $('#bookingDate').val();
+    const list = bookings.filter((b) =>
+      (!st || b.Booking_Status === st) && (!dt || b.Travel_Date === dt) &&
+      (!q || [b.Booking_ID, b.Passenger_Name, b.Phone, b.Email, b.Bus_ID, b.Seat_Number].join(' ').toLowerCase().includes(q)));
+    $('#bookingCount').text(list.length + ' booking' + (list.length === 1 ? '' : 's'));
+    const $tb = $('#bookingRows').empty();
+    if (!list.length) $tb.html('<tr><td colspan="9" class="text-center py-4">No bookings match.</td></tr>');
+    list.slice(0, bookingLimit).forEach((b) => {
+      const cancelled = b.Booking_Status === 'Cancelled';
+      $tb.append(
+        '<tr data-id="' + MF.esc(b.Booking_ID) + '"><td class="fw-bold">' + MF.esc(b.Booking_ID) + '</td><td>' + MF.esc(b.Passenger_Name) + '</td>' +
+        '<td class="small">' + MF.esc(b.Phone) + '<br><span class="text-muted-mf">' + MF.esc(b.Email) + '</span></td>' +
+        '<td>' + MF.esc(b.Bus_ID) + '</td><td>' + MF.fmtDate(b.Travel_Date, { day: 'numeric', month: 'short' }) + '</td><td>' + MF.esc(b.Seat_Number) + '</td>' +
+        '<td>' + MF.lkr(b.Fare) + '</td><td><span class="badge-status ' + (cancelled ? 'badge-cancelled' : 'badge-confirmed') + '">' + b.Booking_Status + '</span></td>' +
+        '<td class="text-end text-nowrap">' + (cancelled ? '' :
+          '<button class="icon-btn" data-bk="edit" title="Edit" aria-label="Edit ' + MF.esc(b.Booking_ID) + '"><i class="bi bi-pencil"></i></button> ' +
+          '<button class="icon-btn danger" data-bk="cancel" title="Cancel" aria-label="Cancel ' + MF.esc(b.Booking_ID) + '"><i class="bi bi-x-lg"></i></button>') + '</td></tr>'
+      );
+    });
+    $('#moreBookings').toggleClass('d-none', list.length <= bookingLimit);
+  }
+  $('#bookingFilter').on('input', () => { bookingLimit = 50; renderBookings(); });
+  $('#bookingStatus, #bookingDate').on('change', () => { bookingLimit = 50; renderBookings(); });
+  $('#moreBookings').on('click', () => { bookingLimit += 50; renderBookings(); });
+
+  $('#bookingRows').on('click', '[data-bk]', function () {
+    const b = bookings.find((x) => x.Booking_ID === $(this).closest('tr').data('id'));
+    if ($(this).data('bk') === 'cancel') {
+      askConfirm('Cancel ' + b.Booking_ID + '?', MF.esc(b.Passenger_Name) + ' · seat ' + b.Seat_Number + ' on ' + b.Bus_ID + '. The seat will be released.', () =>
+        Api.bookings.cancel(b.Booking_ID).done(() => { MF.toast('Booking ' + b.Booking_ID + ' cancelled'); loadBookings(); loadBuses(); loadStats(); }));
+    } else {
+      $('#bId').val(b.Booking_ID); $('#bName').val(b.Passenger_Name); $('#bPhone').val(b.Phone);
+      $('#bEmail').val(b.Email); $('#bSeat').val(b.Seat_Number); $('#bBoard').val(b.Boarding_Point);
+      $('#bkTitle').text('Edit ' + b.Booking_ID);
+      bkModal.show();
+    }
+  });
+  $('#bkForm').on('submit', function (e) {
+    e.preventDefault();
+    const d = MF.formToJSON($(this));
+    const id = d.Booking_ID;
+    delete d.Booking_ID;
+    d.Seat_Number = d.Seat_Number.toUpperCase();
+    Api.bookings.update(id, d)
+      .done(() => { bkModal.hide(); MF.toast('Booking ' + id + ' updated'); loadBookings(); })
+      .fail((err) => MF.toast(err.message, 'error'));
+  });
+
+  /* ---------------- Confirm helper ---------------- */
+  function askConfirm(title, html, action) {
+    $('#confirmTitle').text(title);
+    $('#confirmText').html(html);
+    confirmAction = action;
+    confirmModal.show();
+  }
+  $('#confirmYes').on('click', function () {
+    const $b = $(this).prop('disabled', true);
+    confirmAction()
+      .done(() => confirmModal.hide())
+      .fail((err) => { if (!guard(err)) MF.toast(err.message, 'error'); confirmModal.hide(); })
+      .always(() => $b.prop('disabled', false));
+  });
+
+  showGate(!!token());
+});
