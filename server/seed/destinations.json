@@ -1,0 +1,137 @@
+[
+  {
+    "Dest_ID": "D001", "Name": "Kandy", "Slug": "kandy", "Province": "Central", "Category": "Culture",
+    "Tagline": "The hill capital and home of the Sacred Tooth Relic.",
+    "Description": "Ringed by misty hills and built around a calm lake, Kandy is the cultural heart of Sri Lanka. The Temple of the Sacred Tooth Relic draws pilgrims from across the island, and the surrounding hills hide tea estates, botanical gardens and the Knuckles range.",
+    "Best_Season": "December to April",
+    "Highlights": ["Temple of the Sacred Tooth Relic", "Kandy Lake promenade", "Royal Botanical Gardens", "Esala Perahera festival"],
+    "Image_URL": "https://images.unsplash.com/photo-1665849050332-8d5d7e59afb6?auto=format&fit=crop&w=900&q=70",
+    "Gallery": [
+      "https://images.unsplash.com/photo-1665849050332-8d5d7e59afb6?auto=format&fit=crop&w=1200&q=72",
+      "https://images.unsplash.com/photo-1566296314736-6eaac1ca0cb9?auto=format&fit=crop&w=1200&q=72"
+    ],
+    "Lat": 7.2906, "Lng": 80.6337, "Rating": 4.7, "Popular": true
+  },
+  {
+    "Dest_ID": "D002", "Name": "Galle", "Slug": "galle", "Province": "Southern", "Category": "Culture",
+    "Tagline": "A Dutch fort city where ramparts meet the Indian Ocean.",
+    "Description": "Galle Fort is a walled colonial town you can walk end to end in an afternoon: coral-stone ramparts, shuttered villas, tiny museums and cafes. Sunset on the western wall, with the lighthouse behind you, is the classic Galle moment.",
+    "Best_Season": "November to April",
+    "Highlights": ["Galle Fort ramparts", "Dutch Reformed Church", "Galle Lighthouse", "Unawatuna beach nearby"],
+    "Image_URL": "https://images.unsplash.com/photo-1580910527739-556eb89f9d65?auto=format&fit=crop&w=900&q=70",
+    "Gallery": [
+      "https://images.unsplash.com/photo-1580910527739-556eb89f9d65?auto=format&fit=crop&w=1200&q=72",
+      "https://images.unsplash.com/photo-1612862862126-865765df2ded?auto=format&fit=crop&w=1200&q=72"
+    ],
+    "Lat": 6.0535, "Lng": 80.221, "Rating": 4.6, "Popular": true
+  },
+  {
+    "Dest_ID": "D003", "Name": "Jaffna", "Slug": "jaffna", "Province": "Northern", "Category": "Culture",
+    "Tagline": "Northern peninsula of palmyra palms, kovils and island ferries.",
+    "Description": "Jaffna feels distinct from anywhere else on the island: Tamil kovils with technicolour gopurams, a Dutch fort on the lagoon, and flat roads lined with palmyra palms leading to causeways and small inhabited islands.",
+    "Best_Season": "January to September",
+    "Highlights": ["Nallur Kandaswamy Kovil", "Jaffna Fort", "Casuarina beach", "Delft island ferry"],
+    "Image_URL": "https://images.unsplash.com/photo-1580910527739-556eb89f9d65?auto=format&fit=crop&w=900&q=70",
+    "Gallery": ["https://images.unsplash.com/photo-1580910527739-556eb89f9d65?auto=format&fit=crop&w=1200&q=72"],
+    "Lat": 9.6615, "Lng": 80.0255, "Rating": 4.3, "Popular": false
+  },
+  {
+    "Dest_ID": "D004", "Name": "Ella", "Slug": "ella", "Province": "Uva", "Category": "Hill Country",
+    "Tagline": "Nine Arch Bridge, cool air and a valley that drops away forever.",
+    "Description": "A small hill town that became a traveller favourite for good reason. Walk to Little Adam's Peak at dawn, watch the blue train curve across the Nine Arch Bridge, then eat kottu while the mist rolls up the Ella Gap.",
+    "Best_Season": "January to March",
+    "Highlights": ["Nine Arch Bridge", "Little Adam's Peak", "Ravana Falls", "Ella Rock hike"],
+    "Image_URL": "https://images.unsplash.com/photo-1566296314736-6eaac1ca0cb9?auto=format&fit=crop&w=900&q=70",
+    "Gallery": [
+      "https://images.unsplash.com/photo-1566296314736-6eaac1ca0cb9?auto=format&fit=crop&w=1200&q=72",
+      "https://images.unsplash.com/photo-1665849050332-8d5d7e59afb6?auto=format&fit=crop&w=1200&q=72"
+    ],
+    "Lat": 6.8667, "Lng": 81.0466, "Rating": 4.8, "Popular": true
+  },
+  {
+    "Dest_ID": "D005", "Name": "Nuwara Eliya", "Slug": "nuwara-eliya", "Province": "Central", "Category": "Hill Country",
+    "Tagline": "Little England: tea estates, cool nights and a boating lake.",
+    "Description": "At nearly 1,900 m, Nuwara Eliya keeps its colonial hill-station air — hedged gardens, a racecourse, red postboxes — surrounded by some of the finest tea country anywhere. Bring a jacket; evenings genuinely get cold.",
+    "Best_Season": "February to May",
+    "Highlights": ["Gregory Lake", "Pedro tea estate", "Hakgala Botanical Garden", "Horton Plains day trip"],
+    "Image_URL": "https://images.unsplash.com/photo-1566296314736-6eaac1ca0cb9?auto=format&fit=crop&w=900&q=70",
+    "Gallery": ["https://images.unsplash.com/photo-1566296314736-6eaac1ca0cb9?auto=format&fit=crop&w=1200&q=72"],
+    "Lat": 6.9497, "Lng": 80.7891, "Rating": 4.5, "Popular": true
+  },
+  {
+    "Dest_ID": "D006", "Name": "Sigiriya", "Slug": "sigiriya", "Province": "Central", "Category": "Culture",
+    "Tagline": "A fifth-century palace on top of a 200-metre rock.",
+    "Description": "Sigiriya is the island's signature climb: water gardens at the base, mirror wall and frescoes halfway up, and the footprint of a royal palace on the flat summit. Start early — both for the light and before the heat arrives.",
+    "Best_Season": "December to April",
+    "Highlights": ["Lion Rock summit", "Mirror Wall frescoes", "Water gardens", "Pidurangala viewpoint"],
+    "Image_URL": "https://images.unsplash.com/photo-1612862862126-865765df2ded?auto=format&fit=crop&w=900&q=70",
+    "Gallery": [
+      "https://images.unsplash.com/photo-1612862862126-865765df2ded?auto=format&fit=crop&w=1200&q=72",
+      "https://images.unsplash.com/photo-1665849050332-8d5d7e59afb6?auto=format&fit=crop&w=1200&q=72"
+    ],
+    "Lat": 7.9570, "Lng": 80.7603, "Rating": 4.9, "Popular": true
+  },
+  {
+    "Dest_ID": "D007", "Name": "Anuradhapura", "Slug": "anuradhapura", "Province": "North Central", "Category": "Culture",
+    "Tagline": "Ancient capital of giant stupas and sacred bo trees.",
+    "Description": "For over a thousand years this was the island's capital, and the scale still shows: brick stupas the size of hills, vast reservoirs that still irrigate the region, and the Sri Maha Bodhi, grown from a cutting of the tree under which the Buddha gained enlightenment.",
+    "Best_Season": "May to September",
+    "Highlights": ["Ruwanwelisaya stupa", "Sri Maha Bodhi", "Jetavanaramaya", "Isurumuniya rock temple"],
+    "Image_URL": "https://images.unsplash.com/photo-1612862862126-865765df2ded?auto=format&fit=crop&w=900&q=70",
+    "Gallery": ["https://images.unsplash.com/photo-1612862862126-865765df2ded?auto=format&fit=crop&w=1200&q=72"],
+    "Lat": 8.3114, "Lng": 80.4037, "Rating": 4.4, "Popular": false
+  },
+  {
+    "Dest_ID": "D008", "Name": "Mirissa", "Slug": "mirissa", "Province": "Southern", "Category": "Beach",
+    "Tagline": "Palm-fringed crescent bay and the island's best whale watching.",
+    "Description": "A sheltered half-moon of sand on the south coast, with warm water, a headland to climb for the view, and boats that head out before dawn to find blue whales and spinner dolphins in the deep water offshore.",
+    "Best_Season": "November to April",
+    "Highlights": ["Blue whale boat trips", "Coconut Tree Hill", "Secret Beach", "Surf at Weligama nearby"],
+    "Image_URL": "https://images.unsplash.com/photo-1580910527739-556eb89f9d65?auto=format&fit=crop&w=900&q=70",
+    "Gallery": [
+      "https://images.unsplash.com/photo-1580910527739-556eb89f9d65?auto=format&fit=crop&w=1200&q=72",
+      "https://images.unsplash.com/photo-1566296314736-6eaac1ca0cb9?auto=format&fit=crop&w=1200&q=72"
+    ],
+    "Lat": 5.9483, "Lng": 80.4589, "Rating": 4.6, "Popular": true
+  },
+  {
+    "Dest_ID": "D009", "Name": "Trincomalee", "Slug": "trincomalee", "Province": "Eastern", "Category": "Beach",
+    "Tagline": "East-coast harbour town with reef snorkelling off Pigeon Island.",
+    "Description": "Trincomalee sits on one of the world's finest natural harbours. The town has a clifftop kovil and hot springs, while Nilaveli and Uppuveli just north give you quiet sand and a short boat hop to the coral at Pigeon Island.",
+    "Best_Season": "April to September",
+    "Highlights": ["Pigeon Island snorkelling", "Koneswaram temple", "Nilaveli beach", "Kanniya hot wells"],
+    "Image_URL": "https://images.unsplash.com/photo-1580910527739-556eb89f9d65?auto=format&fit=crop&w=900&q=70",
+    "Gallery": ["https://images.unsplash.com/photo-1580910527739-556eb89f9d65?auto=format&fit=crop&w=1200&q=72"],
+    "Lat": 8.5874, "Lng": 81.2152, "Rating": 4.4, "Popular": false
+  },
+  {
+    "Dest_ID": "D010", "Name": "Colombo", "Slug": "colombo", "Province": "Western", "Category": "City",
+    "Tagline": "The island's front door: markets, seafront and street food.",
+    "Description": "Sri Lanka's commercial capital rewards a wander — Pettah's market lanes, the colonial quarter around the old fort, Galle Face Green at sunset with isso wade from the carts, and a dining scene that ranges from hoppers to tasting menus.",
+    "Best_Season": "Year round",
+    "Highlights": ["Galle Face Green", "Pettah market", "Gangaramaya Temple", "Independence Square"],
+    "Image_URL": "https://images.unsplash.com/photo-1612862862126-865765df2ded?auto=format&fit=crop&w=900&q=70",
+    "Gallery": ["https://images.unsplash.com/photo-1612862862126-865765df2ded?auto=format&fit=crop&w=1200&q=72"],
+    "Lat": 6.9271, "Lng": 79.8612, "Rating": 4.2, "Popular": true
+  },
+  {
+    "Dest_ID": "D011", "Name": "Yala", "Slug": "yala", "Province": "Southern", "Category": "Wildlife",
+    "Tagline": "Dry-zone national park with the densest leopard population anywhere.",
+    "Description": "Yala pairs scrub jungle, lagoons and granite outcrops with remarkable wildlife density: leopard, sloth bear, elephant, crocodile and an enormous bird list. Early-morning game drives in Block 1 give you the best odds.",
+    "Best_Season": "February to July",
+    "Highlights": ["Leopard safari drives", "Elephant herds", "Lagoon birdlife", "Sithulpawwa rock temple"],
+    "Image_URL": "https://images.unsplash.com/photo-1612862862126-865765df2ded?auto=format&fit=crop&w=900&q=70",
+    "Gallery": ["https://images.unsplash.com/photo-1612862862126-865765df2ded?auto=format&fit=crop&w=1200&q=72"],
+    "Lat": 6.3728, "Lng": 81.5019, "Rating": 4.5, "Popular": false
+  },
+  {
+    "Dest_ID": "D012", "Name": "Matara", "Slug": "matara", "Province": "Southern", "Category": "Nature",
+    "Tagline": "Southern coast town with a star fort and the Dondra lighthouse.",
+    "Description": "Often passed through on the way along the coast, Matara is worth a stop: a moated star fort, a wide river mouth, and a few kilometres south the tallest lighthouse in Sri Lanka at Dondra Head, the island's southernmost point.",
+    "Best_Season": "November to April",
+    "Highlights": ["Star Fort", "Dondra Head lighthouse", "Polhena reef lagoon", "Weherahena temple"],
+    "Image_URL": "https://images.unsplash.com/photo-1580910527739-556eb89f9d65?auto=format&fit=crop&w=900&q=70",
+    "Gallery": ["https://images.unsplash.com/photo-1580910527739-556eb89f9d65?auto=format&fit=crop&w=1200&q=72"],
+    "Lat": 5.9549, "Lng": 80.5550, "Rating": 4.1, "Popular": false
+  }
+]

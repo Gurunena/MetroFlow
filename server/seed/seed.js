@@ -10,6 +10,7 @@ require('dotenv').config();
 
 const buses = require('./buses.json');
 const bookings = require('./bookings.json');
+const destinations = require('./destinations.json');
 
 const bcrypt = require('bcryptjs');
 
@@ -18,6 +19,7 @@ const Bus = require('../models/Bus');
 const Booking = require('../models/Booking');
 const Counter = require('../models/Counter');
 const User = require('../models/User');
+const Destination = require('../models/Destination');
 
 const keepExisting = process.argv.includes('--keep');
 
@@ -90,6 +92,19 @@ async function seed() {
       )
     ));
     console.log('Counters: synced for ' + Object.keys(seqByDate).length + ' date(s)');
+  }
+
+  // ---------------------------- destinations ----------------------------
+  const destCount = await Destination.countDocuments();
+  if (destCount && keepExisting) {
+    console.log('Destinations: ' + destCount + ' already present, left alone (--keep)');
+  } else {
+    if (destCount) {
+      await Destination.deleteMany({});
+      console.log('Destinations: cleared ' + destCount + ' existing');
+    }
+    await Destination.insertMany(destinations, { ordered: true });
+    console.log('Destinations: inserted ' + destinations.length);
   }
 
   // ----------------------------- admin user -----------------------------

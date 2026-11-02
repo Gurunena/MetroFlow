@@ -30,6 +30,7 @@ function mount(path, modulePath, label) {
 console.log('Mounting API routes:');
 mount('/buses', './busRoutes', 'bus management');
 mount('/bookings', './bookingRoutes', 'bookings');
+mount('/destinations', './destinationRoutes', 'destinations');
 mount('/schedules', './routeScheduleRoutes', 'routes & timetable');
 mount('/auth', './authRoutes', 'authentication');
 mount('/chat', './chatRoutes', 'chat');
