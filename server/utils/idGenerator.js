@@ -16,4 +16,12 @@ async function generateBookingId(travelDate) {
   return 'BK' + dateKey + String(counter.seq).padStart(3, '0');
 }
 
-module.exports = { generateBookingId };
+/**
+ * Neutralises regex metacharacters so user input can be used inside a
+ * RegExp safely. busService imports this for its case-insensitive matches.
+ */
+function escapeRegex(text) {
+  return String(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+module.exports = { generateBookingId, escapeRegex };

@@ -28,7 +28,12 @@ function mount(path, modulePath, label) {
 }
 
 console.log('Mounting API routes:');
-mount('/buses', './busRoutes', 'bus management');
+// busRoutes.js currently cannot load (its handler names no longer match
+// busController.js). Fall back to the read-only search endpoints so the
+// search page works; the team's router wins again as soon as it loads.
+if (!mount('/buses', './busRoutes', 'bus management')) {
+  mount('/buses', './busSearchRoutes', 'bus search (fallback)');
+}
 mount('/bookings', './bookingRoutes', 'bookings');
 mount('/destinations', './destinationRoutes', 'destinations');
 mount('/schedules', './routeScheduleRoutes', 'routes & timetable');
