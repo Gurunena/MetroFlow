@@ -95,3 +95,23 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 @media (max-width: 575.98px) { .mf-stat-value { font-size: 1.4rem; } }
 @media (prefers-reduced-motion: reduce) { .fade { transition: none; } }
+
+/* ---------------------------------------------------------------------------
+   The shared navbar partial is now injected into #navbar on admin.html, and
+   .mf-nav above themes it dark. home.css colours the brand text and nav links
+   navy, which disappears on that background, so flip them to light here.
+   --------------------------------------------------------------------------- */
+.mf-nav .mf-brand-name { color: #fff; }
+.mf-nav .mf-brand-name span { color: #FF8A91; }   /* lighter red: readable on navy */
+.mf-nav .mf-brand-tag { color: rgba(255, 255, 255, .62); }
+
+.mf-nav .nav-link { color: rgba(255, 255, 255, .84); }
+.mf-nav .nav-link:hover,
+.mf-nav .nav-link.active { color: #fff; background: rgba(255, 255, 255, .12); }
+.mf-nav .nav-link.active::after { background: #fff; }
+
+.mf-nav .navbar-toggler i { color: #fff !important; }
+.mf-nav .mf-weather-chip { background: rgba(255, 255, 255, .12); color: #fff; }
+.mf-nav .mf-weather-chip:hover { background: rgba(255, 255, 255, .2); }
+.mf-nav .mf-btn-outline-red { border-color: #FF8A91; color: #FF8A91; }
+.mf-nav .mf-btn-outline-red:hover { background: #FF8A91; color: var(--mf-navy); }
