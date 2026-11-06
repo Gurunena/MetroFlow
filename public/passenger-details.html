@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Passenger Details | MetroFlow</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- MetroFlow CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/passenger-details.css">
+</head>
+<body>
+
+    <div id="navbar"></div>
+
+<main class="passenger-page">
+
+    
+<!-- Passenger Management Hero -->
+
+<section class="passenger-header">
+
+    <div class="container">
+
+        <span class="passenger-hero-label">
+            METROFLOW TRAVEL
+        </span>
+
+        <h1>Passenger Management</h1>
+
+        <p>
+            Add, view, update and manage passenger details.
+        </p>
+
+    </div>
+
+</section>
+
+
+    <!-- ADD / UPDATE PASSENGER -->
+    <section class="passenger-form-card">
+
+        <h2 id="formTitle">Add Passenger</h2>
+
+        <form id="passengerForm">
+
+            <input type="hidden" id="passengerId">
+
+            <div class="passenger-form-grid">
+
+                <div class="form-group">
+                    <label for="fullName">Full Name *</label>
+                    <input type="text"
+                           id="fullName"
+                           placeholder="Enter passenger name"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nic">NIC / Passport *</label>
+                    <input type="text"
+                           id="nic"
+                           placeholder="Enter NIC or passport"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <input type="tel"
+                           id="phone"
+                           placeholder="Enter phone number"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email"
+                           id="email"
+                           placeholder="Enter email address"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text"
+                           id="address"
+                           placeholder="Enter passenger address">
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender">
+                        <option value="">Select gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="passenger-form-actions">
+
+                <button type="submit"
+                        id="savePassengerBtn"
+                        class="confirm-btn">
+                    <i class="bi bi-person-plus"></i>
+                    Add Passenger
+                </button>
+
+                <button type="button"
+                        id="cancelEditBtn"
+                        class="back-btn"
+                        hidden>
+                    Cancel
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+    <!-- PASSENGER LIST -->
+    <section class="passenger-list-card">
+
+        <div class="passenger-list-header">
+
+            <div>
+                <h2>Passenger List</h2>
+                <p>View and manage registered passengers.</p>
+            </div>
+
+            <div class="passenger-search">
+                <i class="bi bi-search"></i>
+
+                <input type="search"
+                       id="passengerSearch"
+                       placeholder="Search passengers...">
+            </div>
+
+        </div>
+
+        <div id="passengerMessage"></div>
+
+        <div class="passenger-table-wrapper">
+
+            <table class="passenger-table">
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Passenger</th>
+                        <th>NIC / Passport</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="passengerTableBody">
+
+                    <tr>
+                        <td colspan="6">
+                            No passengers added yet.
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+    <!-- VIEW PASSENGER DETAILS -->
+    <div class="passenger-details-modal"
+         id="passengerDetailsModal"
+         hidden>
+
+        <div class="passenger-details-content">
+
+            <button type="button"
+                    id="closePassengerDetails"
+                    class="close-details-btn">
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+            <h2>Passenger Details</h2>
+
+            <div id="passengerDetailsContent"></div>
+
+        </div>
+
+    </div>
+
+</main>
+
+    <div id="footer"></div>
+
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/passenger-details.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,776 @@
+
+/* =========================================
+   METROFLOW - SEAT MANAGEMENT
+========================================= */
+
+/* SELECT YOUR SEATS - BUS IMAGE BACKGROUND */
+
+.booking-hero {
+    background:
+        linear-gradient(
+            90deg,
+            rgba(15, 27, 51, 0.75),
+            rgba(15, 27, 51, 0.25)
+        ),
+        url("../images/Sunset%20Foton%20Bus%20on%20City%20Highway.png");
+
+    background-size: cover;
+    background-position: center 65%;
+    background-repeat: no-repeat;
+
+    min-height: 500px;
+    padding: 75px 35px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+/* Hero text */
+
+.booking-hero h1,
+.booking-hero h2 {
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.booking-hero p {
+    color: #ffffff;
+}
+
+/* Mobile */
+
+@media (max-width: 576px) {
+
+    .booking-hero {
+        min-height: 400px;
+        padding: 45px 20px;
+
+        background-position: center 60%;
+    }
+
+}
+/* =========================================
+   JOURNEY DETAILS SECTION
+========================================= */
+
+.booking-search-section {
+    padding: 35px 0 55px;
+    background: #f4f6fa;
+}
+
+/* Journey Card */
+
+.journey-details-card {
+    display: block;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 6px 22px rgba(15, 27, 51, 0.06);
+    margin-bottom: 25px;
+}
+
+/* Journey Info */
+
+.journey-info {
+    display: block;
+}
+
+/* Journey Icon */
+
+.journey-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff0f1;
+    color: #D80F1E;
+    font-size: 28px;
+    border-radius: 12px;
+}
+
+/* Journey Title */
+
+.journey-info h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0F1B33;
+    margin-bottom: 8px;
+}
+
+/* Journey Tags */
+
+.journey-tag {
+    display: inline-block;
+    background: #eef3fa;
+    color: #52627b;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+/* Journey Information */
+
+.journey-info p {
+    color: #687386;
+    font-size: 14px;
+    margin: 12px 0 0;
+}
+
+.journey-info p i {
+    color: #D80F1E;
+    margin-right: 7px;
+}
+
+.journey-time {
+    margin-left: 12px;
+}
+
+
+/* Journey Details Under Image */
+
+.journey-info-details {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 0;
+}
+
+.journey-info-details h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f1b33;
+    margin-bottom: 10px;
+}
+
+.journey-info-details p {
+    color: #64748b;
+    margin-top: 12px;
+    margin-bottom: 8px;
+}
+
+.journey-info-details p i {
+    color: #d80f1e;
+    margin-right: 8px;
+}
+
+
+/* =========================================
+   MAIN SEAT LAYOUT
+========================================= */
+
+.seat-selection-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    align-items: stretch;
+}
+
+/* Seat Cards */
+
+.seat-selection-card,
+.selected-seats-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 6px 22px rgba(15, 27, 51, 0.06);
+}
+
+
+/* =========================================
+   SEAT LEGEND
+========================================= */
+
+.seat-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.seat-legend span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #687386;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.legend-box {
+    width: 17px;
+    height: 17px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.legend-box.available {
+    background: #22a447;
+}
+
+.legend-box.selected {
+    background: #1769e0;
+}
+
+.legend-box.booked {
+    background: #cbd1d9;
+}
+
+
+/* =========================================
+   BUS FRONT
+========================================= */
+
+.bus-front {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #687386;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.bus-front i {
+    font-size: 20px;
+}
+
+
+/* =========================================
+   SEAT GRID
+========================================= */
+
+.bus-seat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    max-width: 390px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 2px solid #dce2eb;
+    border-radius: 20px;
+    background: #f8f9fc;
+}
+
+/* Seat Base */
+
+.seat {
+    min-height: 48px;
+    border: none;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 700;
+    transition: 0.2s;
+}
+
+/* Available Seat */
+
+.seat.available {
+    background: #22a447;
+    color: #fff;
+    cursor: pointer;
+}
+
+.seat.available:hover {
+    background: #168637;
+    transform: translateY(-2px);
+}
+
+/* Selected Seat */
+
+.seat.selected {
+    background: #1769e0;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(23, 105, 224, 0.25);
+}
+
+/* Booked Seat */
+
+.seat.booked {
+    background: #cbd1d9;
+    color: #596273;
+    cursor: not-allowed;
+    opacity: 0.85;
+}
+
+/* Seat Note */
+
+.seat-note {
+    text-align: center;
+    color: #687386;
+    font-size: 13px;
+    margin: 20px 0 0;
+}
+
+
+/* =========================================
+   SEAT AVAILABILITY CARD
+========================================= */
+
+.selected-seats-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.selected-seats-card h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0F1B33;
+    margin-bottom: 25px;
+}
+
+
+/* Seat Count Items */
+
+.seat-count-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.seat-count-item span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #0F1B33;
+}
+
+.seat-count-item strong {
+    font-size: 20px;
+    color: #0F1B33;
+}
+
+
+/* =========================================
+   SELECTED SEAT DETAILS
+========================================= */
+
+.selected-seat-details {
+    margin-top: 25px;
+}
+
+.selected-seat-details h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #0F1B33;
+    margin-bottom: 15px;
+}
+
+/* Empty Seats */
+
+.empty-seats {
+    color: #687386;
+    font-size: 14px;
+    padding: 15px 0;
+}
+
+/* Selected Seat Number */
+
+.selected-seat-item {
+    display: inline-block;
+    background: #e8f0ff;
+    color: #0F1B33;
+    padding: 8px 12px;
+    margin: 4px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   SELECTED SEAT ROW
+========================================= */
+
+.selected-seat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 0;
+    border-bottom: 1px solid #e8ecf2;
+    color: #0F1B33;
+    font-size: 14px;
+}
+
+.selected-seat-row strong {
+    font-weight: 700;
+}
+
+.remove-seat-btn {
+    border: none;
+    background: transparent;
+    color: #D80F1E;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.remove-seat-btn:hover {
+    color: #B00B18;
+}
+
+
+/* =========================================
+   TOTAL FARE
+========================================= */
+
+.seat-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    border-top: 1px solid #e8ecf2;
+    margin-top: auto;
+    padding-top: 25px;
+    margin-bottom: 25px;
+    color: #0F1B33;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.seat-total strong {
+    font-size: 22px;
+    font-weight: 800;
+}
+
+
+/* =========================================
+   REFRESH SEAT AVAILABILITY BUTTON
+========================================= */
+
+#refreshSeatAvailability {
+    width: 100%;
+    margin-top: 25px;
+    background: #0F1B33;
+    color: #ffffff;
+    border: none;
+    padding: 13px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+#refreshSeatAvailability:hover {
+    background: #1d2e4d;
+    transform: translateY(-2px);
+}
+
+#refreshSeatAvailability:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================
+   PROCEED BUTTON
+========================================= */
+
+.proceed-passenger-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 9px;
+    background: #1769e0;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.proceed-passenger-btn i {
+    margin-left: 8px;
+}
+
+.proceed-passenger-btn:hover:not(:disabled) {
+    background: #1055bd;
+    transform: translateY(-2px);
+}
+
+.proceed-passenger-btn:disabled {
+    background: #aab7ca;
+    cursor: not-allowed;
+}
+
+
+/* =========================================
+   SEAT MESSAGE
+========================================= */
+
+#seatMessage {
+    margin-top: 15px;
+    color: #B00B18;
+    font-size: 14px;
+}
+
+
+/* =========================================
+   PASSENGER MANAGEMENT BUTTON
+========================================= */
+
+.passenger-management-link {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0;
+}
+
+.passenger-details-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #D80F1E;
+    color: #ffffff;
+    padding: 14px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.passenger-details-btn:hover {
+    background: #B00B18;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+
+/* =========================================
+   RESPONSIVE DESIGN
+========================================= */
+
+/* Tablets */
+
+@media (max-width: 900px) {
+
+    .seat-selection-layout {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* Mobile */
+
+@media (max-width: 768px) {
+
+    .booking-hero {
+        padding: 35px 0;
+    }
+
+    .booking-hero h1 {
+        font-size: 30px;
+    }
+
+    .journey-details-card {
+        padding: 20px;
+    }
+
+    .metro-bus-image {
+        height: 220px;
+    }
+
+    .metro-bus-image-content {
+        top: 18px;
+        left: 18px;
+    }
+
+    .metro-bus-image-content h2 {
+        font-size: 23px;
+    }
+
+    .journey-info-details {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .seat-selection-card,
+    .selected-seats-card {
+        padding: 18px;
+    }
+
+    .seat-legend {
+        gap: 12px;
+    }
+
+    .bus-seat-grid {
+        gap: 8px;
+        padding: 12px;
+    }
+
+    .seat {
+        min-height: 42px;
+        font-size: 12px;
+    }
+
+    .selected-seats-card h2 {
+        font-size: 20px;
+    }
+
+}
+
+
+/* Small Mobile Screens */
+
+@media (max-width: 576px) {
+
+    .booking-hero h1 {
+        font-size: 27px;
+    }
+
+    .booking-hero p {
+        font-size: 14px;
+    }
+
+    .metro-bus-image {
+        height: 190px;
+        border-radius: 14px;
+    }
+
+    .metro-bus-image-content {
+        top: 15px;
+        left: 15px;
+    }
+
+    .metro-bus-image-content h2 {
+        font-size: 21px;
+    }
+
+    .metro-bus-image-content p {
+        font-size: 11px;
+    }
+
+    .journey-info-details {
+        gap: 12px;
+    }
+
+    .journey-info-details h2 {
+        font-size: 20px;
+    }
+
+    .journey-info-details p {
+        font-size: 12px;
+    }
+
+    .journey-time {
+        display: block;
+        margin-left: 22px;
+        margin-top: 5px;
+    }
+
+    .seat-selection-card,
+    .selected-seats-card {
+        padding: 15px;
+    }
+
+    .bus-seat-grid {
+        gap: 7px;
+        padding: 10px;
+    }
+
+    .seat {
+        min-height: 38px;
+        font-size: 11px;
+    }
+
+    .seat-legend span {
+        font-size: 11px;
+    }
+
+    .seat-count-item span {
+        font-size: 13px;
+    }
+
+    .seat-count-item strong {
+        font-size: 18px;
+    }
+
+    .selected-seat-details h3 {
+        font-size: 15px;
+    }
+
+    .selected-seat-item {
+        padding: 7px 10px;
+        font-size: 13px;
+    }
+
+    .passenger-details-btn {
+        padding: 12px 22px;
+        font-size: 14px;
+    }
+
+}
+
+/* Journey Details Full Width Layout */
+
+.journey-details-card {
+    width: 100%;
+    background: #f8fafc;
+    padding: 25px 30px;
+    margin: 0 0 25px;
+    border-radius: 18px;
+    box-sizing: border-box;
+}
+
+.journey-info-details {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr;
+    align-items: center;
+    gap: 25px;
+    width: 100%;
+}
+
+.journey-main-info h2 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #0F1B33;
+    margin-bottom: 12px;
+}
+
+.journey-tags {
+    display: flex;
+    gap: 10px;
+}
+
+.journey-route-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.journey-route-info p {
+    margin: 8px 0;
+    color: #64748b;
+    font-size: 16px;
+}
+
+.journey-route-info i {
+    color: #D80F1E;
+    margin-right: 10px;
+}
+
+@media (max-width: 768px) {
+    .journey-info-details {
+        grid-template-columns: auto 1fr;
+        gap: 15px;
+    }
+
+    .journey-route-info {
+        grid-column: 1 / -1;
+    }
+}
+/* MetroFlow Travel Label */
+
+.booking-label {
+    color: #D80F1E;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}

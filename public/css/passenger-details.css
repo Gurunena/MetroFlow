@@ -1,0 +1,311 @@
+/* Passenger Management */
+.passenger-page {
+    max-width: 1200px;
+    margin: 5px auto 50px;
+    padding: 20px;
+}
+
+
+/* Passenger Management Hero */
+
+.passenger-header {
+    background:
+        linear-gradient(
+            90deg,
+            rgba(15, 27, 51, 0.85),
+            rgba(15, 27, 51, 0.35)
+        ),
+        url("../images/Gemini_Generated_Image_bdlpsubdlpsubdlp.jpg");
+
+    background-size: cover;
+    background-position: center 60%;
+    background-repeat: no-repeat;
+
+    min-height: 300px;
+    padding: 70px 0;
+
+    display: flex;
+    align-items: center;
+
+    border-radius: 0 0 18px 18px;
+    margin-bottom: 35px;
+}
+
+/* Hero Label */
+
+.passenger-hero-label {
+    display: block;
+    color: #D80F1E;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    margin-bottom: 15px;
+}
+
+/* Heading */
+
+.passenger-header h1 {
+    color: #ffffff;
+    font-size: 48px;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+/* Subtitle */
+
+.passenger-header p {
+    color: #ffffff;
+    font-size: 18px;
+    margin-bottom: 0;
+}
+
+/* Mobile */
+
+@media (max-width: 576px) {
+
+    .passenger-header {
+        min-height: 230px;
+        padding: 45px 0;
+        background-position: center;
+    }
+
+    .passenger-header h1 {
+        font-size: 32px;
+    }
+
+    .passenger-header p {
+        font-size: 15px;
+    }
+
+}
+
+
+.passenger-form-card,
+.passenger-list-card {
+    background: #fff;
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.passenger-form-card h2,
+.passenger-list-card h2 {
+    color: #0F1B33;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* Form */
+.passenger-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #0F1B33;
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    outline: none;
+    font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #D80F1E;
+    box-shadow: 0 0 0 2px rgba(216, 15, 30, 0.1);
+}
+
+.passenger-form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.confirm-btn,
+.back-btn {
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.confirm-btn {
+    background: #D80F1E;
+    color: white;
+}
+
+.confirm-btn:hover {
+    background: #B00B18;
+}
+
+.back-btn {
+    background: #e9ecef;
+    color: #333;
+}
+
+/* Passenger List */
+.passenger-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.passenger-list-header p {
+    color: #666;
+    margin: 0;
+}
+
+.passenger-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #ddd;
+    padding: 10px 14px;
+    border-radius: 6px;
+}
+
+.passenger-search input {
+    border: none;
+    outline: none;
+    min-width: 180px;
+}
+
+.passenger-table-wrapper {
+    overflow-x: auto;
+}
+
+.passenger-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.passenger-table th {
+    background: #0F1B33;
+    color: white;
+    padding: 14px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.passenger-table td {
+    padding: 14px;
+    border-bottom: 1px solid #eee;
+    color: #333;
+}
+
+.passenger-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+/* Table Action Buttons */
+.passenger-table button {
+    border: none;
+    padding: 7px 10px;
+    margin: 2px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.view-btn {
+    background: #0F1B33;
+    color: white;
+}
+
+.edit-btn {
+    background: #ffc107;
+    color: #222;
+}
+
+.delete-btn {
+    background: #D80F1E;
+    color: white;
+}
+
+/* Passenger Details Modal */
+.passenger-details-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 9999;
+}
+
+.passenger-details-modal[hidden] {
+    display: none;
+}
+
+.passenger-details-content {
+    background: white;
+    width: 100%;
+    max-width: 500px;
+    padding: 30px;
+    border-radius: 12px;
+    position: relative;
+}
+
+.passenger-details-content h2 {
+    color: #0F1B33;
+    margin-bottom: 20px;
+}
+
+.close-details-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .passenger-page {
+        margin-top: 80px;
+        padding: 15px;
+    }
+
+    .passenger-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .passenger-list-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .passenger-search input {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .passenger-form-actions {
+        flex-direction: column;
+    }
+
+    .confirm-btn,
+    .back-btn {
+        width: 100%;
+    }
+}
