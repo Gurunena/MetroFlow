@@ -15,11 +15,12 @@
 
   var API = '/api';
   var REFRESH_MS = 20000;
-  var MAX_SEATS = 6; // limit when no passenger count was given
+  var MAX_PAX = 6; // one booking can be for up to 6 passengers
 
   var params = new URLSearchParams(window.location.search);
   var busId = (params.get('busId') || params.get('bus') || '').toUpperCase();
-  var pax = parseInt(params.get('pax'), 10) || 0; // 0 = not set
+  // number of passengers = number of seats that must be selected (1–6, from the search page)
+  var pax = Math.min(Math.max(parseInt(params.get('pax'), 10) || 1, 1), MAX_PAX);
   var bus = null;
   var booked = [];
   var selected = [];
@@ -72,7 +73,7 @@
   }
 
   function limit() {
-    return pax || MAX_SEATS;
+    return pax;
   }
 
   function today() {
@@ -213,10 +214,9 @@
       }
     }
 
-    $('#paxNote').text(pax
-      ? 'Select ' + pax + ' seat' + (pax === 1 ? '' : 's') + ' – ' + selected.length + ' of ' + pax + ' chosen.'
-      : 'Select up to ' + MAX_SEATS + ' available seats.');
-    $('#continueBooking').prop('disabled', !selected.length || (pax && selected.length !== pax));
+    $('#paxNote').text('Select ' + pax + ' seat' + (pax === 1 ? '' : 's') + ' – ' + selected.length + ' of ' + pax + ' chosen.');
+    // Continue only when exactly one seat per passenger has been selected
+    $('#continueBooking').prop('disabled', selected.length !== pax);
   }
 
   /* ================================ events =============================== */
@@ -244,9 +244,25 @@
 
     $('#refreshSeatAvailability').on('click', function () { loadSeats(true); });
 
+    // Changing the passenger count changes how many seats must be selected
+    $('#paxSelect').on('change', function () {
+      pax = parseInt($(this).val(), 10) || 1;
+      if (selected.length > pax) {
+        var dropped = selected.splice(pax);
+        $.each(dropped, function (i, s) {
+          $('#seatGrid .seat[data-seat="' + s + '"]').removeClass('selected').addClass('available');
+        });
+        showMessage('Removed ' + dropped.join(', ') + ' – ' + pax + ' passenger' + (pax === 1 ? '' : 's') + ' selected.', 'warning');
+      }
+      if (busId) {
+        window.history.replaceState(null, '', '?busId=' + encodeURIComponent(busId) + '&pax=' + pax);
+      }
+      updateSeatAvailability();
+    });
+
     $('#busPicker').on('change', function () {
       busId = $(this).val();
-      var url = busId ? '?busId=' + encodeURIComponent(busId) + (pax ? '&pax=' + pax : '') : window.location.pathname;
+      var url = busId ? '?busId=' + encodeURIComponent(busId) + '&pax=' + pax : window.location.pathname;
       window.history.replaceState(null, '', url);
       $('#seatMessage').empty().attr('class', '');
       loadBus();
@@ -266,6 +282,7 @@
       MF.loadPartial('#navbar', 'partials/navbar.html'),
       MF.loadPartial('#footer', 'partials/footer.html')
     );
+    $('#paxSelect').val(String(pax));
     bind();
     // A bus normally arrives from the search results (?busId=…). The picker is
     // only a fallback for when the page is opened without one.

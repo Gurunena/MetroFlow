@@ -39,11 +39,12 @@ phone +94XXXXXXXXX / 07XXXXXXXX, valid email, NIC must be unique (409 if already
 |---|---|
 | Display seat layout | Seats A1, A2 … built from the bus's Total_Seats (GET /api/buses/:busId), 4 per row |
 | Show available / occupied seats | Booked seats from GET /api/bookings/bus/:busId/seats are grey and disabled |
-| Select seats | Click to select / deselect; limited to the passenger count from Search (?pax=2) |
+| Select seats | **Passengers** select (1–6, starts from the Search page's count). Exactly that many seats must be chosen before Continue is enabled; lowering the count removes the extra seats. Total price shown. |
 | Update seat availability | A booking takes a seat and a cancellation frees it (booking API updates Available_Seats). The page re-checks every 20 s and on "Refresh Seat Availability"; a seat someone else just booked is removed from your selection. |
 | Continue | "Continue to booking" → booking.html?bus=MB1002&seats=A1,A2 (Member 4) |
 
 Flow: Search → **Select Seats** → seats.html → manage-bookings.html?busId=…&pax=… → Continue → booking.html
+(The seat page is not in the navbar – it is always reached from a search result. Opened without a bus, it shows a "Find a bus" button.)
 
 ## jQuery uses on these pages
 Events & delegation (`.on('click', '.seat…')`), Ajax (`$.ajax` GET/POST/PUT/DELETE), DOM building

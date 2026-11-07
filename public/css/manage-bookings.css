@@ -845,3 +845,18 @@
 #seatMessage.alert-success { color: #15803D; background: #E8F7EE; border-color: #BBF7D0; }
 #seatMessage.alert-warning { color: #92400E; background: #FEF3C7; border-color: #FDE68A; }
 #seatMessage.alert-danger  { color: #B00B18; background: #FFF0F1; border-color: #FECACA; }
+
+/* passenger count picker above the seat map */
+.pax-picker {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .75rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    background: var(--mf-tint-red, #FFF5F5);
+}
+.pax-picker label { margin: 0; font-weight: 700; color: var(--mf-navy, #0F1B33); }
+.pax-picker label i { color: var(--mf-red, #D80F1E); margin-right: .35rem; }
+.pax-picker .form-select { width: auto; min-width: 90px; font-weight: 700; }
