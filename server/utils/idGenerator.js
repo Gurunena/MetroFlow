@@ -7,21 +7,13 @@ const Counter = require('../models/Counter');
  * $inc is atomic, so two bookings made at the same moment never get the same number.
  */
 async function generateBookingId(travelDate) {
-  const Booking = require('../models/Booking'); // loaded here to keep the models independent
   const dateKey = String(travelDate).replace(/-/g, ''); // "2026-10-15" -> "20261015"
-
-  // If the counter is behind the data already in the database (e.g. after seeding
-  // sample bookings), numbers that are already taken are skipped.
-  for (let attempt = 0; attempt < 1000; attempt++) {
-    const counter = await Counter.findOneAndUpdate(
-      { _id: 'booking-' + dateKey },
-      { $inc: { seq: 1 } },
-      { returnDocument: 'after', upsert: true } // creates the counter on first use
-    );
-    const id = 'BK' + dateKey + String(counter.seq).padStart(3, '0');
-    if (!(await Booking.exists({ Booking_ID: id }))) return id;
-  }
-  throw new Error('Could not generate a unique Booking ID');
+  const counter = await Counter.findOneAndUpdate(
+    { _id: 'booking-' + dateKey },
+    { $inc: { seq: 1 } },
+    { returnDocument: 'after', upsert: true } // creates the counter on first use
+  );
+  return 'BK' + dateKey + String(counter.seq).padStart(3, '0');
 }
 
 /**

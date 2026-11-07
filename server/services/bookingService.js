@@ -154,8 +154,12 @@ async function createBooking(body) {
 
   try {
     // Schedule details (date, destination, fare) are copied from the bus – never trusted from the client
+        let bookingId = await generateBookingId(bus.Travel_Date);
+    while (await Booking.exists({ Booking_ID: bookingId })) {
+      bookingId = await generateBookingId(bus.Travel_Date); // skip IDs already used by sample data
+    }
     const booking = await Booking.create({
-      Booking_ID: await generateBookingId(bus.Travel_Date),
+      Booking_ID: bookingId,
       Passenger_Name: data.Passenger_Name,
       Phone: cleanPhone(data.Phone),
       Email: data.Email,
@@ -170,20 +174,14 @@ async function createBooking(body) {
     await hooks.afterCreate(booking);
     return booking.toJSON();
   } catch (err) {
-            // Booking failed (e.g. two people took the same seat at the same moment) – give the seat back
+    // Booking failed (e.g. two people took the same seat at the same moment) – give the seat back
     await Bus.updateOne(
       { Bus_ID: busId, $expr: { $lt: ['$Available_Seats', '$Total_Seats'] } },
       { $inc: { Available_Seats: 1 } }
     );
-    if (err && err.code === 11000) {
-      // Only a clash on the seat index means "seat taken"; anything else (e.g. a Booking_ID clash) is not the seat's fault
-      if (err.keyPattern && err.keyPattern.Seat_Number) {
-        throw new ServiceError(409, 'Seat ' + seat + ' is already booked');
-      }
-      throw new ServiceError(409, 'Could not create the booking right now – please try again');
-    }
+    if (err && err.code === 11000) throw new ServiceError(409, 'Seat ' + seat + ' is already booked');
     throw err;
-    
+  }
 }
 
 /* ---------- 2–8. View & search ---------- */
