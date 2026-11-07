@@ -12,6 +12,7 @@ const passengerSchema = new mongoose.Schema(
     Passenger_ID: { type: String, required: true, unique: true, trim: true, uppercase: true },
     Full_Name: {
       type: String,
+      alias: 'Passenger_Name',   // the brief's name for this field
       required: [true, 'Full_Name is required'],
       trim: true,
       minlength: [2, 'Full_Name must be at least 2 characters'],
@@ -19,8 +20,13 @@ const passengerSchema = new mongoose.Schema(
     },
     NIC: {
       type: String,
-      required: [true, 'NIC / Passport is required'],
+      // Optional on purpose: creating a booking upserts a passenger from
+      // name + phone + email, and a traveller does not give a NIC at that
+      // point. `sparse` lets many documents have no NIC while the ones that
+      // do stay unique. The admin passenger form still sends it.
+      required: false,
       unique: true,
+      sparse: true,
       trim: true,
       uppercase: true,
       match: [NIC_RE, 'NIC must be 9 digits + V/X, 12 digits, or a passport number like N1234567']
@@ -50,18 +56,29 @@ const passengerSchema = new mongoose.Schema(
     versionKey: false,
     timestamps: true,
     toJSON: {
+      virtuals: true,            // so Passenger_Name appears in responses
       transform: (doc, ret) => {
         delete ret._id; // API records follow the brief's style (no Mongo _id)
+        delete ret.id;  // the virtual Mongoose adds alongside _id
+        if (ret.Full_Name !== undefined) { ret.Passenger_Name = ret.Full_Name; }
         return ret;
       }
     }
   }
 );
 
+// Optional link to the account the passenger signed in with (User 1 -- 0..1
+// Passenger). Left unset for guest bookings.
+passengerSchema.add({
+  User_Ref: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }
+});
+
 // Indexes for the search box
 passengerSchema.index({ Full_Name: 1 });
 passengerSchema.index({ Phone: 1 });
 passengerSchema.index({ Email: 1 });
+// Bookings upsert a passenger on this pair, so it must be fast and unique.
+passengerSchema.index({ Email: 1, Phone: 1 }, { unique: true });
 
 const Passenger = mongoose.model('Passenger', passengerSchema);
 

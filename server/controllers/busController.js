@@ -1,6 +1,10 @@
 // busController.js – handles bus REST API requests
 const busService = require('../services/busService');
-const { ServiceError } = busService;
+// busService throws ApiError from utils/response and has never exported a
+// `ServiceError`, so destructuring it off the service gave `undefined` and
+// `err instanceof undefined` threw a TypeError that killed the process the
+// first time any bus route failed. Import the real class instead.
+const { ApiError: ServiceError } = require('../utils/response');
 
 // success:  { success: true, message?, count?, data }
 // failure:  { success: false, error, details? }
@@ -39,29 +43,53 @@ function handler(run, options) {
   };
 }
 
+/**
+ * Export names match routes/busRoutes.js, and each one calls the function
+ * busService actually exports. These two files had drifted apart (the
+ * controller exported getAllBuses/getAvailable/... while the router asked
+ * for list/available/..., and it called busService.listBuses/searchAvailable/
+ * createBus/... which the service never exported), so the router threw at
+ * mount time and /api/buses fell back to the read-only search router.
+ */
 module.exports = {
   // 1. Insert a Metro Bus
-  createBus: handler((req) => busService.createBus(req.body), { status: 201, message: 'Bus added successfully' }),
+  create: handler((req) => busService.create(req.body), { status: 201, message: 'Bus added successfully' }),
   // 2. Show all Metro Buses
-  getAllBuses: handler(() => busService.listBuses()),
+  list: handler((req) => busService.list(req.query)),
   // 3. Find a Metro Bus by Bus ID
-  getBusById: handler((req) => busService.getBusById(req.params.busId)),
+  getById: handler((req) => busService.getBusOr404(req.params.busId)),
   // 4. Find Buses by Route
-  getByRoute: handler((req) => busService.findByRoute(req.params.route)),
+  byRoute: handler((req) => busService.findByRoute(req.params.route)),
   // 5. Find Buses by Departure Location
-  getByDeparture: handler((req) => busService.findByDeparture(req.params.departure)),
+  byDeparture: handler((req) => busService.findByDeparture(req.params.departure)),
   // 6. Find Buses by Destination
-  getByDestination: handler((req) => busService.findByDestination(req.params.destination)),
+  byDestination: handler((req) => busService.findByDestination(req.params.destination)),
   // 7. Find Buses by Travel Date
-  getByDate: handler((req) => busService.findByDate(req.params.date)),
+  byDate: handler((req) => busService.findByDate(req.params.date)),
   // 8. Find Available Buses
-  getAvailable: handler((req) => busService.searchAvailable(req.query)),
+  available: handler((req) => busService.findAvailable(req.query)),
   // 9. Update Metro Bus Details
-  updateBus: handler((req) => busService.updateBus(req.params.busId, req.body), { message: 'Bus updated successfully' }),
+  update: handler((req) => busService.update(req.params.busId, req.body), { message: 'Bus updated successfully' }),
   // 10. Update Metro Bus Schedule
   updateSchedule: handler((req) => busService.updateSchedule(req.params.busId, req.body), { message: 'Schedule updated successfully' }),
   // 11. Delete Metro Bus by Bus ID
-  deleteBus: handler((req) => busService.deleteBus(req.params.busId), { message: 'Bus deleted successfully' }),
-  // helper: places for autocomplete
-  getLocations: handler(() => busService.getLocations())
+  remove: handler((req) => busService.remove(req.params.busId), { message: 'Bus deleted successfully' }),
+
+  // helpers
+  seats: handler((req) => busService.getSeatMap(req.params.busId, req.query.date)),
+  popular: handler((req) => busService.popularRoutes(Number(req.query.limit) || 6)),
+  locations: handler(() => busService.locations()),
+
+  // Legacy aliases, kept so nothing that imported the old names breaks.
+  createBus: handler((req) => busService.create(req.body), { status: 201, message: 'Bus added successfully' }),
+  getAllBuses: handler((req) => busService.list(req.query)),
+  getBusById: handler((req) => busService.getBusOr404(req.params.busId)),
+  getByRoute: handler((req) => busService.findByRoute(req.params.route)),
+  getByDeparture: handler((req) => busService.findByDeparture(req.params.departure)),
+  getByDestination: handler((req) => busService.findByDestination(req.params.destination)),
+  getByDate: handler((req) => busService.findByDate(req.params.date)),
+  getAvailable: handler((req) => busService.findAvailable(req.query)),
+  updateBus: handler((req) => busService.update(req.params.busId, req.body), { message: 'Bus updated successfully' }),
+  deleteBus: handler((req) => busService.remove(req.params.busId), { message: 'Bus deleted successfully' }),
+  getLocations: handler(() => busService.locations())
 };

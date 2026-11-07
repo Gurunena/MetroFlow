@@ -29,6 +29,11 @@ function pick(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
     throw new ServiceError(400, 'Request body must be a JSON object');
   }
+  // The assignment calls this field Passenger_Name, this model calls it
+  // Full_Name. Accept either so neither contract has to change.
+  if (body.Passenger_Name !== undefined && body.Full_Name === undefined) {
+    body = Object.assign({}, body, { Full_Name: body.Passenger_Name });
+  }
   const out = {};
   FIELDS.forEach((key) => {
     if (!Object.prototype.hasOwnProperty.call(body, key) || body[key] === undefined) return;
@@ -106,19 +111,41 @@ async function createPassenger(body) {
 
 /* ---------- 2. View all passengers (optional ?search=) ---------- */
 function listPassengers(search) {
+  // .lean() skips the model toJSON, so add the brief's field name here.
+  const withAlias = (rows) => rows.map((r) => {
+    if (r.Full_Name !== undefined) { r.Passenger_Name = r.Full_Name; }
+    return r;
+  });
   const filter = {};
   const text = typeof search === 'string' ? search.trim() : '';
   if (text) {
     const re = new RegExp(escapeRegex(text), 'i');
     filter.$or = [{ Passenger_ID: re }, { Full_Name: re }, { NIC: re }, { Phone: re }, { Email: re }];
   }
-  return Passenger.find(filter).select(HIDE_ID).sort({ Passenger_ID: 1 }).lean();
+  return Passenger.find(filter).select(HIDE_ID).sort({ Passenger_ID: 1 }).lean().then(withAlias);
 }
+
 
 /* ---------- 3. View one passenger ---------- */
 async function getPassengerById(passengerId) {
   const passenger = await Passenger.findOne({ Passenger_ID: normalizeId(passengerId) }).select(HIDE_ID).lean();
   if (!passenger) throw new ServiceError(404, 'Passenger not found');
+
+  // The brief asks for the passenger "with their bookings". Matched on the
+  // reference when the booking carries one, and on email+phone for the older
+  // rows written before Passenger_Ref existed.
+  const Booking = require('../models/Booking');
+  const or = [{ Email: passenger.Email }, { Phone: passenger.Phone }];
+  if (passenger._id) { or.push({ Passenger_Ref: passenger._id }); }
+
+  const bookings = await Booking.find({ $or: or })
+    .sort({ Travel_Date: -1, Booking_ID: -1 })
+    .lean();
+  bookings.forEach((b) => { delete b._id; });
+
+  passenger.Bookings = bookings;
+  // The brief's field name for Full_Name.
+  if (passenger.Full_Name !== undefined) { passenger.Passenger_Name = passenger.Full_Name; }
   return passenger;
 }
 

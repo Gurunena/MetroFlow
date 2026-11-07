@@ -7,6 +7,22 @@ const { connectDB, disconnectDB } = require('./config/db');
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
 
+/**
+ * A rejected promise or a throw inside an async handler used to take the
+ * whole process down mid-request (busController's `instanceof undefined`
+ * did exactly that). Log it loudly and keep serving: one bad request must
+ * never end the night's demo.
+ */
+process.on('unhandledRejection', (reason) => {
+  console.error('\nUNHANDLED REJECTION — the server is still running:');
+  console.error(reason && reason.stack ? reason.stack : reason, '\n');
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('\nUNCAUGHT EXCEPTION — the server is still running:');
+  console.error(err && err.stack ? err.stack : err, '\n');
+});
+
 async function start() {
   // The HTTP server comes up whether or not Mongo answers. Teammates working
   // on the front end can then open the pages without installing MongoDB –
