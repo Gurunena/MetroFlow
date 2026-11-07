@@ -1,0 +1,653 @@
+/* info-pages.css – shared styles for about.html, team.html and contact.html
+   -------------------------------------------------------------------------
+   Loaded AFTER home.css, which owns the design tokens (--mf-red, --mf-navy,
+   --mf-grey, --mf-tint-*, radii, shadows) and the shared components these
+   pages reuse unchanged: .mf-card, .mf-section, .mf-bg-tint, .mf-btn-red,
+   .mf-btn-outline-red, .mf-btn-ghost, .mf-eyebrow, .mf-section-title,
+   .mf-badge-soft, .mf-step, .mf-stats / .mf-stat-num, .mf-link-arrow,
+   .mf-state and the navbar/footer rules the partials depend on.
+
+   Only what those three pages add lives here, all prefixed `mf-info-` so
+   nothing can collide with a teammate's CSS. Fallback values are given for
+   every token so a page still looks right if home.css ever fails to load.
+
+   Motion is deliberately restrained: colour and shadow changes on hover, one
+   fade on the FAQ panels, nothing that moves the layout. Everything is
+   switched off under prefers-reduced-motion at the bottom of the file.
+   ------------------------------------------------------------------------- */
+
+/* ============================== HERO BANNER ============================= */
+/* Compact banner: eyebrow, headline with one script word, subtitle, crumb. */
+.mf-info-hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--mf-tint-grey, #F7F8FA);
+  border-bottom: 1px solid var(--mf-line, #E8EAEF);
+  padding: clamp(2.25rem, 6vw, 4rem) 0 clamp(1.75rem, 4vw, 2.75rem);
+}
+
+/* Soft brand glow, bottom-right. Decorative only. */
+.mf-info-hero::after {
+  content: "";
+  position: absolute;
+  right: -8%;
+  bottom: -70%;
+  width: 46%;
+  min-width: 260px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(216, 15, 30, .10), transparent 68%);
+  pointer-events: none;
+}
+
+.mf-info-hero > .container { position: relative; z-index: 1; }
+
+.mf-info-hero-title {
+  font-size: clamp(2rem, 5.2vw, 3.4rem);
+  line-height: 1.1;
+  color: var(--mf-navy, #0F1B33);
+  margin: .35rem 0 .75rem;
+  max-width: 24ch;
+}
+
+/* The one highlighted word per hero. Pinyon Script needs a little side
+   padding or its swashes get clipped by the inline box. */
+.mf-info-script {
+  font-family: "Pinyon Script", "Great Vibes", Caveat, cursive;
+  font-weight: 400;
+  font-size: 1.24em;
+  line-height: 1;
+  color: var(--mf-red, #D80F1E);
+  padding: 0 .07em;
+}
+
+.mf-info-hero-sub {
+  color: var(--mf-grey, #6B7280);
+  font-size: 1.02rem;
+  max-width: 58ch;
+  margin: 0;
+}
+
+/* -------------------------------- crumb -------------------------------- */
+.mf-info-crumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .4rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: .82rem;
+}
+.mf-info-crumb li { display: flex; align-items: center; gap: .4rem; color: var(--mf-grey, #6B7280); }
+.mf-info-crumb li + li::before {
+  content: "/";
+  color: var(--mf-line, #E8EAEF);
+  font-weight: 700;
+}
+.mf-info-crumb a { color: var(--mf-grey, #6B7280); text-decoration: none; font-weight: 600; }
+.mf-info-crumb a:hover { color: var(--mf-red, #D80F1E); text-decoration: underline; }
+.mf-info-crumb [aria-current="page"] { color: var(--mf-navy, #0F1B33); font-weight: 700; }
+
+/* ============================== OUR STORY =============================== */
+.mf-info-story-photo {
+  background: var(--mf-tint-red, #FFF5F5);
+  border: 1px solid var(--mf-line, #E8EAEF);
+  border-radius: var(--mf-r-lg, 24px);
+  padding: clamp(1.25rem, 4vw, 2.25rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 220px;
+}
+.mf-info-story-photo img {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  display: block;
+}
+
+/* A short pull-quote between the two story paragraphs. */
+.mf-info-quote {
+  border-left: 3px solid var(--mf-red, #D80F1E);
+  padding: .1rem 0 .1rem 1rem;
+  margin: 1.25rem 0;
+  color: var(--mf-navy, #0F1B33);
+  font-weight: 600;
+}
+
+/* ========================= MISSION & VISION CARDS ======================= */
+.mf-info-mv { border-top: 3px solid var(--mf-red, #D80F1E); }
+.mf-info-mv .mf-info-mv-ic {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--mf-r-md, 16px);
+  background: var(--mf-tint-red, #FFF5F5);
+  color: var(--mf-red, #D80F1E);
+  font-size: 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.mf-info-mv h3 { font-size: 1.25rem; margin-bottom: .6rem; }
+.mf-info-mv p { margin-bottom: 0; }
+
+/* ============================ FEATURE CARDS ============================= */
+/* "What you can do" – 6 cards. Hover changes colour only, never position. */
+.mf-info-feature {
+  transition: border-color .2s, box-shadow .2s, background-color .2s;
+}
+.mf-info-feature:hover,
+.mf-info-feature:focus-within {
+  border-color: rgba(216, 15, 30, .4);
+  box-shadow: var(--mf-shadow, 0 10px 30px rgba(15, 27, 51, .08));
+}
+.mf-info-feature .mf-info-ic {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--mf-r-md, 16px);
+  background: var(--mf-tint-red, #FFF5F5);
+  color: var(--mf-red, #D80F1E);
+  font-size: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: .9rem;
+  transition: background-color .2s, color .2s;
+}
+.mf-info-feature:hover .mf-info-ic {
+  background: var(--mf-red, #D80F1E);
+  color: #fff;
+}
+.mf-info-feature h3 { font-size: 1.05rem; margin-bottom: .4rem; }
+.mf-info-feature p { font-size: .92rem; margin-bottom: 0; }
+
+/* ============================ TECHNOLOGY ROW ============================ */
+.mf-info-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.mf-info-tech-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  background: #fff;
+  border: 1px solid var(--mf-line, #E8EAEF);
+  border-radius: 999px;
+  padding: .5rem 1rem;
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--mf-navy, #0F1B33);
+  box-shadow: var(--mf-shadow-sm, 0 2px 8px rgba(15, 27, 51, .06));
+  transition: border-color .2s, color .2s;
+}
+.mf-info-tech-badge i { color: var(--mf-red, #D80F1E); font-size: 1rem; }
+.mf-info-tech-badge:hover { border-color: rgba(216, 15, 30, .45); color: var(--mf-red, #D80F1E); }
+/* The short "what it does here" note under each badge name. */
+.mf-info-tech-badge span span {
+  display: block;
+  font-size: .72rem;
+  font-weight: 500;
+  color: var(--mf-grey, #6B7280);
+}
+
+/* ================================= FAQ ================================== */
+.mf-info-faq .accordion-item {
+  background: #fff;
+  border: 1px solid var(--mf-line, #E8EAEF);
+  border-radius: var(--mf-r-md, 16px) !important;
+  margin-bottom: .75rem;
+  overflow: hidden;
+}
+.mf-info-faq .accordion-button {
+  font-weight: 700;
+  color: var(--mf-navy, #0F1B33);
+  background: #fff;
+  box-shadow: none;
+  padding: 1.05rem 1.25rem;
+}
+.mf-info-faq .accordion-button:not(.collapsed) {
+  color: var(--mf-red, #D80F1E);
+  background: var(--mf-tint-red, #FFF5F5);
+}
+.mf-info-faq .accordion-button:hover { color: var(--mf-red, #D80F1E); }
+.mf-info-faq .accordion-button:focus {
+  border-color: transparent;
+  box-shadow: 0 0 0 3px rgba(216, 15, 30, .28);
+}
+/* Bootstrap's default chevron is a dark SVG; recolour it when open. */
+.mf-info-faq .accordion-button::after {
+  width: 1rem;
+  height: 1rem;
+  background-size: 1rem;
+}
+.mf-info-faq .accordion-button:not(.collapsed)::after {
+  filter: invert(16%) sepia(92%) saturate(5700%) hue-rotate(350deg) brightness(84%) contrast(102%);
+}
+.mf-info-faq .accordion-body { color: var(--mf-grey, #6B7280); padding: 0 1.25rem 1.2rem; }
+/* The "simple fade" – the panel body eases in as the item opens. */
+.mf-info-faq .accordion-collapse.show .accordion-body { animation: mf-info-fade .32s ease both; }
+@keyframes mf-info-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ============================= CLOSING CTA ============================== */
+.mf-info-cta {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--mf-r-lg, 24px);
+  background: var(--mf-navy, #0F1B33);
+  color: #fff;
+  padding: clamp(1.75rem, 5vw, 3rem);
+  text-align: center;
+}
+.mf-info-cta::after {
+  content: "";
+  position: absolute;
+  inset: auto -12% -70% auto;
+  width: 56%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(216, 15, 30, .5), transparent 70%);
+  pointer-events: none;
+}
+.mf-info-cta > * { position: relative; z-index: 1; }
+.mf-info-cta h2 { color: #fff; font-size: clamp(1.5rem, 3.4vw, 2.2rem); }
+.mf-info-cta p { color: rgba(255, 255, 255, .78); max-width: 52ch; margin: .6rem auto 1.5rem; }
+/* On navy, the outline button needs light ink to clear 4.5:1. */
+.mf-info-cta .mf-btn-outline-red { border-color: #fff; color: #fff; }
+.mf-info-cta .mf-btn-outline-red:hover,
+.mf-info-cta .mf-btn-outline-red:focus { background: #fff; color: var(--mf-navy, #0F1B33); }
+
+/* ========================================================================
+   TEAM PAGE
+   ===================================================================== */
+
+/* ----------------------------- filter chips ---------------------------- */
+.mf-info-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.mf-info-chip {
+  border: 1px solid var(--mf-line, #E8EAEF);
+  background: #fff;
+  color: var(--mf-navy, #0F1B33);
+  border-radius: 999px;
+  padding: .5rem 1.1rem;
+  font-size: .88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color .2s, color .2s, border-color .2s;
+}
+.mf-info-chip:hover { border-color: var(--mf-red, #D80F1E); color: var(--mf-red, #D80F1E); }
+.mf-info-chip.is-active {
+  background: var(--mf-red, #D80F1E);
+  border-color: var(--mf-red, #D80F1E);
+  color: #fff;
+}
+.mf-info-chip .mf-info-chip-n {
+  font-size: .76rem;
+  font-weight: 800;
+  opacity: .72;
+  margin-left: .3rem;
+}
+
+/* ----------------------------- member cards ---------------------------- */
+.mf-info-member {
+  display: flex;
+  flex-direction: column;
+  transition: border-color .2s, box-shadow .2s;
+}
+.mf-info-member:hover,
+.mf-info-member:focus-within {
+  border-color: rgba(216, 15, 30, .4);
+  box-shadow: var(--mf-shadow, 0 10px 30px rgba(15, 27, 51, .08));
+}
+
+/* Circle of initials in brand red. 4.9:1 for white on #D80F1E. */
+.mf-info-avatar {
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  border-radius: 50%;
+  background: var(--mf-red, #D80F1E);
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: .02em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.mf-info-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.mf-info-member-name { font-size: 1.1rem; margin: 0 0 .15rem; }
+.mf-info-member-id {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--mf-grey, #6B7280);
+  font-variant-numeric: tabular-nums;
+}
+.mf-info-member-role {
+  display: inline-block;
+  margin-top: .45rem;
+  font-size: .8rem;
+  font-weight: 800;
+  color: var(--mf-red, #D80F1E);
+}
+.mf-info-built {
+  font-size: .92rem;
+  color: var(--mf-grey, #6B7280);
+  margin: .85rem 0 1rem;
+}
+.mf-info-built strong { color: var(--mf-navy, #0F1B33); font-weight: 700; }
+
+/* Module badges on each card. */
+.mf-info-modules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  padding: 0;
+  margin: 0 0 1rem;
+  list-style: none;
+}
+.mf-info-mod {
+  font-size: .72rem;
+  font-weight: 700;
+  padding: .22rem .6rem;
+  border-radius: 999px;
+  background: var(--mf-tint-grey, #F7F8FA);
+  border: 1px solid var(--mf-line, #E8EAEF);
+  color: var(--mf-navy, #0F1B33);
+}
+
+/* Email / GitHub icon links, pushed to the bottom of the card. */
+.mf-info-member-links {
+  margin-top: auto;
+  display: flex;
+  gap: .4rem;
+  padding-top: .25rem;
+}
+.mf-info-iconlink {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--mf-line, #E8EAEF);
+  background: #fff;
+  color: var(--mf-navy, #0F1B33);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: background-color .2s, color .2s, border-color .2s;
+}
+.mf-info-iconlink:hover {
+  background: var(--mf-red, #D80F1E);
+  border-color: var(--mf-red, #D80F1E);
+  color: #fff;
+}
+
+/* A placeholder card reads as a placeholder, not as a real person. */
+.mf-info-member.is-placeholder .mf-info-avatar { background: var(--mf-grey, #6B7280); }
+.mf-info-ph-note {
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--mf-grey, #6B7280);
+  background: var(--mf-tint-grey, #F7F8FA);
+  border: 1px dashed var(--mf-line, #E8EAEF);
+  border-radius: 999px;
+  padding: .2rem .6rem;
+  display: inline-block;
+}
+
+/* --------------------------- project at a glance ----------------------- */
+.mf-info-modlist {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: grid;
+  gap: .6rem;
+}
+.mf-info-modlist li {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  font-size: .94rem;
+  color: var(--mf-grey, #6B7280);
+}
+.mf-info-modlist li strong { color: var(--mf-navy, #0F1B33); }
+.mf-info-modlist .mf-info-n {
+  flex: 0 0 26px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--mf-tint-red, #FFF5F5);
+  color: var(--mf-red, #D80F1E);
+  font-size: .76rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: .1rem;
+}
+
+/* ========================================================================
+   CONTACT PAGE
+   ===================================================================== */
+
+.mf-info-detail {
+  display: flex;
+  gap: .9rem;
+  align-items: flex-start;
+  background: #fff;
+  border: 1px solid var(--mf-line, #E8EAEF);
+  border-radius: var(--mf-r-md, 16px);
+  padding: 1.1rem;
+  transition: border-color .2s, box-shadow .2s;
+}
+.mf-info-detail:hover {
+  border-color: rgba(216, 15, 30, .4);
+  box-shadow: var(--mf-shadow-sm, 0 2px 8px rgba(15, 27, 51, .06));
+}
+.mf-info-detail .mf-info-ic {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: var(--mf-r-sm, 12px);
+  background: var(--mf-tint-red, #FFF5F5);
+  color: var(--mf-red, #D80F1E);
+  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.mf-info-detail h3 {
+  font-size: .74rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mf-grey, #6B7280);
+  margin: 0 0 .25rem;
+}
+.mf-info-detail p { margin: 0; color: var(--mf-navy, #0F1B33); font-weight: 600; font-size: .95rem; }
+.mf-info-detail a { color: var(--mf-navy, #0F1B33); text-decoration: none; }
+.mf-info-detail a:hover { color: var(--mf-red, #D80F1E); text-decoration: underline; }
+
+/* Demo-data disclaimer. */
+.mf-info-demo-note {
+  display: flex;
+  gap: .55rem;
+  align-items: flex-start;
+  font-size: .82rem;
+  color: var(--mf-grey, #6B7280);
+  background: var(--mf-tint-grey, #F7F8FA);
+  border: 1px dashed var(--mf-line, #E8EAEF);
+  border-radius: var(--mf-r-sm, 12px);
+  padding: .7rem .85rem;
+}
+.mf-info-demo-note i { color: var(--mf-red, #D80F1E); margin-top: .1rem; }
+
+/* ------------------------------- the form ------------------------------ */
+.mf-info-form { padding: clamp(1.25rem, 3vw, 2rem); }
+.mf-info-form .form-label { font-weight: 700; font-size: .88rem; margin-bottom: .35rem; }
+.mf-info-form .form-label .mf-info-opt { font-weight: 500; color: var(--mf-grey, #6B7280); }
+.mf-info-form .form-control,
+.mf-info-form .form-select {
+  border-radius: var(--mf-r-sm, 12px);
+  border: 1px solid var(--mf-line, #E8EAEF);
+  padding: .7rem .9rem;
+  font-size: .95rem;
+}
+.mf-info-form .form-control:focus,
+.mf-info-form .form-select:focus {
+  border-color: var(--mf-red, #D80F1E);
+  box-shadow: 0 0 0 3px rgba(216, 15, 30, .18);
+}
+.mf-info-form textarea.form-control { min-height: 150px; resize: vertical; }
+
+/* Bootstrap's .invalid-feedback only shows under .was-validated or
+   .is-invalid; these just restyle it to match the rest of the form. */
+.mf-info-form .invalid-feedback { font-size: .8rem; font-weight: 600; }
+.mf-info-form .form-control.is-invalid,
+.mf-info-form .form-select.is-invalid { border-color: #B00B18; }
+
+.mf-info-counter {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--mf-grey, #6B7280);
+  font-variant-numeric: tabular-nums;
+}
+.mf-info-counter.is-near { color: #9A6700; }
+.mf-info-counter.is-over { color: #B00B18; }
+
+/* Honeypot: off-screen rather than display:none, so a bot that only skips
+   hidden inputs still fills it. Never focusable by a real keyboard user. */
+.mf-info-hp {
+  position: absolute !important;
+  left: -9999px !important;
+  top: auto !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}
+
+/* Status line under the submit button (aria-live). */
+.mf-info-status { font-size: .88rem; font-weight: 600; margin: 0; }
+.mf-info-status.is-error { color: #B00B18; }
+.mf-info-status.is-busy { color: var(--mf-grey, #6B7280); }
+
+/* --------------------------- success confirmation ---------------------- */
+.mf-info-success { text-align: center; padding: clamp(1.5rem, 4vw, 2.5rem); }
+.mf-info-success .mf-info-tick {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: var(--mf-tint-red, #FFF5F5);
+  color: var(--mf-red, #D80F1E);
+  font-size: 1.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mf-info-ref {
+  display: inline-block;
+  margin: .9rem 0 1.1rem;
+  padding: .55rem 1.1rem;
+  border-radius: 999px;
+  background: var(--mf-navy, #0F1B33);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: .06em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------- map --------------------------------- */
+.mf-info-map {
+  border: 1px solid var(--mf-line, #E8EAEF);
+  border-radius: var(--mf-r-lg, 24px);
+  overflow: hidden;
+  background: var(--mf-tint-grey, #F7F8FA);
+}
+.mf-info-map iframe {
+  display: block;
+  width: 100%;
+  height: 320px;
+  border: 0;
+}
+
+/* ------------------------------ quick help ----------------------------- */
+.mf-info-quick {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  background: #fff;
+  border: 1px solid var(--mf-line, #E8EAEF);
+  border-radius: var(--mf-r-md, 16px);
+  padding: 1rem 1.1rem;
+  text-decoration: none;
+  height: 100%;
+  transition: border-color .2s, box-shadow .2s;
+}
+.mf-info-quick:hover {
+  border-color: rgba(216, 15, 30, .4);
+  box-shadow: var(--mf-shadow-sm, 0 2px 8px rgba(15, 27, 51, .06));
+}
+.mf-info-quick .mf-info-ic {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: var(--mf-r-sm, 12px);
+  background: var(--mf-tint-red, #FFF5F5);
+  color: var(--mf-red, #D80F1E);
+  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.mf-info-quick strong { display: block; color: var(--mf-navy, #0F1B33); font-size: .98rem; }
+.mf-info-quick span { font-size: .84rem; color: var(--mf-grey, #6B7280); }
+
+/* ============================== RESPONSIVE ============================== */
+/* Guard against any child forcing the page wider than the viewport. */
+.mf-info-page { overflow-x: hidden; }
+
+@media (max-width: 575.98px) {
+  .mf-info-hero-title { max-width: none; }
+  /* Pinyon Script at this size can overhang; shrink it a touch. */
+  .mf-info-script { font-size: 1.14em; }
+  .mf-info-detail { padding: .9rem; }
+  .mf-info-avatar { width: 56px; height: 56px; flex-basis: 56px; font-size: 1.15rem; }
+  .mf-info-map iframe { height: 240px; }
+  .mf-info-cta .mf-btn-red,
+  .mf-info-cta .mf-btn-outline-red { width: 100%; }
+  /* Long placeholder emails must wrap rather than widen the card. */
+  .mf-info-detail p,
+  .mf-info-member-name { overflow-wrap: anywhere; }
+}
+
+/* ============================ REDUCED MOTION ============================ */
+@media (prefers-reduced-motion: reduce) {
+  .mf-info-feature,
+  .mf-info-feature .mf-info-ic,
+  .mf-info-member,
+  .mf-info-detail,
+  .mf-info-quick,
+  .mf-info-chip,
+  .mf-info-iconlink,
+  .mf-info-tech-badge {
+    transition: none;
+  }
+  .mf-info-faq .accordion-collapse.show .accordion-body { animation: none; }
+  /* Bootstrap's own accordion height transition. */
+  .mf-info-faq .accordion-collapse { transition: none !important; }
+}

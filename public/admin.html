@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Operator Dashboard – MetroFlow</title>
+  <meta name="description" content="MetroFlow operator dashboard: manage buses, schedules and bookings.">
   <meta name="robots" content="noindex">
   <link rel="icon" href="images/logo-mark.svg" type="image/svg+xml">
 
@@ -18,107 +19,241 @@
   <link href="css/home.css" rel="stylesheet">
   <link href="css/admin.css" rel="stylesheet">
 </head>
-<body class="admin-shell">
+<body class="mf-admin-page">
+  <!-- The SAME shared navbar as every other page; home.js injects it and
+       auth.js paints the signed-in operator into its right-hand side. -->
   <div id="navbar"></div>
 
-  <main id="main" class="container py-4">
-    <!-- Login gate -->
-    <section id="loginGate" class="d-none">
-      <form class="mf-card login-card p-4" id="adminLogin" novalidate>
-        <div class="text-center mb-3">
-          <img src="images/logo-mark.svg" alt="" width="56" height="56">
-          <h1 class="h4 mt-3 mb-1">Operator login</h1>
-          <p class="small mb-0">Manage buses, schedules and bookings.</p>
+  <main id="main">
+
+    <!-- ======================== LOGIN GATE ============================= -->
+    <!-- Shown by admin.js only when there is no valid admin token. -->
+    <section id="loginGate" class="container d-none">
+      <div class="mf-admin-gate">
+        <div class="mf-admin-card">
+
+          <div class="mf-admin-card-head">
+            <img src="images/logo-mark.svg" alt="MetroFlow" width="56" height="56">
+            <h1 class="mf-admin-title">Operator login</h1>
+            <p class="mf-admin-sub">Manage buses, schedules and bookings.</p>
+          </div>
+
+          <!-- Failure message from the server goes here -->
+          <div class="mf-admin-alert d-none" id="gateAlert" role="alert">
+            <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+            <span id="gateAlertText"></span>
+          </div>
+
+          <form id="adminLogin" novalidate>
+            <div class="mf-admin-field">
+              <label for="aUser">Username</label>
+              <div class="mf-admin-input">
+                <i class="bi bi-person" aria-hidden="true"></i>
+                <input class="form-control form-control-lg" id="aUser" name="username"
+                       type="text" autocomplete="username" autocapitalize="none"
+                       spellcheck="false" placeholder="admin" required>
+              </div>
+              <p class="mf-admin-err" id="aUserMsg" aria-live="polite"></p>
+            </div>
+
+            <div class="mf-admin-field">
+              <label for="aPass">Password</label>
+              <div class="mf-admin-input">
+                <i class="bi bi-lock" aria-hidden="true"></i>
+                <input class="form-control form-control-lg has-eye" id="aPass" name="password"
+                       type="password" autocomplete="current-password"
+                       placeholder="••••••••" required>
+                <button class="mf-admin-eye" type="button" id="aPassEye"
+                        aria-label="Show password" aria-pressed="false">
+                  <i class="bi bi-eye" aria-hidden="true"></i>
+                </button>
+              </div>
+              <p class="mf-admin-err" id="aPassMsg" aria-live="polite"></p>
+            </div>
+
+            <button class="mf-admin-submit" type="submit" id="aSubmit">
+              <span class="mf-admin-submit-label">Log in</span>
+              <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </button>
+          </form>
+
+          <p class="mf-admin-lock">
+            <i class="bi bi-shield-lock" aria-hidden="true"></i> Authorized personnel only
+          </p>
+          <p class="mf-admin-back"><a href="index.html">&larr; Back to home</a></p>
+
         </div>
-        <div class="mb-3"><label class="form-label" for="aUser">Username</label><input class="form-control" id="aUser" name="username" autocomplete="username" required><div class="invalid-feedback">Required.</div></div>
-        <div class="mb-3"><label class="form-label" for="aPass">Password</label><input class="form-control" id="aPass" name="password" type="password" autocomplete="current-password" required><div class="invalid-feedback">Required.</div></div>
-        <button class="btn btn-red w-100" type="submit">Log in <i class="bi bi-arrow-right"></i></button>
-        <p class="small text-muted-mf text-center mt-3 mb-0">Credentials are set in <code>.env</code> (ADMIN_USER / ADMIN_PASS).</p>
-      </form>
+      </div>
     </section>
 
-    <!-- Dashboard -->
-    <section id="dashboard" class="d-none">
-      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <!-- ========================= DASHBOARD ============================= -->
+    <section id="dashboard" class="container py-4 d-none">
+
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mf-admin-head">
         <div>
-          <span class="eyebrow">Operator dashboard</span>
-          <h1 class="h3 mt-1 mb-0">Good day, <span id="adminName">admin</span> <span class="script text-red">Ayubowan</span></h1>
+          <span class="mf-admin-eyebrow">Operator dashboard</span>
+          <h1 class="h3 mt-1 mb-0">Good day, <span id="adminName">operator</span></h1>
         </div>
         <div class="d-flex gap-2">
-          <button class="btn btn-ghost btn-sm" id="refreshAll"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
-          <button class="btn btn-outline-red btn-sm" id="adminLogout"><i class="bi bi-box-arrow-right"></i> Log out</button>
+          <button class="mf-btn-ghost btn-sm" id="refreshAll" type="button">
+            <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Refresh
+          </button>
+          <button class="mf-btn-outline-red btn-sm" id="adminLogout" type="button">
+            <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Log out
+          </button>
         </div>
       </div>
 
-      <!-- KPI cards -->
-      <div class="row g-3 mb-4" id="kpis">
-        <div class="col-6 col-xl-3"><div class="mf-card kpi"><div class="ic"><i class="bi bi-bus-front"></i></div><div><div class="n" data-k="totalBuses">–</div><div class="l">Total buses</div></div></div></div>
-        <div class="col-6 col-xl-3"><div class="mf-card kpi"><div class="ic"><i class="bi bi-calendar-check"></i></div><div><div class="n" data-k="todaysBookings">–</div><div class="l">Today's bookings</div></div></div></div>
-        <div class="col-6 col-xl-3"><div class="mf-card kpi"><div class="ic"><i class="bi bi-person-check"></i></div><div><div class="n" data-k="seatsSold">–</div><div class="l">Seats sold</div></div></div></div>
-        <div class="col-6 col-xl-3"><div class="mf-card kpi"><div class="ic"><i class="bi bi-cash-coin"></i></div><div><div class="n" data-k="revenue" data-prefix="LKR ">–</div><div class="l">Revenue (confirmed)</div></div></div></div>
+      <!-- ---------------------------- stats --------------------------- -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-xl-3">
+          <div class="mf-admin-stat">
+            <span class="mf-admin-stat-ic"><i class="bi bi-bus-front" aria-hidden="true"></i></span>
+            <div>
+              <div class="mf-admin-stat-n" data-stat="totalBuses">–</div>
+              <div class="mf-admin-stat-l">Total buses</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="mf-admin-stat">
+            <span class="mf-admin-stat-ic"><i class="bi bi-calendar-check" aria-hidden="true"></i></span>
+            <div>
+              <div class="mf-admin-stat-n" data-stat="todaysBookings">–</div>
+              <div class="mf-admin-stat-l">Today's bookings</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="mf-admin-stat">
+            <span class="mf-admin-stat-ic"><i class="bi bi-person-check" aria-hidden="true"></i></span>
+            <div>
+              <div class="mf-admin-stat-n" data-stat="seatsSold">–</div>
+              <div class="mf-admin-stat-l">Seats sold</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="mf-admin-stat">
+            <span class="mf-admin-stat-ic"><i class="bi bi-cash-coin" aria-hidden="true"></i></span>
+            <div>
+              <div class="mf-admin-stat-n" data-stat="revenue">–</div>
+              <div class="mf-admin-stat-l">Revenue (LKR)</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <ul class="nav nav-pills gap-2 mb-3" role="tablist">
-        <li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tabBuses" type="button" role="tab"><i class="bi bi-bus-front"></i> Buses</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tabRoutes" type="button" role="tab"><i class="bi bi-signpost-split"></i> Routes &amp; Schedules</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tabBookings" type="button" role="tab"><i class="bi bi-ticket-perforated"></i> Bookings</button></li>
+      <!-- ----------------------------- tabs --------------------------- -->
+      <ul class="nav nav-pills mb-3" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tabBuses"
+                  type="button" role="tab" aria-controls="tabBuses" aria-selected="true">
+            <i class="bi bi-bus-front" aria-hidden="true"></i> Buses
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tabBookings"
+                  type="button" role="tab" aria-controls="tabBookings" aria-selected="false">
+            <i class="bi bi-ticket-perforated" aria-hidden="true"></i> Bookings
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tabRoutes"
+                  type="button" role="tab" aria-controls="tabRoutes" aria-selected="false">
+            <i class="bi bi-signpost-split" aria-hidden="true"></i> Schedules
+          </button>
+        </li>
       </ul>
 
       <div class="tab-content">
-        <!-- Buses -->
+
+        <!-- ---------------------------- buses ------------------------- -->
         <div class="tab-pane fade show active" id="tabBuses" role="tabpanel">
-          <div class="mf-card">
-            <div class="d-flex flex-wrap gap-2 justify-content-between mb-3">
-              <input class="form-control" style="max-width:320px" id="busFilter" placeholder="Filter by ID, name, route…" aria-label="Filter buses">
-              <button class="btn btn-red btn-sm" id="addBusBtn"><i class="bi bi-plus-lg"></i> Add bus</button>
+          <div class="mf-admin-panel">
+            <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
+              <label class="visually-hidden" for="busFilter">Filter buses</label>
+              <input class="form-control" style="max-width:320px" id="busFilter"
+                     type="search" placeholder="Filter by ID, name, route…">
+              <button class="mf-btn-red btn-sm" id="addBusBtn" type="button">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i> Add bus
+              </button>
             </div>
-            <div class="table-responsive">
-              <table class="table table-mf align-middle mb-0">
-                <thead><tr>
-                  <th data-sort="Bus_ID">Bus ID <i class="bi bi-arrow-down-up"></i></th><th data-sort="Bus_Name">Name</th><th data-sort="Route">Route</th>
-                  <th data-sort="Travel_Date">Date <i class="bi bi-arrow-down-up"></i></th><th>Time</th><th data-sort="Available_Seats">Seats <i class="bi bi-arrow-down-up"></i></th>
-                  <th data-sort="Fare">Fare <i class="bi bi-arrow-down-up"></i></th><th class="text-end">Actions</th>
-                </tr></thead>
+            <div class="mf-admin-scroll">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th data-sort="Bus_ID">Bus ID <i class="bi bi-arrow-down-up" aria-hidden="true"></i></th>
+                    <th data-sort="Bus_Name">Name</th>
+                    <th data-sort="Route">Route</th>
+                    <th data-sort="Travel_Date">Date <i class="bi bi-arrow-down-up" aria-hidden="true"></i></th>
+                    <th>Time</th>
+                    <th data-sort="Available_Seats">Seats <i class="bi bi-arrow-down-up" aria-hidden="true"></i></th>
+                    <th data-sort="Fare">Fare <i class="bi bi-arrow-down-up" aria-hidden="true"></i></th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
                 <tbody id="busRows"></tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <!-- Routes & schedules -->
+        <!-- --------------------------- bookings ----------------------- -->
+        <div class="tab-pane fade" id="tabBookings" role="tabpanel">
+          <div class="mf-admin-panel">
+            <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+              <label class="visually-hidden" for="bookingFilter">Filter bookings</label>
+              <input class="form-control" style="max-width:300px" id="bookingFilter"
+                     type="search" placeholder="Filter by ID, name, phone, bus…">
+              <label class="visually-hidden" for="bookingStatus">Status</label>
+              <select class="form-select" style="max-width:180px" id="bookingStatus">
+                <option value="">All statuses</option>
+                <option>Confirmed</option>
+                <option>Cancelled</option>
+              </select>
+              <label class="visually-hidden" for="bookingDate">Travel date</label>
+              <input class="form-control" style="max-width:190px" type="date" id="bookingDate">
+              <span class="ms-auto small fw-bold mf-muted align-self-center"
+                    id="bookingCount" aria-live="polite"></span>
+            </div>
+            <div class="mf-admin-scroll">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Booking ID</th><th>Passenger</th><th>Contact</th><th>Bus</th>
+                    <th>Date</th><th>Seat</th><th>Fare</th><th>Status</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="bookingRows"></tbody>
+              </table>
+            </div>
+            <div class="text-center mt-3">
+              <button class="mf-btn-ghost btn-sm d-none" id="moreBookings" type="button">Show more</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- --------------------------- schedules ---------------------- -->
         <div class="tab-pane fade" id="tabRoutes" role="tabpanel">
           <div class="row g-3" id="routeCards"></div>
         </div>
 
-        <!-- Bookings -->
-        <div class="tab-pane fade" id="tabBookings" role="tabpanel">
-          <div class="mf-card">
-            <div class="d-flex flex-wrap gap-2 mb-3">
-              <input class="form-control" style="max-width:320px" id="bookingFilter" placeholder="Filter by ID, name, phone, bus…" aria-label="Filter bookings">
-              <select class="form-select" style="max-width:180px" id="bookingStatus" aria-label="Status">
-                <option value="">All statuses</option><option>Confirmed</option><option>Cancelled</option>
-              </select>
-              <input class="form-control" style="max-width:190px" type="date" id="bookingDate" aria-label="Travel date">
-              <span class="ms-auto small fw-bold text-muted-mf align-self-center" id="bookingCount"></span>
-            </div>
-            <div class="table-responsive">
-              <table class="table table-mf align-middle mb-0">
-                <thead><tr><th>Booking ID</th><th>Passenger</th><th>Contact</th><th>Bus</th><th>Date</th><th>Seat</th><th>Fare</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
-                <tbody id="bookingRows"></tbody>
-              </table>
-            </div>
-            <div class="text-center mt-3"><button class="btn btn-ghost btn-sm d-none" id="moreBookings">Show more</button></div>
-          </div>
-        </div>
       </div>
     </section>
   </main>
 
-  <!-- Bus add/edit modal -->
+  <div class="mf-admin-toasts" id="adminToasts" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- ====================== Bus add / edit modal ====================== -->
   <div class="modal fade" id="busModal" tabindex="-1" aria-labelledby="busModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content">
       <form id="busForm" novalidate>
-        <div class="modal-header"><h2 class="modal-title h5" id="busModalTitle">Add bus</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="busModalTitle">Add bus</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
         <div class="modal-body"><div class="row g-3">
           <div class="col-md-4"><label class="form-label" for="fBus_ID">Bus ID</label><input class="form-control text-uppercase" id="fBus_ID" name="Bus_ID" placeholder="MB1025" required><div class="invalid-feedback">Format MB1001.</div></div>
           <div class="col-md-8"><label class="form-label" for="fBus_Name">Bus name</label><input class="form-control" id="fBus_Name" name="Bus_Name" required><div class="invalid-feedback">Required.</div></div>
@@ -129,19 +264,25 @@
           <div class="col-6 col-md-4"><label class="form-label" for="fDeparture_Time">Departure time</label><input class="form-control" id="fDeparture_Time" name="Departure_Time" type="time" required><div class="invalid-feedback">Required.</div></div>
           <div class="col-6 col-md-4"><label class="form-label" for="fArrival_Time">Arrival time</label><input class="form-control" id="fArrival_Time" name="Arrival_Time" type="time" required><div class="invalid-feedback">Must be after departure.</div></div>
           <div class="col-6 col-md-4"><label class="form-label" for="fTotal_Seats">Total seats</label><input class="form-control" id="fTotal_Seats" name="Total_Seats" type="number" min="1" max="52" value="50" required><div class="invalid-feedback">1–52.</div></div>
-          <div class="col-6 col-md-4"><label class="form-label" for="fFare">Fare (LKR)</label><input class="form-control" id="fFare" name="Fare" type="number" min="0" step="10" required><div class="invalid-feedback">≥ 0.</div></div>
+          <div class="col-6 col-md-4"><label class="form-label" for="fFare">Fare (LKR)</label><input class="form-control" id="fFare" name="Fare" type="number" min="0" step="10" required><div class="invalid-feedback">&ge; 0.</div></div>
           <div class="col-md-4"><label class="form-label" for="fAvail">Available seats</label><input class="form-control" id="fAvail" readonly><div class="form-text">Calculated from bookings.</div></div>
         </div></div>
-        <div class="modal-footer"><button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Close</button><button class="btn btn-red" type="submit" id="saveBus">Save bus</button></div>
+        <div class="modal-footer">
+          <button type="button" class="mf-btn-ghost btn-sm" data-bs-dismiss="modal">Close</button>
+          <button class="mf-btn-red btn-sm" type="submit" id="saveBus">Save bus</button>
+        </div>
       </form>
     </div></div>
   </div>
 
-  <!-- Schedule modal -->
+  <!-- ========================= Schedule modal ========================= -->
   <div class="modal fade" id="schedModal" tabindex="-1" aria-labelledby="schedTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
       <form id="schedForm" novalidate>
-        <div class="modal-header"><h2 class="modal-title h5" id="schedTitle">Update schedule</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="schedTitle">Update schedule</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
         <div class="modal-body">
           <input type="hidden" id="sBus" name="Bus_ID">
           <div class="mb-3"><label class="form-label" for="sDate">Travel date</label><input class="form-control" type="date" id="sDate" name="Travel_Date" required></div>
@@ -149,31 +290,39 @@
             <div class="col-6"><label class="form-label" for="sDep">Departure</label><input class="form-control" type="time" id="sDep" name="Departure_Time" required></div>
             <div class="col-6"><label class="form-label" for="sArr">Arrival</label><input class="form-control" type="time" id="sArr" name="Arrival_Time" required><div class="invalid-feedback">Must be after departure.</div></div>
           </div>
-          <p class="small text-muted-mf mt-3 mb-0"><i class="bi bi-info-circle"></i> Existing bookings move with the bus to the new date.</p>
+          <p class="small mf-muted mt-3 mb-0"><i class="bi bi-info-circle" aria-hidden="true"></i> Existing bookings move with the bus to the new date.</p>
         </div>
-        <div class="modal-footer"><button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Close</button><button class="btn btn-red" type="submit">Update schedule</button></div>
+        <div class="modal-footer">
+          <button type="button" class="mf-btn-ghost btn-sm" data-bs-dismiss="modal">Close</button>
+          <button class="mf-btn-red btn-sm" type="submit">Update schedule</button>
+        </div>
       </form>
     </div></div>
   </div>
 
-  <!-- Confirm modal (delete bus / cancel booking) -->
+  <!-- ===================== Confirm (delete / cancel) ================== -->
   <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
       <div class="modal-body text-center p-4">
-        <div class="empty-state p-0"><div class="ic"><i class="bi bi-exclamation-triangle"></i></div></div>
-        <h2 class="h5" id="confirmTitle">Are you sure?</h2><p class="mb-0" id="confirmText"></p>
+        <div class="mf-admin-state p-0"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i></div>
+        <h2 class="h5" id="confirmTitle">Are you sure?</h2>
+        <p class="mb-0" id="confirmText"></p>
       </div>
       <div class="modal-footer justify-content-center border-0 pt-0 pb-4">
-        <button class="btn btn-ghost" data-bs-dismiss="modal">No, go back</button><button class="btn btn-red" id="confirmYes">Yes</button>
+        <button class="mf-btn-ghost btn-sm" data-bs-dismiss="modal" type="button">No, go back</button>
+        <button class="mf-btn-red btn-sm" id="confirmYes" type="button">Yes</button>
       </div>
     </div></div>
   </div>
 
-  <!-- Booking edit modal (admin) -->
+  <!-- ======================= Booking edit modal ======================= -->
   <div class="modal fade" id="bkModal" tabindex="-1" aria-labelledby="bkTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
       <form id="bkForm" novalidate>
-        <div class="modal-header"><h2 class="modal-title h5" id="bkTitle">Edit booking</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="bkTitle">Edit booking</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
         <div class="modal-body">
           <input type="hidden" name="Booking_ID" id="bId">
           <div class="mb-3"><label class="form-label" for="bName">Passenger name</label><input class="form-control" id="bName" name="Passenger_Name" required></div>
@@ -184,14 +333,17 @@
           <div class="mb-3"><label class="form-label" for="bEmail">Email</label><input class="form-control" id="bEmail" name="Email" type="email" required></div>
           <div><label class="form-label" for="bBoard">Boarding point</label><input class="form-control" id="bBoard" name="Boarding_Point" required></div>
         </div>
-        <div class="modal-footer"><button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Close</button><button class="btn btn-red" type="submit">Save</button></div>
+        <div class="modal-footer">
+          <button type="button" class="mf-btn-ghost btn-sm" data-bs-dismiss="modal">Close</button>
+          <button class="mf-btn-red btn-sm" type="submit">Save</button>
+        </div>
       </form>
     </div></div>
   </div>
 
   <!-- jQuery -> Bootstrap JS -> api.js -> auth.js -> main.js -> home.js -> admin.js
-       home.js injects the shared navbar into #navbar above; auth.js paints the
-       signed-in state and provides MetroFlowAuth.requireAdmin(). -->
+       home.js injects the shared navbar into #navbar; auth.js owns the session
+       (mf_token / mf_user), the bearer header and MetroFlowAuth.adminLogin(). -->
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/api.js"></script>

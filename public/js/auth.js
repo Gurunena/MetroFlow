@@ -91,6 +91,28 @@
     dropStore(K_USER);
   }
 
+  /**
+   * The ONE admin credential path in the whole front end.
+   *
+   * Both admin UIs call this: the themed form on admin-login.html (below) and
+   * the login gate on admin.html (admin.js). Neither posts credentials itself,
+   * so there is a single place where the request shape, the email mapping and
+   * the session keys are decided.
+   *
+   * ADMIN_USER in .env may be a bare name ("admin"), but the seed stores the
+   * account as an email, so map it here rather than in each caller.
+   * Resolves with the API response; the session is already saved by then.
+   */
+  function adminLogin(user, password) {
+    var id = $.trim(String(user == null ? '' : user)).toLowerCase();
+    var email = id.indexOf('@') > -1 ? id : id + '@metroflow.lk';
+
+    return post('/admin-login', { Email: email, Password: password })
+      .done(function (res) {
+        saveSession(res.data.token, res.data.user);
+      });
+  }
+
   /* =============================== ajax ================================= */
 
   // jQuery Use #1 – $.ajax JSON calls to /api/auth/*
@@ -138,10 +160,17 @@
 
   /* ============================== logout ================================ */
 
+  /**
+   * Returns the request promise so a caller can repaint only AFTER the
+   * session has actually been cleared. The .always() below is registered
+   * first, so clearSession() has already run by the time a caller's own
+   * .always() fires. (admin.js repaints the navbar on logout and used to
+   * race this, leaving "Login / Sign Up" still hidden.)
+   */
   function logout(skipRedirect) {
     // Tell the server for symmetry/audit, but never block on it: the token is
     // discarded client-side either way.
-    post('/logout', {}).always(function () {
+    return post('/logout', {}).always(function () {
       clearSession();
       stopIdleWatch();
       if (!skipRedirect) { window.location.href = 'logout.html'; }
@@ -787,16 +816,14 @@
         return;
       }
 
-      // ADMIN_USER may be a bare name; the API stores it as an email.
-      var email = user.indexOf('@') > -1 ? user : user + '@metroflow.lk';
-
       var $btn = $('#adminSubmit').prop('disabled', true);
       var label = $btn.html();
       $btn.html('<span class="spinner-border" role="status" aria-hidden="true"></span> Checking…');
 
-      post('/admin-login', { Email: email, Password: password })
-        .done(function (res) {
-          saveSession(res.data.token, res.data.user);
+      // Shared path: adminLogin() maps the username to an email and stores
+      // the session, so this handler only drives the scene and the alerts.
+      adminLogin(user, password)
+        .done(function () {
           sceneState('is-open', true);
           sceneState('is-lights-on', true);
           sceneState('is-go', true);
@@ -895,6 +922,8 @@
     getUser: getUser,
     getToken: getToken,
     isAdmin: isAdmin,
+    // The single admin credential path – admin.js drives the gate with this.
+    adminLogin: adminLogin,
     logout: logout,
     requireAuth: requireAuth,
     requireAdmin: requireAdmin,

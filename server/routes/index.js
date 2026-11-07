@@ -39,6 +39,7 @@ mount('/destinations', './destinationRoutes', 'destinations');
 mount('/schedules', './routeScheduleRoutes', 'routes & timetable');
 mount('/auth', './authRoutes', 'authentication');
 mount('/chat', './chatRoutes', 'chat');
+mount('/contact', './contactRoutes', 'contact messages');
 
 // Simple liveness probe, handy for checking the API is actually reachable.
 router.get('/health', (req, res) => {
