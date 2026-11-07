@@ -50,9 +50,14 @@ last 2 hours, passenger tokens 7 days.
 * `POST` / `PUT` / `PATCH` / `DELETE` on `/api/buses`
 * `POST` / `PUT` / `DELETE` on `/api/routes` and `/api/schedules`
 * every `/api/passengers` route
-* `GET /api/bookings` (the whole list)
 * `GET /api/stats`
 * `GET` and `PATCH` on `/api/contact`
+
+**Signed-in, any role** — `GET /api/bookings`. An operator gets every
+booking; a passenger gets only their own, matched on the email in their
+token. A guest is refused with `401`, because the unscoped list holds every
+passenger's name, phone and email. This is what My Trips' "Show all" button
+calls; its six search modes below need no login.
 
 **Public** — deliberately, so the passenger pages work without signing in:
 all bus search `GET`s, `GET /api/buses/:busId/seats`, `POST /api/bookings`,
@@ -147,7 +152,9 @@ is accepted but ignored.
 `201` → the booking with its `Booking_ID` · `400` invalid · `404` no such bus
 · `409` seat already booked / bus full
 
-### 2. `GET /api/bookings` — all bookings · **admin**
+### 2. `GET /api/bookings` — **signed in**
+
+Admin → every booking. Passenger → only their own. Guest → `401`.
 ### 3. `GET /api/bookings/:bookingId`
 ### 4. `GET /api/bookings/passenger/:name` — case-insensitive, partial
 ### 5. `GET /api/bookings/phone/:phone`

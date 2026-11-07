@@ -183,8 +183,19 @@ async function createBooking(body) {
 /* ---------- 2–8. View & search ---------- */
 
 // 2. Show all Bookings
-function listBookings() {
-  return Booking.find().select(HIDE_ID).sort(SORT).lean();
+/**
+ * Every booking, or just one person's.
+ *
+ * My Trips has a "Show all" button. The unscoped list exposes every
+ * passenger's name, phone and email, so it is for operators only; a
+ * signed-in passenger gets their own bookings instead, matched on the email
+ * in their token. The controller decides which case applies.
+ */
+function listBookings(onlyEmail) {
+  const filter = onlyEmail
+    ? { Email: String(onlyEmail).trim().toLowerCase() }
+    : {};
+  return Booking.find(filter).select(HIDE_ID).sort(SORT).lean();
 }
 
 // 3. Find a Booking by Booking ID

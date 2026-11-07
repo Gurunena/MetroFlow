@@ -45,7 +45,13 @@ module.exports = {
   createBooking: handler((req) => bookingService.createBooking(req.body),
     { status: 201, message: (b) => 'Booking ' + b.Booking_ID + ' confirmed' }),
   // 2. Show all Bookings
-  getAllBookings: handler(() => bookingService.listBookings()),
+  // An operator sees the whole list; a signed-in passenger sees only their
+  // own bookings. `protect` on the route already rejected guests with 401.
+  getAllBookings: handler((req) => {
+    const user = req.user || {};
+    const scope = user.role === 'admin' ? null : user.email;
+    return bookingService.listBookings(scope);
+  }),
   // 3. Find a Booking by Booking ID
   getBookingById: handler((req) => bookingService.getBookingById(req.params.bookingId)),
   // 4. Find Bookings by Passenger Name
