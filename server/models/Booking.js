@@ -78,6 +78,26 @@ bookingSchema.index({ Travel_Date: 1 });
 
 const Booking = mongoose.model('Booking', bookingSchema);
 
+/**
+ * ADDITIVE ONLY. Passenger_Name, Phone, Email and Bus_ID stay as plain
+ * fields above, so every existing query and response is unchanged. These
+ * ObjectId references sit alongside them for populate().
+ */
+bookingSchema.add({
+  Bus_Ref: { type: mongoose.Schema.Types.ObjectId, ref: 'Bus' },
+  Passenger_Ref: { type: mongoose.Schema.Types.ObjectId, ref: 'Passenger' },
+  Schedule_Ref: { type: mongoose.Schema.Types.ObjectId, ref: 'Schedule' },
+  Schedule_ID: {
+    type: String, trim: true, uppercase: true,
+    match: [/^S\d{3,5}$/, 'Schedule_ID must look like S001']
+  }
+});
+
+// Bus_ID was the one lookup index the model did not already declare; the
+// partial unique seat index and the name/phone/email/date indexes are
+// defined above and must not be repeated here.
+bookingSchema.index({ Bus_ID: 1 });
+
 module.exports = Booking;
 module.exports.BOOKING_STATUSES = BOOKING_STATUSES;
 module.exports.PHONE_RE = PHONE_RE;

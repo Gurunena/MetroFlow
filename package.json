@@ -1,12 +1,14 @@
 {
   "name": "metroflow",
   "version": "1.0.0",
-  "description": "MetroFlow – Online Metro Bus Booking System (Node.js, Express, MongoDB, jQuery, Bootstrap)",
+  "description": "MetroFlow \u2013 Online Metro Bus Booking System (Node.js, Express, MongoDB, jQuery, Bootstrap)",
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
     "dev": "nodemon server/server.js",
-    "seed": "node server/seed/seed.js"
+    "seed": "node server/seed/seed.js",
+    "migrate": "node server/seed/migrate.js",
+    "smoke": "node server/tests/api-smoke.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

@@ -11,8 +11,12 @@ const app = express();
 
 // ------------------------------- middleware -------------------------------
 app.use(cors());
-app.use(express.json({ limit: '1mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '100kb' }));
+app.use(express.urlencoded({ extended: true, limit: '100kb' }));
+
+// Strip "$"-prefixed and dotted keys from body/query/params on every request,
+// so {"$ne": null} can never reach a Mongoose query as an operator.
+app.use(require('./middleware/validate').sanitiseRequest);
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));
 }
@@ -29,6 +33,9 @@ app.use('/api', (req, res, next) => {
   if (req.path === '/health' || isConnected()) { return next(); }
   return res.status(503).json({
     success: false,
+    // `message` is the failure key the whole API uses; `error` is kept
+    // alongside it so any older front-end code reading it still works.
+    message: 'Database unavailable – check MONGO_URI and that MongoDB is running',
     error: 'Database unavailable – check MONGO_URI and that MongoDB is running'
   });
 });
@@ -41,14 +48,6 @@ app.use('/api', (req, res) => {
 });
 
 // ------------------------------- error handler -----------------------------
-// Replace with middleware/errorHandler.js once that stub is filled in.
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  console.error('Unhandled error:', err);
-  res.status(err.status || 500).json({
-    success: false,
-    error: err.message || 'Internal server error'
-  });
-});
+app.use(require('./middleware/errorHandler'));
 
 module.exports = app;
