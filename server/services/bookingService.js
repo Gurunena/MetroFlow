@@ -154,8 +154,12 @@ async function createBooking(body) {
 
   try {
     // Schedule details (date, destination, fare) are copied from the bus – never trusted from the client
+        let bookingId = await generateBookingId(bus.Travel_Date);
+    while (await Booking.exists({ Booking_ID: bookingId })) {
+      bookingId = await generateBookingId(bus.Travel_Date); // skip IDs already used by sample data
+    }
     const booking = await Booking.create({
-      Booking_ID: await generateBookingId(bus.Travel_Date),
+      Booking_ID: bookingId,
       Passenger_Name: data.Passenger_Name,
       Phone: cleanPhone(data.Phone),
       Email: data.Email,
