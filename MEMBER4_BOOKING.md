@@ -56,3 +56,18 @@ All in `public/js/booking-extras.js` – front-end only, built from data the API
 | Carbon saved | e-ticket, My Trips | Distance ≈ journey time × 40 km/h; saving = km × (0.17 − 0.03) kg CO₂ |
 | MetroMiles loyalty | My Trips (results for one passenger) | 1 mile per LKR 10 confirmed; Bronze → Silver (500) → Gold (1500) → Platinum (3000) |
 | Share to WhatsApp | e-ticket + My Trips cards | wa.me link with the trip details and Booking ID |
+
+## Animations
+| Where | What | How |
+|---|---|---|
+| Trip summary | Bus drives along a dashed route | CSS @keyframes (bk-drive) |
+| Total price, MetroMiles | Number counts up | jQuery `.animate()` step function (countUp) |
+| Invalid form field | Shake | CSS @keyframes (bk-shake) |
+| Booking confirmed | Tick draws itself, confetti burst, tickets "print" out | SVG stroke-dashoffset, canvas + requestAnimationFrame, CSS clip-path |
+| My Trips cards | Rise in one after another | CSS animation with staggered animation-delay |
+| Cancel booking | Ticket rips in half along its dashed line | two clipped clones (zig-zag clip-path) that fall apart |
+All animations are switched off when the user's system has "reduce motion" turned on.
+
+## Fix
+A bus that already left today can no longer be booked: the server compares Departure_Time with the current
+time (409 "This bus has already departed"), and the booking page disables Confirm with a message.

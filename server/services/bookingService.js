@@ -89,6 +89,12 @@ function seatIndex(seat) {
   return (seat.charCodeAt(0) - 65) * 4 + Number(seat.slice(1));
 }
 
+// current time as "HH:mm", to compare with Departure_Time
+function nowTime() {
+  const d = new Date();
+  return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+}
+
 function today() {
   const d = new Date();
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -122,6 +128,9 @@ async function createBooking(body) {
   if (!bus) throw new ServiceError(404, 'Bus ' + busId + ' not found');
   if (bus.Status && bus.Status !== 'Available') throw new ServiceError(409, 'Bus ' + busId + ' is not available for booking');
   if (bus.Travel_Date < today()) throw new ServiceError(409, 'This bus has already departed');
+  if (bus.Travel_Date === today() && bus.Departure_Time && bus.Departure_Time <= nowTime()) {
+    throw new ServiceError(409, 'This bus has already departed (' + bus.Departure_Time + ' today)');
+  }
 
   // Seat: must exist on this bus and be free on this trip
   if (seatIndex(seat) > bus.Total_Seats) {

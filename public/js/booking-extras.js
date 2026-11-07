@@ -212,7 +212,142 @@
     $host.find('.bk-scratch-reveal').on('click', reveal);
   }
 
+  /* ============================== animations ============================ */
+
+  function reducedMotion() {
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  // Counts a number up from 0, e.g. the total price or MetroMiles
+  function countUp($el, to, format, ms) {
+    var fmt = format || function (n) { return Math.round(n).toLocaleString(); };
+    if (reducedMotion()) { $el.text(fmt(to)); return; }
+    $({ n: 0 }).animate({ n: to }, {
+      duration: ms || 900,
+      easing: 'swing',
+      step: function (n) { $el.text(fmt(n)); },
+      complete: function () { $el.text(fmt(to)); }
+    });
+  }
+
+  // Small horizontal shake, used on invalid form fields
+  function shake($el) {
+    if (reducedMotion()) { return; }
+    $el.removeClass('bk-shake');
+    void $el[0].offsetWidth; // restart the animation
+    $el.addClass('bk-shake');
+  }
+
+  // "From ●- - -🚌- - -● To" with a bus that drives along the route
+  function routeHtml(from, to) {
+    return '<div class="bk-route" aria-hidden="true">' +
+      '<span class="bk-route-stop">' + MF.escape(from) + '</span>' +
+      '<div class="bk-route-line"><i class="bi bi-bus-front-fill bk-route-bus"></i></div>' +
+      '<span class="bk-route-stop">' + MF.escape(to) + '</span>' +
+    '</div>';
+  }
+
+  // Animated tick (the circle and the check mark draw themselves)
+  function checkSvg() {
+    return '<svg class="bk-check-svg" viewBox="0 0 52 52" aria-hidden="true">' +
+      '<circle class="bk-check-circle" cx="26" cy="26" r="24" fill="none"/>' +
+      '<path class="bk-check-mark" fill="none" d="M15 27 l7 7 l15 -16"/></svg>';
+  }
+
+  // Confetti burst in MetroFlow colours, drawn on a temporary canvas
+  function confetti() {
+    if (reducedMotion()) { return; }
+    var canvas = $('<canvas class="bk-confetti" aria-hidden="true">').appendTo('body')[0];
+    var ctx = canvas.getContext('2d');
+    var w = canvas.width = window.innerWidth;
+    var h = canvas.height = window.innerHeight;
+    var colors = ['#D80F1E', '#F0444F', '#F5B700', '#0F1B33', '#ffffff', '#22C55E'];
+    var pieces = [];
+    for (var i = 0; i < 160; i++) {
+      pieces.push({
+        x: w / 2 + (Math.random() - 0.5) * 120,
+        y: h * 0.35,
+        vx: (Math.random() - 0.5) * 16,
+        vy: -Math.random() * 15 - 5,
+        size: Math.random() * 7 + 5,
+        rot: Math.random() * 360,
+        spin: (Math.random() - 0.5) * 18,
+        color: colors[i % colors.length]
+      });
+    }
+    var start = null;
+    function frame(t) {
+      if (!start) { start = t; }
+      var elapsed = t - start;
+      ctx.clearRect(0, 0, w, h);
+      pieces.forEach(function (p) {
+        p.vy += 0.45;           // gravity
+        p.vx *= 0.99;           // air
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rot += p.spin;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, 1 - elapsed / 2200);
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot * Math.PI / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+        ctx.restore();
+      });
+      if (elapsed < 2200) { window.requestAnimationFrame(frame); } else { $(canvas).remove(); }
+    }
+    window.requestAnimationFrame(frame);
+  }
+
+  // Rips a ticket in half along its dashed tear line; resolves when done
+  function tearTicket($ticket) {
+    var done = $.Deferred();
+    var $tear = $ticket.find('.bk-tear').first();
+    if (reducedMotion() || !$tear.length) {
+      $ticket.fadeOut(250, function () { done.resolve(); });
+      return done.promise();
+    }
+
+    var width = $ticket.outerWidth();
+    var height = $ticket.outerHeight();
+    var y = $tear.position().top + 1; // where the ticket rips
+    var zigzag = [];
+    for (var x = 0, up = true; x <= width + 12; x += 12, up = !up) {
+      zigzag.push(x + 'px ' + (y + (up ? -4 : 4)) + 'px');
+    }
+    var topShape = 'polygon(0 0, ' + width + 'px 0, ' + zigzag.slice().reverse().join(', ') + ')';
+    var bottomShape = 'polygon(' + zigzag.join(', ') + ', ' + width + 'px ' + height + 'px, 0 ' + height + 'px)';
+
+    var $wrap = $ticket.parent().css('position', 'relative');
+    var offset = $ticket.position();
+    function half(shape, cls) {
+      return $ticket.clone().addClass('bk-torn ' + cls).css({
+        position: 'absolute', top: offset.top, left: offset.left,
+        width: width, height: height, margin: 0, clipPath: shape
+      }).appendTo($wrap);
+    }
+    var $top = half(topShape, 'bk-torn-top');
+    var $bottom = half(bottomShape, 'bk-torn-bottom');
+    $ticket.css('visibility', 'hidden');
+
+    window.requestAnimationFrame(function () {
+      $top.add($bottom).addClass('is-falling');
+    });
+    window.setTimeout(function () {
+      $top.add($bottom).remove();
+      done.resolve();
+    }, 900);
+    return done.promise();
+  }
+
   MF.bookingExtras = {
+    reducedMotion: reducedMotion,
+    countUp: countUp,
+    shake: shake,
+    routeHtml: routeHtml,
+    checkSvg: checkSvg,
+    confetti: confetti,
+    tearTicket: tearTicket,
     tripKm: tripKm,
     co2Saved: co2Saved,
     countdown: countdown,

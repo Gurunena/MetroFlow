@@ -120,7 +120,7 @@
         '<div class="col-md-5 d-flex align-items-center gap-3">' +
           '<span class="bk-miles-badge is-' + esc(mm.level.name.toLowerCase()) + '"><i class="bi ' + esc(mm.level.icon) + '" aria-hidden="true"></i></span>' +
           '<div><small class="mf-eyebrow">MetroMiles &middot; ' + esc(bookings[0].Passenger_Name) + '</small>' +
-            '<div class="h4 mb-0">' + esc(mm.miles.toLocaleString()) + ' <span class="fs-6 fw-semibold mf-muted">miles</span></div>' +
+            '<div class="h4 mb-0"><span id="milesNum">' + esc(mm.miles.toLocaleString()) + '</span> <span class="fs-6 fw-semibold mf-muted">miles</span></div>' +
             '<span class="fw-bold mf-text-red">' + esc(mm.level.name) + ' member</span></div>' +
         '</div>' +
         '<div class="col-md-4">' +
@@ -137,6 +137,7 @@
       '</div>'
     ).slideDown(250);
     $panel.find('.bk-progress span').css('width', 0).animate({ width: mm.progress + '%' }, 800);
+    extras.countUp($('#milesNum'), mm.miles);
   }
 
   function showResults(bookings) {
@@ -195,7 +196,10 @@
     });
 
     applyHideCancelled();
-    $results.children().hide().fadeIn(250);
+    // cards rise into place one after another
+    $results.children().each(function (i) {
+      $(this).addClass('bk-rise').css('animation-delay', Math.min(i, 8) * 0.07 + 's');
+    });
   }
 
   // Live filter: hide cancelled cards without asking the server again
@@ -310,7 +314,8 @@
       api('PATCH', '/bookings/' + encodeURIComponent(b.Booking_ID) + '/cancel')
         .done(function (payload) {
           showToast(payload.message || 'Booking cancelled', 'success');
-          $col.fadeOut(300, refresh);
+          // the ticket rips along its dashed line, then the list refreshes
+          extras.tearTicket($col.find('.bk-ticket')).then(refresh);
         })
         .fail(function (xhr) { showToast(errorMessage(xhr), 'danger'); });
     });
