@@ -3,9 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MetroFlow – Select Seats</title>
+  <title>MetroFlow – Seat Selection</title>
+  <!-- Seat selection lives on manage-bookings.html (Member 3). Links from
+       search.html / routes.html still point here, so pass them straight on
+       with the same query string (busId / bus, date, pax). -->
+  <script>
+    window.location.replace('manage-bookings.html' + window.location.search);
+  </script>
+  <noscript><meta http-equiv="refresh" content="0; url=manage-bookings.html"></noscript>
 </head>
 <body>
-  <!-- TODO -->
+  <p><a href="manage-bookings.html">Continue to seat selection</a></p>
 </body>
 </html>

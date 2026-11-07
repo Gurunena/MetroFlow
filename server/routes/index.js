@@ -35,6 +35,7 @@ if (!mount('/buses', './busRoutes', 'bus management')) {
   mount('/buses', './busSearchRoutes', 'bus search (fallback)');
 }
 mount('/bookings', './bookingRoutes', 'bookings');
+mount('/passengers', './passengerRoutes', 'passengers');
 mount('/destinations', './destinationRoutes', 'destinations');
 mount('/schedules', './routeScheduleRoutes', 'routes & timetable');
 mount('/auth', './authRoutes', 'authentication');

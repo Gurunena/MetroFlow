@@ -774,3 +774,36 @@
     letter-spacing: 3px;
     text-transform: uppercase;
 }
+/* =========================================
+   THEME MATCH – light page header, like Explore / My Trips
+   (replaces the full-height photo banner above)
+========================================= */
+
+.booking-hero {
+    background: linear-gradient(180deg, var(--mf-tint-red, #FFF5F5) 0%, #ffffff 100%);
+    min-height: 0;
+    padding: 2.5rem 0 2rem;
+    border-radius: 0;
+    border-bottom: 1px solid var(--mf-line, #E8EAEF);
+    text-align: center;
+}
+
+.booking-hero h1,
+.booking-hero h2 {
+    color: var(--mf-navy, #0F1B33);
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    letter-spacing: -0.03em;
+    margin: 0.4rem 0 0.5rem;
+}
+
+.booking-hero p {
+    color: var(--mf-grey, #6B7280);
+    margin: 0;
+}
+
+.booking-script {
+    font-family: "Pinyon Script", "Great Vibes", var(--mf-font-hand, cursive);
+    font-weight: 400;
+    color: var(--mf-red, #D80F1E);
+    letter-spacing: 0;
+}
