@@ -161,6 +161,73 @@ body { background: var(--mf-tint-grey, #F7F8FA); }
 .bk-scratch-cover { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; }
 @keyframes bk-pop { 0% { transform: scale(.96); } 60% { transform: scale(1.03); } 100% { transform: scale(1); } }
 
+/* ---------- animations ---------- */
+
+/* trip summary: a bus drives along the route */
+.bk-route { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.1rem; }
+.bk-route-stop { font-weight: 800; color: var(--mf-navy); font-size: .9rem; white-space: nowrap; }
+.bk-route-line {
+  position: relative; flex: 1; height: 2px; min-width: 60px;
+  background: repeating-linear-gradient(90deg, var(--mf-red) 0 8px, transparent 8px 14px);
+}
+.bk-route-line::before, .bk-route-line::after {
+  content: ""; position: absolute; top: 50%; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--mf-red); transform: translateY(-50%);
+}
+.bk-route-line::before { left: -5px; }
+.bk-route-line::after { right: -5px; }
+.bk-route-bus {
+  position: absolute; top: 50%; left: 0; color: var(--mf-red); font-size: 1.35rem;
+  transform: translate(-50%, -62%); animation: bk-drive 3.6s ease-in-out infinite;
+}
+@keyframes bk-drive {
+  0%   { left: 0%;   opacity: 0; }
+  10%  { opacity: 1; }
+  45%  { transform: translate(-50%, -66%); }
+  50%  { transform: translate(-50%, -58%); }
+  90%  { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
+/* invalid field shake */
+.bk-shake { animation: bk-shake .4s ease; }
+@keyframes bk-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* confirmation tick draws itself */
+.bk-done { background: #E8F7EE; }
+.bk-check-svg { width: 40px; height: 40px; }
+.bk-check-circle { stroke: #16A34A; stroke-width: 3; stroke-dasharray: 151; stroke-dashoffset: 151; animation: bk-draw .6s ease forwards; }
+.bk-check-mark { stroke: #16A34A; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 36; stroke-dashoffset: 36; animation: bk-draw .35s .55s ease forwards; }
+@keyframes bk-draw { to { stroke-dashoffset: 0; } }
+
+/* tickets come out of the "printer" */
+.bk-print { animation: bk-print .8s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes bk-print {
+  from { clip-path: inset(0 0 100% 0); transform: translateY(-24px); opacity: .4; }
+  to   { clip-path: inset(0 0 0 0);    transform: translateY(0);     opacity: 1; }
+}
+
+/* confetti canvas */
+.bk-confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3000; }
+
+/* My Trips cards rise in one after another */
+.bk-rise { animation: bk-rise .5s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes bk-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+/* cancelled ticket rips in half */
+.bk-torn { transition: transform .9s cubic-bezier(.5, 0, .75, .45), opacity .45s ease .45s; pointer-events: none; z-index: 5; }
+.bk-torn-top    { transform-origin: 0 100%; }
+.bk-torn-bottom { transform-origin: 100% 0; }
+.bk-torn-top.is-falling    { transform: translate(-24px, -26px) rotate(-11deg); opacity: 0; }
+.bk-torn-bottom.is-falling { transform: translate(34px, 130px) rotate(15deg); opacity: 0; }
+
 /* ---------- toast ---------- */
 .bk-toast {
   position: fixed; left: 50%; bottom: 1.5rem; transform: translateX(-50%); z-index: 2000;
@@ -190,5 +257,8 @@ body { background: var(--mf-tint-grey, #F7F8FA); }
 @media (prefers-reduced-motion: reduce) {
   .bk-trip, .bk-field, .bk-pill { transition: none; }
   .bk-scratch.is-revealed { animation: none; }
+  .bk-route-bus, .bk-shake, .bk-print, .bk-rise,
+  .bk-check-circle, .bk-check-mark { animation: none; }
+  .bk-check-circle, .bk-check-mark { stroke-dashoffset: 0; }
   .bk-trip:hover { transform: none; }
 }
