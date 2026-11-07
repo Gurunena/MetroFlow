@@ -56,3 +56,16 @@ form handling (`.val`, `.addClass('is-invalid')`), `$.each` / `$.grep` / `$.map`
   white panels, light table, icon buttons, Bootstrap modal for "View" (admin.css – no separate CSS needed)
 - Seat page: light header like Explore / My Trips, MetroFlow fonts, favicon, chat widget, navbar login state (auth.js)
 - passenger-details.css is no longer used by the page
+
+## Seat page design (redesigned)
+- **Trip card** like a boarding pass: departure → arrival times with a bus driving along the route, date, time and fare chips
+- **Seat map shaped like a bus**: front (door + driver), 2 + 2 seats with an aisle and row letters, "back of the bus"
+- Seats: white/green = free, MetroFlow red with ✓ = your pick, striped grey = booked
+- **Your trip** panel: Passengers pills 1–6, "Select N seats" progress bar (turns green when done),
+  seat chips with × to remove, fare breakdown, total, Continue to booking, free/booked counts, Refresh
+- **Live**: the map re-checks every 20 s ("Live · updated 12s ago"); a seat someone else just booked shakes and turns grey
+
+### Animations (CSS @keyframes + jQuery)
+seats pop in row by row · picked seat bounces · chips pop in · total counts up (jQuery `.animate()`) ·
+bus drives on the route · pulsing Live dot · Continue arrow nudges · refresh icon spins ·
+"too many seats" shakes the seat. All switched off with the system's "reduce motion" setting.

@@ -1,244 +1,178 @@
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Seats – MetroFlow</title>
+  <meta name="description" content="Pick your seats on a MetroFlow bus – live seat availability, then continue to booking.">
+  <link rel="icon" href="images/logo-mark.svg" type="image/svg+xml">
 
-    <title>Select Seats – MetroFlow</title>
-    <link rel="icon" href="images/logo-mark.svg" type="image/svg+xml">
+  <!-- Fonts: Plus Jakarta Sans for UI, Caveat + Pinyon Script for accents (same as every page) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@600;700&family=Pinyon+Script&display=swap" rel="stylesheet">
 
-    <!-- Fonts: Plus Jakarta Sans for UI, Caveat + Pinyon Script for accents (same as every page) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@600;700&family=Pinyon+Script&display=swap" rel="stylesheet">
-
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
-
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-          rel="stylesheet">
-
-    <!-- Existing MetroFlow CSS -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/home.css">
-    <link rel="stylesheet" href="css/chat.css">
-
-    <!-- Manage Bookings CSS -->
-    <link rel="stylesheet" href="css/manage-bookings.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/home.css" rel="stylesheet">
+  <link href="css/chat.css" rel="stylesheet">
+  <link href="css/manage-bookings.css" rel="stylesheet">
 </head>
+<body class="sm-page">
+  <div id="navbar"></div>
 
-<body>
+  <main id="main">
 
-    <!-- Existing Navbar -->
-    <div id="navbar"></div>
+    <!-- ============================ HEADER ============================ -->
+    <header class="sm-head">
+      <div class="container">
+        <nav class="sm-crumbs" aria-label="Breadcrumb">
+          <a href="index.html">Home</a> / <a href="search.html">Find buses</a> / <span aria-current="page">Seats</span>
+        </nav>
+        <span class="mf-eyebrow">Seat selection</span>
+        <h1 class="sm-title">Pick your <span class="sm-script">seats</span></h1>
+        <p class="sm-sub">Tap a free seat for each passenger. The map updates live.</p>
+      </div>
+    </header>
 
-    <!-- Main Content -->
+    <section class="sm-body">
+      <div class="container">
 
-<!-- Main Content -->
-<main id="main">
-
-    <!-- Seat Selection Hero -->
-    <section class="booking-hero">
-        <div class="container">
-            <div class="booking-hero-content">
-                <span class="mf-eyebrow">Seat selection</span>
-                <h1>Pick your <span class="booking-script">seats</span></h1>
-                <p>Green seats are free, grey ones are taken. Choose yours and continue to booking.</p>
+        <!-- ===================== TRIP CARD (boarding pass) ===================== -->
+        <article class="sm-trip" aria-label="Your bus">
+          <div class="sm-trip-bus">
+            <span class="sm-trip-ic"><i class="bi bi-bus-front-fill" aria-hidden="true"></i></span>
+            <div>
+              <h2 class="sm-trip-name" id="busName">Choose a bus</h2>
+              <div class="sm-tags" id="busTags"></div>
             </div>
-        </div>
-    </section>
+          </div>
 
-<!-- Journey Details -->
-<section class="booking-search-section">
-    <div class="container">
+          <div class="sm-trip-route">
+            <div class="sm-stop">
+              <strong id="depTime">--:--</strong>
+              <span id="depCity">—</span>
+            </div>
+            <div class="sm-line" aria-hidden="true"><i class="bi bi-bus-front-fill sm-line-bus"></i></div>
+            <div class="sm-stop text-end">
+              <strong id="arrTime">--:--</strong>
+              <span id="arrCity">—</span>
+            </div>
+          </div>
 
-<!-- Journey Details -->
-<div class="journey-details-card">
+          <div class="sm-trip-meta">
+            <span class="sm-chip"><i class="bi bi-calendar3" aria-hidden="true"></i> <span id="busDate">—</span></span>
+            <span class="sm-chip"><i class="bi bi-clock" aria-hidden="true"></i> <span id="busTime">—</span></span>
+            <span class="sm-chip sm-chip-red"><i class="bi bi-cash-coin" aria-hidden="true"></i> <span id="fareChip">—</span></span>
+          </div>
 
-    <div class="journey-info-details">
+          <!-- Only shown when the page is opened without a bus from the search results -->
+          <label class="visually-hidden" for="busPicker">Choose a bus</label>
+          <select id="busPicker" class="form-select sm-picker">
+            <option value="">Loading buses...</option>
+          </select>
+          <span id="busRoute" class="visually-hidden"></span>
+        </article>
 
-        <div class="journey-icon">
-    <img src="images/metroflow-bus.svg" alt="MetroFlow Bus">
-</div>
+        <div class="sm-grid">
 
-        <div class="journey-main-info">
-
-            <h2 id="busName">Choose a bus</h2>
-
-            <div class="journey-tags" id="busTags"></div>
-
-        </div>
-
-        <div class="journey-route-info">
-
-            <p>
-                <i class="bi bi-geo-alt"></i>
-                <span id="busRoute">—</span>
-            </p>
-
-            <p>
-                <i class="bi bi-calendar3"></i>
-                <span id="busDate">—</span>
-                <span class="journey-time" id="busTime"></span>
-            </p>
-
-            <label class="visually-hidden" for="busPicker">Choose a bus</label>
-            <select id="busPicker" class="form-select form-select-sm mt-2">
-                <option value="">Loading buses...</option>
-            </select>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-            <!-- Seat Selection Layout -->
-            <div class="seat-selection-layout">
-
-                <!-- Left: Bus Seats -->
-                <div class="seat-selection-card">
-
-                    <!-- How many passengers (max 6) – that many seats can be selected -->
-                    <div class="pax-picker">
-                        <label for="paxSelect"><i class="bi bi-people-fill"></i> Passengers</label>
-                        <select id="paxSelect" class="form-select form-select-sm">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                        </select>
-                    </div>
-
-                    <div class="seat-legend">
-                        <span>
-                            <i class="legend-box available"></i>
-                            Available
-                        </span>
-
-                        <span>
-                            <i class="legend-box selected"></i>
-                            Selected
-                        </span>
-
-                        <span>
-                            <i class="legend-box booked"></i>
-                            Booked
-                        </span>
-                    </div>
-
-                    <div class="bus-front">
-                        <i class="bi bi-steering-wheel"></i>
-                        <span>Front</span>
-                    </div>
-
-                    <div class="bus-seat-grid" id="seatGrid">
-                        <p class="seat-note">Loading seats...</p>
-
-                    </div>
-
-                    <p class="seat-note">
-                        <span id="paxNote">Select your preferred available seats.</span>
-                    </p>
-
-                </div>
-
-                <!-- Right: Selected Seats -->
-                <!-- Right: Seat Availability -->
-<div class="selected-seats-card">
-
-    <h2>Seat Availability</h2>
-
-    <div class="seat-count-item">
-        <span>
-            <i class="bi bi-circle-fill text-success"></i>
-            Available Seats
-        </span>
-        <strong id="availableSeatCount">0</strong>
-    </div>
-
-    <div class="seat-count-item">
-        <span>
-            <i class="bi bi-circle-fill text-danger"></i>
-            Occupied Seats
-        </span>
-        <strong id="occupiedSeatCount">0</strong>
-    </div>
-
-    <div class="seat-count-item">
-        <span>
-            <i class="bi bi-circle-fill text-primary"></i>
-            Selected Seats
-        </span>
-        <strong id="selectedSeatCount">0</strong>
-    </div>
-
-    <div class="selected-seat-details">
-        <h3>Selected Seat Numbers</h3>
-
-        <div id="selectedSeatsList">
-            <p class="empty-seats">No seats selected yet.</p>
-        </div>
-    </div>
-
-<button
-    type="button"
-    id="refreshSeatAvailability"
-    class="proceed-passenger-btn">
-
-    <i class="bi bi-arrow-clockwise"></i>
-    Refresh Seat Availability
-
-</button>
-
-    <button
-        type="button"
-        id="continueBooking"
-        class="proceed-passenger-btn mt-2"
-        disabled>
-
-        Continue to booking
-        <i class="bi bi-arrow-right"></i>
-
-    </button>
-
-    <div id="seatMessage"></div>
-
-</div>
-
+          <!-- ============================ SEAT MAP ============================ -->
+          <section class="sm-card sm-map-card" aria-label="Seat map">
+            <div class="sm-map-head">
+              <div class="sm-legend">
+                <span><i class="sm-dot is-free"></i> Available</span>
+                <span><i class="sm-dot is-mine"></i> Your pick</span>
+                <span><i class="sm-dot is-taken"></i> Booked</span>
+              </div>
+              <span class="sm-live" title="Seats refresh automatically every 20 seconds">
+                <i class="sm-live-dot" aria-hidden="true"></i> Live · <span id="lastUpdated">updating…</span>
+              </span>
             </div>
 
+            <!-- The bus -->
+            <div class="sm-bus">
+              <div class="sm-bus-front">
+                <span class="sm-door"><i class="bi bi-door-open" aria-hidden="true"></i> Door</span>
+                <span class="sm-driver"><i class="bi bi-person-badge" aria-hidden="true"></i> Driver</span>
+              </div>
+              <div class="sm-seats" id="seatGrid" role="group" aria-label="Seats">
+                <p class="sm-empty">Loading seats…</p>
+              </div>
+              <div class="sm-bus-back">Back of the bus</div>
+            </div>
+          </section>
+
+          <!-- ============================ SUMMARY ============================= -->
+          <aside class="sm-card sm-summary" aria-label="Your selection">
+            <h2 class="sm-sum-title">Your trip</h2>
+
+            <!-- Passengers (1–6): that many seats must be picked -->
+            <div class="sm-pax">
+              <span class="sm-label"><i class="bi bi-people-fill" aria-hidden="true"></i> Passengers</span>
+              <div class="sm-pax-pills" role="group" aria-label="Number of passengers">
+                <button type="button" data-pax="1">1</button>
+                <button type="button" data-pax="2">2</button>
+                <button type="button" data-pax="3">3</button>
+                <button type="button" data-pax="4">4</button>
+                <button type="button" data-pax="5">5</button>
+                <button type="button" data-pax="6">6</button>
+              </div>
+              <label class="visually-hidden" for="paxSelect">Passengers</label>
+              <select id="paxSelect" class="visually-hidden" tabindex="-1" aria-hidden="true">
+                <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+              </select>
+            </div>
+
+            <div class="sm-progress-wrap">
+              <div class="d-flex justify-content-between small">
+                <span id="paxNote">Select 1 seat</span>
+                <strong><span id="selectedSeatCount">0</span> chosen</strong>
+              </div>
+              <div class="sm-progress"><span id="progressBar"></span></div>
+            </div>
+
+            <div class="sm-label mt-3">Selected seats</div>
+            <div id="selectedSeatsList" class="sm-chips">
+              <p class="sm-muted mb-0">No seats selected yet.</p>
+            </div>
+
+            <div class="sm-fare">
+              <div class="d-flex justify-content-between"><span>Fare per seat</span><span id="farePer">—</span></div>
+              <div class="d-flex justify-content-between"><span>Seats</span><span id="fareCount">0</span></div>
+              <div class="sm-total"><span>Total</span><strong id="totalPrice">LKR 0</strong></div>
+            </div>
+
+            <button type="button" id="continueBooking" class="sm-continue" disabled>
+              Continue to booking <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </button>
+
+            <div id="seatMessage" role="status" aria-live="polite"></div>
+
+            <div class="sm-stats">
+              <div><strong id="availableSeatCount">0</strong><span>free</span></div>
+              <div><strong id="occupiedSeatCount">0</strong><span>booked</span></div>
+              <button type="button" id="refreshSeatAvailability" class="sm-refresh" title="Refresh seat availability">
+                <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Refresh
+              </button>
+            </div>
+          </aside>
         </div>
+      </div>
     </section>
+  </main>
 
+  <div id="footer"></div>
+  <div id="chatWidget"></div>
 
-</main>
-
-
-
-    <!-- Existing Footer -->
-    <div id="footer"></div>
-    <div id="chatWidget"></div>
-
-
-    <!-- Existing Shared JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/main.js"></script>
-
-    <!-- Manage Bookings JavaScript -->
-    <script src="js/manage-bookings.js"></script>
-    <script src="js/chat.js"></script>
-
+  <!-- jQuery -> Bootstrap JS -> api.js -> auth.js -> main.js -> page script -> chat.js -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/manage-bookings.js"></script>
+  <script src="js/chat.js"></script>
 </body>
-
 </html>
