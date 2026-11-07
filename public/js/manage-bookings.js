@@ -123,7 +123,11 @@
       $('#busTags').empty();
       $('#busRoute, #busDate').text('—');
       $('#busTime').text('');
-      $('#seatGrid').html('<p class="seat-note" style="grid-column:1/-1">Choose a bus above to see its seats.</p>');
+      $('#seatGrid').html(
+        '<p class="seat-note" style="grid-column:1/-1">Search for your journey first, then choose <strong>Select Seats</strong> on a bus.</p>' +
+        '<p style="grid-column:1/-1;text-align:center;margin:0">' +
+          '<a class="mf-btn-red btn-sm text-decoration-none" href="search.html">' +
+          '<i class="bi bi-search" aria-hidden="true"></i> Find a bus</a></p>');
       updateSeatAvailability();
       return;
     }
@@ -261,11 +265,15 @@
     $.when(
       MF.loadPartial('#navbar', 'partials/navbar.html'),
       MF.loadPartial('#footer', 'partials/footer.html')
-    ).always(function () {
-      $('.mf-nav .nav-link[data-page="manage-bookings"]').addClass('active').attr('aria-current', 'page');
-    });
+    );
     bind();
-    loadBusPicker();
+    // A bus normally arrives from the search results (?busId=…). The picker is
+    // only a fallback for when the page is opened without one.
+    if (busId) {
+      $('#busPicker').hide();
+    } else {
+      loadBusPicker();
+    }
     loadBus();
   });
 })(window, jQuery);
