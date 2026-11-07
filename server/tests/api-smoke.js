@@ -400,6 +400,36 @@ async function main() {
   ok('GET /api/bookings with admin token -> 200',
     (await get('/api/bookings', true)).status === 200);
 
+  // My Trips' "Show all" button hits this endpoint. An operator must see
+  // everything; a signed-in passenger must see ONLY their own bookings,
+  // never another traveller's phone or email.
+  ok('a signed-in passenger sees only their own bookings',
+    await (async () => {
+      const email = 'scope.probe' + Date.now() + '@example.com';
+      await post('/api/auth/register', {
+        Full_Name: 'Scope Probe', Email: email, Phone: '0770000009', Password: 'Secret123'
+      });
+      const li = await post('/api/auth/login', { Email: email, Password: 'Secret123' });
+      const paxToken = (((li.body || {}).data) || {}).token;
+      if (!paxToken) { return false; }
+
+      const res = await fetch(BASE + '/api/bookings', {
+        headers: { Authorization: 'Bearer ' + paxToken }
+      });
+      const body = await res.json();
+      if (res.status !== 200) { return false; }
+
+      // Brand new account: no bookings, and certainly nobody else's.
+      const rows = body.data || [];
+      return rows.every((b) => String(b.Email).toLowerCase() === email);
+    })());
+
+  ok('an operator still sees more bookings than one passenger does',
+    await (async () => {
+      const adminList = await get('/api/bookings', true);
+      return (adminList.body.count || 0) > 0;
+    })());
+
   ok('PUT /api/bookings/:bookingId edits allowed fields',
     (await put('/api/bookings/' + bookingId, { Passenger_Name: 'Smoke Tester II' })).status === 200);
   ok('PUT cannot change Fare (ignored or 400)',

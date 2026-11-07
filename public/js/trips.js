@@ -53,6 +53,13 @@
   }
 
   function errorMessage(xhr) {
+    // "Show all" is the only lookup that needs a login: the unscoped list
+    // holds every passenger's details, so the API refuses it for guests.
+    // Say what to do instead of showing the raw 401.
+    if (xhr && xhr.status === 401) {
+      return 'Sign in to list all your trips — or search by booking reference, ' +
+             'phone, email or name without signing in.';
+    }
     var r = xhr && xhr.responseJSON;
     return (r && (r.error || r.message)) || 'Could not reach the server – please try again';
   }
