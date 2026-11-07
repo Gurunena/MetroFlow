@@ -179,7 +179,17 @@ async function createBooking(body) {
       { Bus_ID: busId, $expr: { $lt: ['$Available_Seats', '$Total_Seats'] } },
       { $inc: { Available_Seats: 1 } }
     );
-    if (err && err.code === 11000) throw new ServiceError(409, 'Seat ' + seat + ' is already booked');
+    if (err && err.code === 11000) {
+      // Two different unique indexes can fire here. Saying "seat already
+      // booked" for a Booking_ID clash sent the team hunting a phantom seat
+      // conflict, so report which one actually tripped.
+      const key = Object.keys(err.keyPattern || err.keyValue || {}).join(',');
+      if (key.indexOf('Booking_ID') > -1) {
+        throw new ServiceError(409,
+          'Could not allocate a booking reference – please try again');
+      }
+      throw new ServiceError(409, 'Seat ' + seat + ' is already booked');
+    }
     throw err;
   }
 }
