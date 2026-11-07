@@ -126,12 +126,7 @@ async function createBooking(body) {
   // Bus + schedule: must exist, be running and not have left already
   const bus = await Bus.findOne({ Bus_ID: busId }).lean();
   if (!bus) throw new ServiceError(404, 'Bus ' + busId + ' not found');
-  // 'Active' and 'Available' both mean the service is running. Only an
-  // explicitly withdrawn bus blocks a booking.
-  const BOOKABLE = ['Available', 'Active'];
-  if (bus.Status && BOOKABLE.indexOf(bus.Status) === -1) {
-    throw new ServiceError(409, 'Bus ' + busId + ' is not available for booking');
-  }
+  if (bus.Status && bus.Status !== 'Available') throw new ServiceError(409, 'Bus ' + busId + ' is not available for booking');
   if (bus.Travel_Date < today()) throw new ServiceError(409, 'This bus has already departed');
   if (bus.Travel_Date === today() && bus.Departure_Time && bus.Departure_Time <= nowTime()) {
     throw new ServiceError(409, 'This bus has already departed (' + bus.Departure_Time + ' today)');
@@ -170,12 +165,15 @@ async function createBooking(body) {
     await hooks.afterCreate(booking);
     return booking.toJSON();
   } catch (err) {
-    // Booking failed (e.g. two people took the same seat at the same moment) – give the seat back
-    await Bus.updateOne(
-      { Bus_ID: busId, $expr: { $lt: ['$Available_Seats', '$Total_Seats'] } },
-      { $inc: { Available_Seats: 1 } }
-    );
-    if (err && err.code === 11000) throw new ServiceError(409, 'Seat ' + seat + ' is already booked');
+    // Booking failed – give the seat back to the bus
+    await Bus.updateOne({ Bus_ID: busId }, { $inc: { Available_Seats: 1 } });
+    if (err && err.code === 11000) {
+      // Only a clash on the seat index means "seat taken" (e.g. two people took it at the same moment)
+      if (err.keyPattern && err.keyPattern.Seat_Number) {
+        throw new ServiceError(409, 'Seat ' + seat + ' is already booked');
+      }
+      throw new ServiceError(409, 'Could not create the booking right now – please try again');
+    }
     throw err;
   }
 }
@@ -290,12 +288,7 @@ async function cancelBooking(bookingId) {
     throw new ServiceError(404, 'Booking not found');
   }
 
-  // $expr caps the increment at the coach's capacity, so a seat can never be
-  // handed back twice and leave the bus claiming more seats than it has.
-  await Bus.updateOne(
-    { Bus_ID: booking.Bus_ID, $expr: { $lt: ['$Available_Seats', '$Total_Seats'] } },
-    { $inc: { Available_Seats: 1 } }
-  );
+  await Bus.updateOne({ Bus_ID: booking.Bus_ID }, { $inc: { Available_Seats: 1 } });
   await hooks.afterCancel(booking);
   return booking.toJSON();
 }
