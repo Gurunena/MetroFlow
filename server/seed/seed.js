@@ -32,6 +32,7 @@ const Schedule = require('../models/Schedule');
 const Passenger = require('../models/Passenger');
 const Booking = require('../models/Booking');
 const Destination = require('../models/Destination');
+const Counter = require('../models/Counter');
 const User = require('../models/User');
 
 const destinations = require('./destinations.json');
@@ -368,6 +369,44 @@ async function reconcileSeats() {
   line('seat counts reconciled', ops.length + ' bus(es) adjusted to match real bookings');
 }
 
+/**
+ * The seed writes Booking_IDs itself (BK<date><nnn>) instead of calling
+ * generateBookingId(), so the shared per-date counter in `counters` never
+ * moved. The first REAL booking on a seeded date then generated
+ * BK<date>001, which already existed: a duplicate-key error that
+ * createBooking reports as "Seat already booked".
+ *
+ * Push each counter up to the highest sequence actually used, so a
+ * generated ID can never collide with a seeded one.
+ */
+async function syncBookingCounters() {
+  const rows = await Booking.aggregate([
+    { $group: {
+      _id: { $substr: ['$Booking_ID', 2, 8] },          // the YYYYMMDD part
+      maxSeq: { $max: { $toInt: { $substr: ['$Booking_ID', 10, 3] } } }
+    } }
+  ]);
+
+  let moved = 0;
+  for (const row of rows) {
+    if (!row._id || !isFinite(row.maxSeq)) { continue; }
+
+    const id = 'booking-' + row._id;
+    const counter = await Counter.findOne({ _id: id }).lean();
+
+    if (!counter || counter.seq < row.maxSeq) {
+      await Counter.updateOne(
+        { _id: id },
+        { $set: { seq: row.maxSeq } },
+        { upsert: true }
+      );
+      moved += 1;
+    }
+  }
+
+  line('booking counters advanced', moved + ' date(s) moved past the seeded IDs');
+}
+
 async function verifyConsistency() {
   const buses = await Bus.find({}).lean();
   const bad = [];
@@ -426,6 +465,7 @@ async function main() {
 
   await linkReferences();
   await reconcileSeats();
+  await syncBookingCounters();
   await seedAdmin();
 
   const counts = {

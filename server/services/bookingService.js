@@ -179,7 +179,17 @@ async function createBooking(body) {
       { Bus_ID: busId, $expr: { $lt: ['$Available_Seats', '$Total_Seats'] } },
       { $inc: { Available_Seats: 1 } }
     );
-    if (err && err.code === 11000) throw new ServiceError(409, 'Seat ' + seat + ' is already booked');
+    if (err && err.code === 11000) {
+      // Two different unique indexes can fire here. Saying "seat already
+      // booked" for a Booking_ID clash sent the team hunting a phantom seat
+      // conflict, so report which one actually tripped.
+      const key = Object.keys(err.keyPattern || err.keyValue || {}).join(',');
+      if (key.indexOf('Booking_ID') > -1) {
+        throw new ServiceError(409,
+          'Could not allocate a booking reference – please try again');
+      }
+      throw new ServiceError(409, 'Seat ' + seat + ' is already booked');
+    }
     throw err;
   }
 }
@@ -187,8 +197,19 @@ async function createBooking(body) {
 /* ---------- 2–8. View & search ---------- */
 
 // 2. Show all Bookings
-function listBookings() {
-  return Booking.find().select(HIDE_ID).sort(SORT).lean();
+/**
+ * Every booking, or just one person's.
+ *
+ * My Trips has a "Show all" button. The unscoped list exposes every
+ * passenger's name, phone and email, so it is for operators only; a
+ * signed-in passenger gets their own bookings instead, matched on the email
+ * in their token. The controller decides which case applies.
+ */
+function listBookings(onlyEmail) {
+  const filter = onlyEmail
+    ? { Email: String(onlyEmail).trim().toLowerCase() }
+    : {};
+  return Booking.find(filter).select(HIDE_ID).sort(SORT).lean();
 }
 
 // 3. Find a Booking by Booking ID
