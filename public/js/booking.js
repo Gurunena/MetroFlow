@@ -118,7 +118,11 @@
         $('#sumRoute').text(bus.Departure + ' → ' + bus.Destination);
         $('#routeLine').html(esc(bus.Departure) + ' <i class="bi bi-arrow-right" aria-hidden="true"></i> ' +
           esc(bus.Destination) + ' &middot; ' + esc(niceDate(bus.Travel_Date)));
+        var trip = extras.countdown(bus.Travel_Date, bus.Departure_Time);
+        var departed = trip && trip.past;
+        $('#confirmBtn').prop('disabled', departed);
         $('#tripSummary').html(
+          extras.routeHtml(bus.Departure, bus.Destination) +
           '<div class="row g-3">' +
             kv('Bus', esc(bus.Bus_Name) + ' &middot; ' + esc(bus.Bus_ID)) +
             kv('Date', esc(niceDate(bus.Travel_Date))) +
@@ -129,14 +133,18 @@
           '</div>' +
           '<div class="bk-tear my-3 mx-0"></div>' +
           '<div class="d-flex justify-content-between align-items-end">' +
-            '<div class="bk-kv"><small>Total to pay at boarding</small><span class="bk-price">' + esc(money(bus.Fare * count)) + '</span></div>' +
+            '<div class="bk-kv"><small>Total to pay at boarding</small><span class="bk-price" id="sumTotal">' + esc(money(bus.Fare * count)) + '</span></div>' +
             '<span class="small mf-muted">' + count + ' &times; ' + esc(money(bus.Fare)) + '</span>' +
           '</div>' +
-          (bus.Available_Seats < count
-            ? '<p class="small mf-text-red mt-3 mb-0"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> Only ' +
-              esc(bus.Available_Seats) + ' seat(s) left on this bus.</p>'
-            : '')
+          (departed
+            ? '<p class="small mf-text-red mt-3 mb-0"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> ' +
+              'This bus has already departed – please choose a later bus.</p>'
+            : bus.Available_Seats < count
+              ? '<p class="small mf-text-red mt-3 mb-0"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> Only ' +
+                esc(bus.Available_Seats) + ' seat(s) left on this bus.</p>'
+              : '')
         ).hide().fadeIn(200);
+        extras.countUp($('#sumTotal'), bus.Fare * count, function (n) { return money(Math.round(n)); });
       })
       .fail(function () {
         currentBus = null;
@@ -159,7 +167,10 @@
       $(selector).attr('aria-invalid', !ok).closest('.bk-field').toggleClass('is-invalid', !ok).toggleClass('is-valid', ok);
       if (!ok) { valid = false; }
     });
-    if (!valid) { $('#bookingForm .is-invalid input').first().trigger('focus'); }
+    if (!valid) {
+      extras.shake($('#bookingForm .bk-field.is-invalid'));
+      $('#bookingForm .is-invalid input').first().trigger('focus');
+    }
     return valid;
   }
 
@@ -241,6 +252,10 @@
     createdBookings = created;
     $('#tickets').html($.map(created, ticketHtml).join(''));
     drawBarcodes();
+    $('#confirmSection .bk-done').html(extras.checkSvg());
+    $('#tickets .bk-ticket').each(function (i) {
+      $(this).addClass('bk-print').css('animation-delay', (0.35 + i * 0.3) + 's');
+    });
 
     // extras: live countdown, MetroMiles earned, WhatsApp share, scratch-card reward
     var bus = currentBus || {};
@@ -256,6 +271,7 @@
       extras.mountScratchCard($('#rewardBox'), created[0].Booking_ID);
       $('#confirmSection').hide().fadeIn(400);
       $('html, body').animate({ scrollTop: 0 }, 300);
+      window.setTimeout(extras.confetti, 450);
     });
   }
 
