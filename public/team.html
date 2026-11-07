@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MetroFlow – Our team</title>
+  <meta name="description" content="The group behind MetroFlow: who built which module of the Online Metro Bus Booking System, the nine modules in scope and the technologies used.">
+  <link rel="icon" href="images/logo-mark.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@600;700&family=Pinyon+Script&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap CSS -> Icons -> style.css -> home.css -> info-pages.css -> chat.css -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/home.css" rel="stylesheet">
+  <link href="css/info-pages.css" rel="stylesheet">
+  <link href="css/chat.css" rel="stylesheet">
+</head>
+<body class="mf-info-page">
+  <div id="navbar"></div>
+
+  <main id="main">
+
+    <!-- ================================ HERO ============================ -->
+    <section class="mf-info-hero">
+      <div class="container">
+        <span class="mf-eyebrow">The group</span>
+        <h1 class="mf-info-hero-title">
+          Meet the <span class="mf-info-script">team</span>
+        </h1>
+        <p class="mf-info-hero-sub">
+          ETF Group Assignment 2 — Online Metro Bus Booking System. Five members, nine
+          modules, one codebase.
+        </p>
+
+        <nav aria-label="Breadcrumb">
+          <ol class="mf-info-crumb">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><span aria-current="page">Our team</span></li>
+          </ol>
+        </nav>
+      </div>
+    </section>
+
+    <!-- ============================ MEMBER CARDS ======================== -->
+    <section class="mf-section" aria-labelledby="membersHead">
+      <div class="container">
+        <div class="row g-4 align-items-end mb-4">
+          <div class="col-lg">
+            <span class="mf-eyebrow mf-eyebrow-dash">Who built what</span>
+            <h2 class="mf-section-title mt-2 mb-2" id="membersHead">Group members</h2>
+            <p class="mb-0" id="teamCount" aria-live="polite"></p>
+          </div>
+        </div>
+
+        <!-- Filter chips – rendered by info-pages.js from its FILTERS list -->
+        <div class="mf-info-filters mb-4" id="teamFilters"
+             role="group" aria-label="Filter members by area of work"></div>
+
+        <!-- Cards – rendered by info-pages.js from the TEAM_MEMBERS array -->
+        <div class="row g-4" id="teamGrid"></div>
+
+        <div class="mf-state d-none" id="teamEmpty">
+          <i class="bi bi-person-x" aria-hidden="true"></i>
+          No members in this area yet. Pick another filter, or add the area to a member
+          in <code>js/info-pages.js</code>.
+        </div>
+
+        <p class="small mf-muted mt-4 mb-0">
+          <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>
+          Names, student IDs, emails and GitHub links on this page are placeholders.
+          Edit the <code>TEAM_MEMBERS</code> array at the top of
+          <code>js/info-pages.js</code> to fill in the real details — member&nbsp;1 is a
+          worked sample showing the format.
+        </p>
+      </div>
+    </section>
+
+    <!-- ======================= PROJECT AT A GLANCE ====================== -->
+    <section class="mf-section mf-bg-tint" aria-labelledby="glanceHead">
+      <div class="container">
+        <div class="text-center mb-5">
+          <span class="mf-eyebrow">Scope</span>
+          <h2 class="mf-section-title mt-2 mb-0" id="glanceHead">Project at a glance</h2>
+        </div>
+
+        <div class="row g-4">
+          <!-- ----------------------- the nine modules ------------------- -->
+          <div class="col-lg-7">
+            <article class="mf-card">
+              <h3 class="h5 mb-1">System modules</h3>
+              <p class="small mb-4">The nine modules the assignment asks for.</p>
+
+              <ul class="mf-info-modlist">
+                <li>
+                  <span class="mf-info-n">1</span>
+                  <span><strong>Bus Management</strong> — add, edit and retire buses, with
+                  seat totals and fares.</span>
+                </li>
+                <li>
+                  <span class="mf-info-n">2</span>
+                  <span><strong>Route Management</strong> — the origin and destination pairs
+                  the network serves.</span>
+                </li>
+                <li>
+                  <span class="mf-info-n">3</span>
+                  <span><strong>Schedule Management</strong> — departure and arrival times per
+                  travel date.</span>
+                </li>
+                <li>
+                  <span class="mf-info-n">4</span>
+                  <span><strong>Bus Search</strong> — find services by route, date and
+                  passenger count, with filters and sorting.</span>
+                </li>
+                <li>
+                  <span class="mf-info-n">5</span>
+                  <span><strong>Seat Management</strong> — the per-coach seat map and which
+                  seats are already sold.</span>
+                </li>
+                <li>
+                  <span class="mf-info-n">6</span>
+                  <span><strong>Passenger Management</strong> — accounts, sign in and the
+                  passenger's own details.</span>
+                </li>
+                <li>
+                  <span class="mf-info-n">7</span>
+                  <span><strong>Booking Management</strong> — create, confirm and cancel a
+                  booking against real seat stock.</span>
+                </li>
+                <li>
+                  <span class="mf-info-n">8</span>
+                  <span><strong>Booking Search</strong> — look a booking up by reference and
+                  review it before travelling.</span>
+                </li>
+                <li>
+                  <span class="mf-info-n">9</span>
+                  <span><strong>REST API</strong> — the JSON endpoints under
+                  <code>/api</code> that every page talks to.</span>
+                </li>
+              </ul>
+            </article>
+          </div>
+
+          <!-- -------------------------- technologies -------------------- -->
+          <div class="col-lg-5">
+            <article class="mf-card h-100">
+              <h3 class="h5 mb-1">Technologies</h3>
+              <p class="small mb-4">What the system is built with.</p>
+
+              <ul class="mf-info-tech">
+                <li class="mf-info-tech-badge">
+                  <i class="bi bi-filetype-html" aria-hidden="true"></i><span>HTML5</span>
+                </li>
+                <li class="mf-info-tech-badge">
+                  <i class="bi bi-filetype-css" aria-hidden="true"></i><span>CSS3</span>
+                </li>
+                <li class="mf-info-tech-badge">
+                  <i class="bi bi-bootstrap-fill" aria-hidden="true"></i><span>Bootstrap 5</span>
+                </li>
+                <li class="mf-info-tech-badge">
+                  <i class="bi bi-braces" aria-hidden="true"></i><span>jQuery 3</span>
+                </li>
+                <li class="mf-info-tech-badge">
+                  <i class="bi bi-arrow-repeat" aria-hidden="true"></i><span>Ajax</span>
+                </li>
+                <li class="mf-info-tech-badge">
+                  <i class="bi bi-filetype-json" aria-hidden="true"></i><span>JSON</span>
+                </li>
+                <li class="mf-info-tech-badge">
+                  <i class="bi bi-hexagon-fill" aria-hidden="true"></i><span>Node.js</span>
+                </li>
+                <li class="mf-info-tech-badge">
+                  <i class="bi bi-diagram-3" aria-hidden="true"></i><span>Express</span>
+                </li>
+                <li class="mf-info-tech-badge">
+                  <i class="bi bi-database-fill" aria-hidden="true"></i><span>MongoDB</span>
+                </li>
+                <li class="mf-info-tech-badge">
+                  <i class="bi bi-link-45deg" aria-hidden="true"></i><span>Mongoose</span>
+                </li>
+                <li class="mf-info-tech-badge">
+                  <i class="bi bi-shield-lock" aria-hidden="true"></i><span>JWT + bcrypt</span>
+                </li>
+                <li class="mf-info-tech-badge">
+                  <i class="bi bi-git" aria-hidden="true"></i><span>Git &amp; GitHub</span>
+                </li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= ACKNOWLEDGEMENTS ======================= -->
+    <section class="mf-section" aria-labelledby="ackHead">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <article class="mf-card text-center">
+              <span class="mf-eyebrow">Thank you</span>
+              <h2 class="h4 mt-2 mb-3" id="ackHead">Acknowledgements</h2>
+
+              <!-- PLACEHOLDER: replace the angle-bracket text below. -->
+              <p class="mb-2">
+                Our thanks to <strong>&lt;Lecturer / supervisor name&gt;</strong> for the
+                guidance on this assignment, and to
+                <strong>&lt;Module code — Module name&gt;</strong> at
+                <strong>&lt;Institution name&gt;</strong> for the brief.
+              </p>
+              <p class="small mb-0">
+                <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>
+                Placeholder text — edit this section in <code>public/team.html</code>.
+              </p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ CLOSING CTA ========================= -->
+    <section class="pb-5" aria-labelledby="teamCtaHead">
+      <div class="container">
+        <div class="mf-info-cta">
+          <h2 id="teamCtaHead">See it working</h2>
+          <p>
+            Every module on this page is wired to the same Express API and MongoDB
+            database. Take it for a ride.
+          </p>
+          <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a class="mf-btn-red" href="search.html">
+              <i class="bi bi-search" aria-hidden="true"></i> Find Buses
+            </a>
+            <a class="mf-btn-outline-red" href="contact.html">
+              <i class="bi bi-chat-dots" aria-hidden="true"></i> Contact us
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="footer"></div>
+  <div id="chatWidget"></div>
+
+  <!-- jQuery -> Bootstrap JS -> api.js -> auth.js -> main.js -> home.js -> info-pages.js -> chat.js -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/home.js"></script>
+  <script src="js/info-pages.js"></script>
+  <script src="js/chat.js"></script>
+</body>
+</html>

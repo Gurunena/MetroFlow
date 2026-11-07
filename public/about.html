@@ -1,11 +1,528 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MetroFlow – About Us</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MetroFlow – About us</title>
+  <meta name="description" content="Why MetroFlow exists: one online platform for searching Sri Lankan metro buses, checking seats and booking a trip in minutes. Our story, mission, features and FAQ.">
+  <link rel="icon" href="images/logo-mark.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@600;700&family=Pinyon+Script&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap CSS -> Icons -> style.css -> home.css -> info-pages.css -> chat.css -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/home.css" rel="stylesheet">
+  <link href="css/info-pages.css" rel="stylesheet">
+  <!-- chat.css is required wherever chat.js runs: without it the widget
+       loses position:fixed and renders inline under the footer. -->
+  <link href="css/chat.css" rel="stylesheet">
 </head>
-<body>
-  <!-- TODO -->
+<body class="mf-info-page">
+  <div id="navbar"></div>
+
+  <main id="main">
+
+    <!-- ================================ HERO ============================ -->
+    <section class="mf-info-hero">
+      <div class="container">
+        <span class="mf-eyebrow">About MetroFlow</span>
+        <h1 class="mf-info-hero-title">
+          Moving Sri Lanka, <span class="mf-info-script">smarter</span>
+        </h1>
+        <p class="mf-info-hero-sub">
+          One place to search every metro bus service on the island, see exactly which
+          seats are free and hold them before you leave the house — no phone calls, no
+          queueing at the counter.
+        </p>
+
+        <nav aria-label="Breadcrumb">
+          <ol class="mf-info-crumb">
+            <li><a href="index.html">Home</a></li>
+            <li><span aria-current="page">About</span></li>
+          </ol>
+        </nav>
+      </div>
+    </section>
+
+    <!-- ============================== OUR STORY ======================== -->
+    <section class="mf-section" aria-labelledby="storyHead">
+      <div class="container">
+        <div class="row g-4 g-lg-5 align-items-center">
+          <div class="col-lg-6">
+            <span class="mf-eyebrow mf-eyebrow-dash">Our story</span>
+            <h2 class="mf-section-title mt-2 mb-3" id="storyHead">
+              Booking a bus seat should take a minute, not a morning
+            </h2>
+
+            <p>
+              Reserving a long-distance seat in Sri Lanka has long meant ringing a
+              depot that may not answer, asking a friend near the stand to hold a
+              place, or simply turning up early and hoping. Timetables live on
+              noticeboards, fares are quoted from memory, and the only record of a
+              reservation is a name in a notebook. Passengers cannot see what is
+              available, and operators cannot see what they have already sold.
+            </p>
+
+            <p class="mf-info-quote">
+              The timetable already exists. It was just never anywhere you could reach it.
+            </p>
+
+            <p>
+              MetroFlow puts that whole process online. Every service, seat map and
+              fare sits in one database, so searching a route, picking a specific seat,
+              paying and managing the trip afterwards all happen in the same place.
+              Operators get a dashboard instead of a notebook, passengers get a
+              reference number instead of a promise, and the seat you chose is still
+              yours when the bus pulls in.
+            </p>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="mf-info-story-photo">
+              <img src="images/metroflow-bus.svg"
+                   alt="A red and white MetroFlow intercity coach seen from the front corner"
+                   width="420" height="280" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================== MISSION & VISION ===================== -->
+    <section class="mf-section mf-bg-tint" aria-labelledby="mvHead">
+      <div class="container">
+        <div class="text-center mb-5">
+          <span class="mf-eyebrow">What drives us</span>
+          <h2 class="mf-section-title mt-2 mb-0" id="mvHead">Mission &amp; vision</h2>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-md-6">
+            <article class="mf-card mf-info-mv">
+              <span class="mf-info-mv-ic"><i class="bi bi-bullseye" aria-hidden="true"></i></span>
+              <h3>Our mission</h3>
+              <p>
+                To replace manual bus reservations with one dependable online platform —
+                so any passenger with a phone can find a service, choose a seat and
+                confirm a booking in under a minute, and every operator can see their
+                occupancy in real time.
+              </p>
+            </article>
+          </div>
+
+          <div class="col-md-6">
+            <article class="mf-card mf-info-mv">
+              <span class="mf-info-mv-ic"><i class="bi bi-binoculars" aria-hidden="true"></i></span>
+              <h3>Our vision</h3>
+              <p>
+                A single connected view of public road transport across Sri Lanka, where
+                routes, timetables and seat availability are open and accurate — and
+                planning a trip from Jaffna to Matara is as ordinary as checking the
+                weather.
+              </p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================== WHAT YOU CAN DO ======================= -->
+    <section class="mf-section" aria-labelledby="featuresHead">
+      <div class="container">
+        <div class="text-center mb-5">
+          <span class="mf-eyebrow">Features</span>
+          <h2 class="mf-section-title mt-2 mb-0" id="featuresHead">What you can do here</h2>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-4">
+            <article class="mf-card mf-info-feature">
+              <span class="mf-info-ic"><i class="bi bi-search" aria-hidden="true"></i></span>
+              <h3>Search buses</h3>
+              <p>
+                Pick your route and date and see every matching service with its
+                departure time, journey length, fare and seats remaining. Filter by
+                time of day or price and sort by whichever matters most.
+              </p>
+              <a class="mf-link-arrow small" href="search.html">
+                Find buses <i class="bi bi-arrow-right" aria-hidden="true"></i>
+              </a>
+            </article>
+          </div>
+
+          <div class="col-md-6 col-lg-4">
+            <article class="mf-card mf-info-feature">
+              <span class="mf-info-ic"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i></span>
+              <h3>Choose your seat</h3>
+              <p>
+                An interactive seat map of the actual coach: taken seats are locked,
+                free ones are yours to click. Window, aisle or front row — you decide,
+                rather than finding out when you board.
+              </p>
+            </article>
+          </div>
+
+          <div class="col-md-6 col-lg-4">
+            <article class="mf-card mf-info-feature">
+              <span class="mf-info-ic"><i class="bi bi-lightning-charge" aria-hidden="true"></i></span>
+              <h3>Book in minutes</h3>
+              <p>
+                Name, phone, seats, done. Your booking gets a reference number
+                straight away so there is always something concrete to quote at the
+                counter or on the phone.
+              </p>
+            </article>
+          </div>
+
+          <div class="col-md-6 col-lg-4">
+            <article class="mf-card mf-info-feature">
+              <span class="mf-info-ic"><i class="bi bi-ticket-perforated" aria-hidden="true"></i></span>
+              <h3>Manage and cancel trips</h3>
+              <p>
+                Every booking lives under My Trips. Look up a reference, check the
+                details before you travel, or cancel a seat you no longer need and free
+                it for someone else.
+              </p>
+              <a class="mf-link-arrow small" href="my-trips.html">
+                My Trips <i class="bi bi-arrow-right" aria-hidden="true"></i>
+              </a>
+            </article>
+          </div>
+
+          <div class="col-md-6 col-lg-4">
+            <article class="mf-card mf-info-feature">
+              <span class="mf-info-ic"><i class="bi bi-robot" aria-hidden="true"></i></span>
+              <h3>Chat with Metro AI</h3>
+              <p>
+                Ask in plain English — "cheapest bus to Jaffna tomorrow", "what time
+                does the Kandy service leave" — and the assistant answers from the live
+                timetable instead of a canned script.
+              </p>
+              <a class="mf-link-arrow small" href="assistant.html">
+                Open the assistant <i class="bi bi-arrow-right" aria-hidden="true"></i>
+              </a>
+            </article>
+          </div>
+
+          <div class="col-md-6 col-lg-4">
+            <article class="mf-card mf-info-feature">
+              <span class="mf-info-ic"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
+              <h3>Admin tools for operators</h3>
+              <p>
+                A separate operator login opens a dashboard for adding buses, editing
+                routes and timetables, and watching bookings arrive — the paper ledger,
+                replaced.
+              </p>
+              <a class="mf-link-arrow small" href="admin-login.html">
+                Operator login <i class="bi bi-arrow-right" aria-hidden="true"></i>
+              </a>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ HOW IT WORKS ======================== -->
+    <section class="mf-section mf-bg-tint" aria-labelledby="howHead">
+      <div class="container">
+        <div class="text-center mb-5">
+          <span class="mf-eyebrow">Four steps</span>
+          <h2 class="mf-section-title mt-2 mb-0" id="howHead">How it works</h2>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-6 col-lg-3">
+            <div class="mf-step">
+              <div class="mf-num">1</div>
+              <h3 class="h6">Search</h3>
+              <p class="small mb-0">Enter where you are leaving from, where you are going and the date.</p>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="mf-step">
+              <div class="mf-num">2</div>
+              <h3 class="h6">Select seat</h3>
+              <p class="small mb-0">Open the seat map and click the seats you want on that coach.</p>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="mf-step">
+              <div class="mf-num">3</div>
+              <h3 class="h6">Book</h3>
+              <p class="small mb-0">Confirm your details and keep the booking reference you are given.</p>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="mf-step">
+              <div class="mf-num">4</div>
+              <h3 class="h6">Travel</h3>
+              <p class="small mb-0">Show the reference when you board — your seat is already held.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== NUMBERS =========================== -->
+    <!-- The figures in the markup are the fallback. info-pages.js replaces
+         them with live totals from /api/destinations and /api/buses when the
+         API answers, and leaves them alone when it does not. -->
+    <section class="mf-section" aria-labelledby="numbersHead">
+      <div class="container">
+        <div class="text-center mb-4">
+          <span class="mf-eyebrow">MetroFlow today</span>
+          <h2 class="mf-section-title mt-2 mb-0" id="numbersHead">The network in numbers</h2>
+        </div>
+
+        <div class="mf-stats">
+          <div class="row g-4 text-center position-relative" style="z-index:1">
+            <div class="col-12 col-md-4" data-stat-wrap>
+              <div class="mf-stat-num" data-stat="destinations" data-fallback="12+">12+</div>
+              <div class="mf-stat-label">Destinations</div>
+            </div>
+            <div class="col-6 col-md-4" data-stat-wrap>
+              <div class="mf-stat-num" data-stat="buses" data-fallback="40+">40+</div>
+              <div class="mf-stat-label">Daily buses</div>
+            </div>
+            <div class="col-6 col-md-4" data-stat-wrap>
+              <div class="mf-stat-num" data-stat="provinces" data-fallback="9">9</div>
+              <div class="mf-stat-label">Provinces</div>
+            </div>
+          </div>
+        </div>
+
+        <p class="small mf-muted text-center mt-3 mb-0" id="aboutStatsNote" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- ============================= TECHNOLOGY ========================= -->
+    <section class="mf-section mf-bg-tint" aria-labelledby="techHead">
+      <div class="container">
+        <div class="row g-4 g-lg-5 align-items-center">
+          <div class="col-lg-5">
+            <span class="mf-eyebrow mf-eyebrow-dash">Under the bonnet</span>
+            <h2 class="mf-section-title mt-2 mb-3" id="techHead">Built with</h2>
+            <p class="mb-0">
+              MetroFlow is a full-stack web application: semantic HTML and Bootstrap on
+              the outside, a jQuery Ajax layer in between, and an Express REST API over
+              MongoDB doing the real work. Nothing is stored in the browser — every bus,
+              seat, booking and message lives in the database.
+            </p>
+          </div>
+
+          <div class="col-lg-7">
+            <ul class="mf-info-tech">
+              <li class="mf-info-tech-badge">
+                <i class="bi bi-filetype-html" aria-hidden="true"></i>
+                <span>HTML5<span>Semantic page structure</span></span>
+              </li>
+              <li class="mf-info-tech-badge">
+                <i class="bi bi-bootstrap-fill" aria-hidden="true"></i>
+                <span>Bootstrap 5<span>Responsive grid &amp; components</span></span>
+              </li>
+              <li class="mf-info-tech-badge">
+                <i class="bi bi-braces" aria-hidden="true"></i>
+                <span>jQuery<span>DOM, events and templating</span></span>
+              </li>
+              <li class="mf-info-tech-badge">
+                <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+                <span>Ajax<span>Pages update without reloading</span></span>
+              </li>
+              <li class="mf-info-tech-badge">
+                <i class="bi bi-filetype-json" aria-hidden="true"></i>
+                <span>JSON<span>The format every request speaks</span></span>
+              </li>
+              <li class="mf-info-tech-badge">
+                <i class="bi bi-hexagon-fill" aria-hidden="true"></i>
+                <span>Node.js<span>The server runtime</span></span>
+              </li>
+              <li class="mf-info-tech-badge">
+                <i class="bi bi-diagram-3" aria-hidden="true"></i>
+                <span>Express REST API<span>Routing and validation</span></span>
+              </li>
+              <li class="mf-info-tech-badge">
+                <i class="bi bi-database-fill" aria-hidden="true"></i>
+                <span>MongoDB<span>Buses, bookings and users</span></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================= FAQ ============================ -->
+    <section class="mf-section" id="faq" aria-labelledby="faqHead">
+      <div class="container">
+        <div class="row g-4 align-items-end mb-4">
+          <div class="col-md">
+            <span class="mf-eyebrow">Questions</span>
+            <h2 class="mf-section-title mt-2 mb-0" id="faqHead">Frequently asked</h2>
+          </div>
+          <div class="col-md-auto">
+            <button type="button" class="mf-btn-ghost btn-sm" id="faqToggleAll"
+                    aria-controls="faqAccordion" aria-expanded="false">
+              <i class="bi bi-chevron-bar-expand" aria-hidden="true"></i>
+              <span class="mf-info-toggle-label">Expand all</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="accordion mf-info-faq" id="faqAccordion">
+
+          <div class="accordion-item">
+            <h3 class="accordion-header" id="faqH1">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#faqC1" aria-expanded="false" aria-controls="faqC1">
+                How do I book a seat?
+              </button>
+            </h3>
+            <div class="accordion-collapse collapse" id="faqC1"
+                 aria-labelledby="faqH1">
+              <div class="accordion-body">
+                Search for your route and date on the
+                <a href="search.html">Find buses</a> page, open the service you want and
+                click <strong>Select seats</strong>. Choose your seats on the coach map,
+                enter your name and phone number, and confirm. You will be given a
+                booking reference such as <code>BK20261106001</code> straight away —
+                that reference is your ticket.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h3 class="accordion-header" id="faqH2">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#faqC2" aria-expanded="false" aria-controls="faqC2">
+                Can I cancel a booking?
+              </button>
+            </h3>
+            <div class="accordion-collapse collapse" id="faqC2"
+                 aria-labelledby="faqH2">
+              <div class="accordion-body">
+                Yes. Open <a href="my-trips.html">My Trips</a>, find the booking by its
+                reference and choose <strong>Cancel booking</strong>. The seats go back
+                into the pool for that service immediately, so someone else can take
+                them. Cancelled bookings stay in your history marked as cancelled rather
+                than disappearing.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h3 class="accordion-header" id="faqH3">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#faqC3" aria-expanded="false" aria-controls="faqC3">
+                How do I choose seats?
+              </button>
+            </h3>
+            <div class="accordion-collapse collapse" id="faqC3"
+                 aria-labelledby="faqH3">
+              <div class="accordion-body">
+                Each service has a seat map laid out like the real coach. Seats already
+                sold are shown as unavailable and cannot be clicked; the rest are free to
+                pick. Click a seat to take it and click again to release it. The map
+                reflects what is in the database, so two people cannot be sold the same
+                seat.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h3 class="accordion-header" id="faqH4">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#faqC4" aria-expanded="false" aria-controls="faqC4">
+                What do I need to travel?
+              </button>
+            </h3>
+            <div class="accordion-collapse collapse" id="faqC4"
+                 aria-labelledby="faqH4">
+              <div class="accordion-body">
+                Your booking reference and the name it was made in. Have them ready when
+                you board — on your phone is fine, no printing needed. Arrive about ten
+                minutes before departure; a held seat is only held until the bus leaves.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h3 class="accordion-header" id="faqH5">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#faqC5" aria-expanded="false" aria-controls="faqC5">
+                Can I book for several passengers?
+              </button>
+            </h3>
+            <div class="accordion-collapse collapse" id="faqC5"
+                 aria-labelledby="faqH5">
+              <div class="accordion-body">
+                Yes — up to six seats in one booking. Set the number of passengers when
+                you search, then pick that many seats on the map. They are kept together
+                under a single reference, so there is one booking to look up and one to
+                cancel rather than six.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h3 class="accordion-header" id="faqH6">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#faqC6" aria-expanded="false" aria-controls="faqC6">
+                How do I contact support?
+              </button>
+            </h3>
+            <div class="accordion-collapse collapse" id="faqC6"
+                 aria-labelledby="faqH6">
+              <div class="accordion-body">
+                Use the form on the <a href="contact.html">Contact</a> page and you will
+                get a message reference to quote if you follow up. For a quick question
+                about a route, fare or timetable, <a href="assistant.html">Metro AI</a>
+                answers from the live data straight away.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ CLOSING CTA ========================= -->
+    <section class="pb-5" aria-labelledby="ctaHead">
+      <div class="container">
+        <div class="mf-info-cta">
+          <span class="mf-script" style="color:#fff">Same island, new journeys</span>
+          <h2 class="mt-2" id="ctaHead">Ready to ride?</h2>
+          <p>
+            Find a service, pick the seat you actually want, and have it held before you
+            leave the house.
+          </p>
+          <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a class="mf-btn-red" href="search.html">
+              <i class="bi bi-search" aria-hidden="true"></i> Find Buses
+            </a>
+            <a class="mf-btn-outline-red" href="contact.html">
+              <i class="bi bi-chat-dots" aria-hidden="true"></i> Contact us
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="footer"></div>
+  <div id="chatWidget"></div>
+
+  <!-- jQuery -> Bootstrap JS -> api.js -> auth.js -> main.js -> home.js -> info-pages.js -> chat.js -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/home.js"></script>
+  <script src="js/info-pages.js"></script>
+  <script src="js/chat.js"></script>
 </body>
 </html>

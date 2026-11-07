@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MetroFlow – Contact us</title>
+  <meta name="description" content="Get in touch with MetroFlow about a booking, a cancellation or a problem. Send a message and get a reference number back straight away.">
+  <link rel="icon" href="images/logo-mark.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@600;700&family=Pinyon+Script&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap CSS -> Icons -> style.css -> home.css -> info-pages.css -> chat.css -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/home.css" rel="stylesheet">
+  <link href="css/info-pages.css" rel="stylesheet">
+  <link href="css/chat.css" rel="stylesheet">
+</head>
+<body class="mf-info-page">
+  <div id="navbar"></div>
+
+  <main id="main">
+
+    <!-- ================================ HERO ============================ -->
+    <section class="mf-info-hero">
+      <div class="container">
+        <span class="mf-eyebrow">Contact</span>
+        <h1 class="mf-info-hero-title">
+          We'd love to <span class="mf-info-script">hear</span> from you
+        </h1>
+        <p class="mf-info-hero-sub">
+          A question about a booking, a cancellation to sort out, or something that went
+          wrong — send it over and you will get a reference number back straight away.
+        </p>
+
+        <nav aria-label="Breadcrumb">
+          <ol class="mf-info-crumb">
+            <li><a href="index.html">Home</a></li>
+            <li><span aria-current="page">Contact</span></li>
+          </ol>
+        </nav>
+      </div>
+    </section>
+
+    <!-- ========================= DETAILS + FORM ========================= -->
+    <section class="mf-section" aria-labelledby="contactHead">
+      <div class="container">
+        <h2 class="visually-hidden" id="contactHead">Contact details and message form</h2>
+
+        <div class="row g-4 g-lg-5">
+
+          <!-- ------------------------- LEFT: details ------------------- -->
+          <div class="col-lg-5">
+            <span class="mf-eyebrow mf-eyebrow-dash">Reach us</span>
+            <h3 class="h4 mt-2 mb-4">Where to find us</h3>
+
+            <!-- Cards rendered by contact.js from its CONTACT_DETAILS object -->
+            <div class="row g-3" id="contactDetails"></div>
+
+            <div class="mf-info-demo-note mt-4">
+              <i class="bi bi-info-circle" aria-hidden="true"></i>
+              <span>
+                These are <strong>demo details</strong> for a university project — there
+                is no real MetroFlow office, phone line or mailbox. Messages sent with
+                the form <em>are</em> stored in the project database, so please do not
+                put anything private in them.
+              </span>
+            </div>
+          </div>
+
+          <!-- --------------------------- RIGHT: form ------------------- -->
+          <div class="col-lg-7">
+
+            <div id="contactFormWrap">
+              <div class="mf-card mf-info-form">
+                <h3 class="h4 mb-1">Send a message</h3>
+                <p class="small mb-4">
+                  All fields are required except your phone number.
+                </p>
+
+                <form id="contactForm" novalidate>
+
+                  <div class="row g-3">
+                    <!-- ------------------------- name ------------------- -->
+                    <div class="col-md-6">
+                      <label class="form-label" for="cfName">Full name</label>
+                      <input class="form-control" id="cfName" name="Full_Name" type="text"
+                             maxlength="60" autocomplete="name" required
+                             placeholder="Nimal Perera">
+                      <div class="invalid-feedback" id="cfNameMsg"></div>
+                    </div>
+
+                    <!-- ------------------------ email ------------------- -->
+                    <div class="col-md-6">
+                      <label class="form-label" for="cfEmail">Email</label>
+                      <input class="form-control" id="cfEmail" name="Email" type="email"
+                             maxlength="100" autocomplete="email" required
+                             placeholder="you@example.com">
+                      <div class="invalid-feedback" id="cfEmailMsg"></div>
+                    </div>
+
+                    <!-- ------------------------ phone ------------------- -->
+                    <div class="col-md-6">
+                      <label class="form-label" for="cfPhone">
+                        Phone <span class="mf-info-opt">(optional)</span>
+                      </label>
+                      <input class="form-control" id="cfPhone" name="Phone" type="tel"
+                             autocomplete="tel" placeholder="+94 77 123 4567"
+                             aria-describedby="cfPhoneHelp">
+                      <div class="form-text" id="cfPhoneHelp">
+                        +94 77 123 4567 or 077 123 4567
+                      </div>
+                      <div class="invalid-feedback" id="cfPhoneMsg"></div>
+                    </div>
+
+                    <!-- ----------------------- subject ------------------ -->
+                    <div class="col-md-6">
+                      <label class="form-label" for="cfSubject">Subject</label>
+                      <!-- Options rendered by contact.js from its SUBJECTS list,
+                           so they cannot drift from the server's enum. -->
+                      <select class="form-select" id="cfSubject" name="Subject" required>
+                        <option value="" selected disabled>Choose a subject…</option>
+                      </select>
+                      <div class="invalid-feedback" id="cfSubjectMsg"></div>
+                    </div>
+
+                    <!-- ----------------------- message ----------------- -->
+                    <div class="col-12">
+                      <label class="form-label" for="cfMessage">Message</label>
+                      <textarea class="form-control" id="cfMessage" name="Message"
+                                maxlength="1000" required
+                                aria-describedby="cfMessageHelp"
+                                placeholder="Tell us what happened, and include your booking reference if you have one."></textarea>
+
+                      <div class="d-flex justify-content-between align-items-center gap-2 mt-2"
+                           id="cfMessageHelp">
+                        <span class="form-text m-0">
+                          Between 20 and 1000 characters.
+                          <span class="mf-info-counter" id="cfCountHint" aria-live="polite"></span>
+                        </span>
+                        <span class="mf-info-counter" id="cfCount" aria-live="polite">0 / 1000</span>
+                      </div>
+
+                      <div class="invalid-feedback" id="cfMessageMsg"></div>
+                    </div>
+                  </div>
+
+                  <!-- Honeypot. Positioned off-screen rather than hidden, and
+                       out of the tab order, so a human never meets it but a
+                       form-filling bot does. A filled value is dropped by the
+                       server and nothing is stored. -->
+                  <div class="mf-info-hp" aria-hidden="true">
+                    <label for="cfWebsite">Website</label>
+                    <input id="cfWebsite" name="Website" type="text"
+                           tabindex="-1" autocomplete="off">
+                  </div>
+
+                  <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
+                    <button class="mf-btn-red" type="submit" id="cfSubmit">
+                      <i class="bi bi-send" aria-hidden="true"></i>
+                      <span class="mf-info-btn-label">Send message</span>
+                    </button>
+                    <p class="mf-info-status" id="cfStatus" role="status" aria-live="polite"></p>
+                  </div>
+
+                </form>
+              </div>
+            </div>
+
+            <!-- Confirmation card – filled in and revealed by contact.js -->
+            <div class="mf-card mf-info-success d-none" id="contactSuccess"
+                 role="status" aria-live="polite"></div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================= MAP ============================ -->
+    <section class="mf-section pt-0" aria-labelledby="mapHead">
+      <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+          <div>
+            <span class="mf-eyebrow">On the map</span>
+            <h2 class="mf-section-title mt-2 mb-0" id="mapHead">Colombo Fort</h2>
+          </div>
+          <a class="mf-link-arrow"
+             href="https://www.openstreetmap.org/?mlat=6.9344&amp;mlon=79.8428#map=16/6.9344/79.8428"
+             target="_blank" rel="noopener noreferrer">
+            Open in OpenStreetMap <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+          </a>
+        </div>
+
+        <div class="mf-info-map">
+          <!-- Keyless OpenStreetMap embed, centred on Colombo Fort. -->
+          <iframe
+            src="https://www.openstreetmap.org/export/embed.html?bbox=79.8328%2C6.9244%2C79.8528%2C6.9444&amp;layer=mapnik&amp;marker=6.9344%2C79.8428"
+            title="Map of Colombo Fort, Sri Lanka"
+            loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <p class="small mf-muted mt-2 mb-0">
+          Map data © OpenStreetMap contributors. Marker shows the Colombo Fort area —
+          the head office address above is a placeholder.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============================= QUICK HELP ========================= -->
+    <section class="mf-section mf-bg-tint" aria-labelledby="quickHead">
+      <div class="container">
+        <div class="text-center mb-4">
+          <span class="mf-eyebrow">Faster than waiting</span>
+          <h2 class="mf-section-title mt-2 mb-0" id="quickHead">Quick help</h2>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <a class="mf-info-quick" href="about.html#faq">
+              <span class="mf-info-ic"><i class="bi bi-patch-question" aria-hidden="true"></i></span>
+              <span>
+                <strong>Read the FAQ</strong>
+                <span>Booking, cancelling, seats and what to bring</span>
+              </span>
+            </a>
+          </div>
+          <div class="col-md-4">
+            <a class="mf-info-quick" href="my-trips.html">
+              <span class="mf-info-ic"><i class="bi bi-ticket-perforated" aria-hidden="true"></i></span>
+              <span>
+                <strong>My Trips</strong>
+                <span>Look up or cancel a booking yourself</span>
+              </span>
+            </a>
+          </div>
+          <div class="col-md-4">
+            <a class="mf-info-quick" href="assistant.html">
+              <span class="mf-info-ic"><i class="bi bi-robot" aria-hidden="true"></i></span>
+              <span>
+                <strong>Ask Metro AI</strong>
+                <span>Routes, fares and times, answered now</span>
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="footer"></div>
+  <div id="chatWidget"></div>
+
+  <!-- jQuery -> Bootstrap JS -> api.js -> auth.js -> main.js -> home.js -> info-pages.js -> contact.js -> chat.js -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/home.js"></script>
+  <script src="js/info-pages.js"></script>
+  <script src="js/contact.js"></script>
+  <script src="js/chat.js"></script>
+</body>
+</html>
