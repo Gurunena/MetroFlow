@@ -45,55 +45,69 @@
      ======================================================================= */
   var TEAM_MEMBERS = [
     {
-      // ---- SAMPLE: this is the slice built in this repo so far. ----
-      name: 'Member 1 – <Your Name>',
-      studentId: '<Student ID>',
-      role: 'Front end – public pages & chatbot',
-      built: 'Home page, Metro AI chatbot, Explore page with the Leaflet map, ' +
-             'Sign in / Sign up / Admin login, Bus search results, and the ' +
-             'About, Our Team and Contact pages.',
-      modules: ['Bus Search', 'REST API'],
+      name: 'Member 1 – K. Harshani',
+      studentId: 'SA25610847',
+      role: 'Full stack – bus management & admin dashboard',
+      built: 'Bus API with add, view, update and delete, available-bus search, ' +
+             'bus details (bus number, type, capacity and status), and the bus ' +
+             'management tab in the admin dashboard.',
+      modules: ['Bus Management', 'Bus Search'],
       areas: ['Front end', 'Back end'],
       email: '',
       github: ''
     },
     {
-      name: 'Member 2 – <Name>',
-      studentId: '<Student ID>',
-      role: '<Role / title>',
-      built: '<One line: what this member built>',
-      modules: ['Bus Management', 'Route Management'],
-      areas: ['Back end'],
+      name: 'Member 2 – J. Shambavi',
+      studentId: 'SA26610142',
+      role: 'Back end – routes & schedules',
+      built: 'Route and Schedule management – departure and destination routes, ' +
+             'travel dates with departure and arrival times, assigning buses to ' +
+             'schedules, and the Schedules tab in the admin dashboard.',
+      modules: ['Route Management', 'Schedule Management'],
+      areas: ['Back end', 'Front end'],
       email: '',
       github: ''
     },
     {
-      name: 'Member 3 – <Name>',
-      studentId: '<Student ID>',
-      role: '<Role / title>',
-      built: '<One line: what this member built>',
-      modules: ['Schedule Management', 'Seat Management'],
+      name: 'Member 3 – K.G.Bineth Minuwara',
+      studentId: 'SA25610831',
+      role: 'Full stack – seat management & passenger management',
+      built: 'Seat Management API integration, seat selection, seat availability ' +
+             'checking and available seat status, and seat availability refresh. ' +
+             'Passenger Management page with passenger details management, search, ' +
+             'add, update and delete.',
+      modules: ['Seat Management', 'Passenger Management'],
       areas: ['Front end', 'Back end'],
       email: '',
       github: ''
     },
     {
-      name: 'Member 4 – <Name>',
-      studentId: '<Student ID>',
-      role: '<Role / title>',
-      built: '<One line: what this member built>',
+      name: 'Member 4 – L. A. Daluwatte',
+      studentId: 'SA25610755',
+      role: 'Full stack – bookings & e-tickets',
+      built: 'Booking API, Booking ID generator, Booking page with e-tickets and ' +
+             'PDF download, My Trips page with booking search, edit and cancel, ' +
+             'and MetroMiles rewards.',
       modules: ['Booking Management', 'Booking Search'],
-      areas: ['Back end', 'Database'],
+      areas: ['Front end', 'Back end'],
       email: '',
       github: ''
     },
     {
-      name: 'Member 5 – <Name>',
-      studentId: '<Student ID>',
-      role: '<Role / title>',
-      built: '<One line: what this member built>',
-      modules: ['Passenger Management', 'REST API'],
-      areas: ['Database', 'Documentation'],
+      name: 'Member 5 – R.W.V.K.G.Dayananda',
+      studentId: 'SA25610884',
+      role: 'Full stack – public site, authentication & REST API',
+      built: 'Home page and the Metro AI chatbot; the Explore page with its ' +
+             'Leaflet map of Sri Lanka; Sign in, Sign up, Admin login and ' +
+             'Logout backed by real JWT + bcrypt auth in MongoDB; the bus ' +
+             'search results page; the About, Our Team and Contact pages with ' +
+             'a MongoDB-backed contact API; the operator dashboard fix; and ' +
+             'the REST API and database layer — the Route and Schedule ' +
+             'collections, request validation, central error handling, the ' +
+             'idempotent seed and migration scripts, the endpoint test suite ' +
+             'and the project documentation.',
+      modules: ['REST API'],
+      areas: ['Front end', 'Back end', 'Database', 'Documentation'],
       email: '',
       github: ''
     }
@@ -129,7 +143,10 @@
       return n ? 'M' + n[1] : '?';
     }
 
-    var parts = name.split(/\s+/).filter(Boolean);
+    // Split on dots too: Sri Lankan names are often written as strings of
+    // initials ("R.W.V.K.G.Dayananda"), which on whitespace alone would be
+    // one word and yield a single letter.
+    var parts = name.split(/[\s.]+/).filter(Boolean);
     var first = parts[0] ? parts[0].charAt(0) : '';
     var last = parts.length > 1 ? parts[parts.length - 1].charAt(0) : '';
     return (first + last).toUpperCase() || '?';
@@ -278,7 +295,7 @@
      TEAM – cards + module filter
      ======================================================================= */
 
-  function memberCard(member, index) {
+  function memberCard(member) {
     var placeholder = isPlaceholder(member.name) || isPlaceholder(member.studentId);
     var areas = $.isArray(member.areas) ? member.areas : [];
     var modules = $.isArray(member.modules) ? member.modules : [];
@@ -324,9 +341,7 @@
               '<i class="bi bi-github" aria-hidden="true"></i></a>';
     }
     if (placeholder) {
-      html += '      <span class="mf-info-ph-note">' +
-              (index === 0 ? 'Sample – copy this format' : 'Placeholder – fill in') +
-              '</span>';
+      html += '      <span class="mf-info-ph-note">Placeholder – fill in</span>';
     }
     html += '    </div>';
 
@@ -356,7 +371,7 @@
     }
 
     $.each(TEAM_MEMBERS, function (i, member) {
-      $grid.append(memberCard(member, i));
+      $grid.append(memberCard(member));
     });
 
     return true;
