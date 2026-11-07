@@ -774,3 +774,74 @@
     letter-spacing: 3px;
     text-transform: uppercase;
 }
+/* =========================================
+   THEME MATCH – light page header, like Explore / My Trips
+   (replaces the full-height photo banner above)
+========================================= */
+
+.booking-hero {
+    background: linear-gradient(180deg, var(--mf-tint-red, #FFF5F5) 0%, #ffffff 100%);
+    min-height: 0;
+    padding: 2.5rem 0 2rem;
+    border-radius: 0;
+    border-bottom: 1px solid var(--mf-line, #E8EAEF);
+    text-align: center;
+}
+
+.booking-hero h1,
+.booking-hero h2 {
+    color: var(--mf-navy, #0F1B33);
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    letter-spacing: -0.03em;
+    margin: 0.4rem 0 0.5rem;
+}
+
+.booking-hero p {
+    color: var(--mf-grey, #6B7280);
+    margin: 0;
+}
+
+.booking-script {
+    font-family: "Pinyon Script", "Great Vibes", var(--mf-font-hand, cursive);
+    font-weight: 400;
+    color: var(--mf-red, #D80F1E);
+    letter-spacing: 0;
+}
+
+/* =========================================
+   LAYOUT – keep the journey card and the seat
+   area inside the page width, like every other page
+========================================= */
+
+.booking-search-section {
+    padding: 2rem 0 3.5rem;
+    background: var(--mf-tint-grey, #F7F8FA);
+}
+
+.journey-info-details {
+    flex-wrap: wrap;
+}
+
+.journey-route-info {
+    margin-left: auto;
+    min-width: min(100%, 320px);
+}
+
+.journey-route-info p {
+    margin: 0 0 .4rem;
+}
+
+.seat-selection-layout {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+}
+
+@media (max-width: 991.98px) {
+    .seat-selection-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* readable status messages under the buttons */
+#seatMessage.alert-success { color: #15803D; background: #E8F7EE; border-color: #BBF7D0; }
+#seatMessage.alert-warning { color: #92400E; background: #FEF3C7; border-color: #FDE68A; }
+#seatMessage.alert-danger  { color: #B00B18; background: #FFF0F1; border-color: #FECACA; }
